@@ -77,17 +77,18 @@ gantt
   * Escrever o `schema.prisma` com `binaryTargets`.
   * Configurar scripts de migrations no monorepo.
 
-### US-INF-04: CI/CD Pipeline (Coolify Webhook) & Git Hooks (Vitest / Pytest)
+### US-INF-04: CI/CD Pipeline (Coolify Webhook) & Git Hooks (Vitest / Pytest, Ruff / Mypy)
 * **Story:**
-  Como engenheiro DevOps, quero configurar git hooks locais e uma pipeline CI/CD via GitHub Actions com verificações estritas, para garantir que o deploy via webhook do Coolify só ocorra se o código estiver 100% tipado (sem `any`), formatado e testado.
+  Como engenheiro DevOps, quero configurar git hooks locais e uma pipeline CI/CD via GitHub Actions com verificações estritas de código Node e Python, para garantir que o deploy via webhook do Coolify só ocorra se todo o código estiver formatado, testado e 100% tipado.
 * **Critérios de Aceite:**
-  * **Git Hooks locais:** Husky + Lint-staged configurados no pre-commit executando apenas ESLint e Prettier nos arquivos em staging.
+  * **Git Hooks locais:** Husky + Lint-staged configurados no pre-commit executando ESLint/Prettier (para JS/TS) e **Ruff** (para linting/formatação rápida do Python) nos arquivos em staging.
   * **CI/CD Pipeline (GitHub Actions):**
-    * Executa checagem de tipos estrita (TypeScript strict mode, proibido tipo `any`).
+    * Executa checagem de tipos estrita no Node (TypeScript strict mode, sem `any`) e checagem de tipos estática no Python (**Mypy**).
     * Executa a suite de testes TDD: **Vitest** para aplicações Node/Web e **Pytest** para Python backend, integrados ao comando `turbo run test`.
     * Caso todas as etapas do runner self-hosted passem, envia uma requisição HTTP POST (Webhook) para o Coolify disparar o deploy na Hostinger VPS.
 * **Tarefas Técnicas:**
-  * Configurar Husky e lint-staged no monorepo.
+  * Configurar Husky e lint-staged no monorepo para checar arquivos `.js`, `.ts`, `.tsx` e `.py`.
+  * Configurar Ruff e Mypy nas dependências de desenvolvimento do Poetry em `backend-python`.
   * Escrever `.github/workflows/deploy.yml` configurado para o runner self-hosted.
 
 ---
