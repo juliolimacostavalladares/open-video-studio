@@ -46,7 +46,7 @@ gantt
   * Configurar aliases de caminho absoluto local (`@/*`) estendidos nos tsconfigs de cada app (`apps/web` e `apps/backend-node`) para evitar caminhos relativos longos (ex: `../../`).
   * **Portas Fixas & CORS:** Mapeamento de portas padrão (`3000` web Next.js, `4000` backend-node Fastify) e middleware de CORS configurado nas APIs para aceitar requisições de origens específicas informadas dinamicamente no `.env`.
   * Criação das aplicações em `apps/`:
-    * `apps/web`: Next.js (Dashboard) configurada para utilizar **Tailwind CSS** para estilização visual.
+    * `apps/web`: Next.js (Dashboard) configurada com **App Router**, utilizando **Tailwind CSS** para estilização visual, **Radix UI / Shadcn UI** para base de componentes interativos e **Zustand** para gerenciamento de estado global.
     * `apps/backend-node`: Fastify API com TypeScript estrito (Rotas, BullMQ, YouTube API).
 * **Tarefas Técnicas:**
   * Inicializar workspace do pnpm (`pnpm-workspace.yaml`).
@@ -187,7 +187,7 @@ gantt
 * **Critérios de Aceite:**
   * Fila de jobs implementada via BullMQ conectada ao Redis.
   * Somente 1 renderização simultânea de vídeo por canal é permitida por worker do backend.
-  * O status da renderização ("Aguardando na Fila", "Renderizando", "Concluído", "Falha") deve ser salvo e transmitido via WebSockets.
+  * O status da renderização ("Aguardando na Fila", "Renderizando", "Concluído", "Falha") deve ser salvo e transmitido via Server-Sent Events (SSE) para o frontend.
 * **Tarefas Técnicas:**
   * Configurar fila BullMQ em `backend-node`.
   * Escrever worker de execução remota de render do Remotion CLI.
@@ -200,7 +200,7 @@ gantt
   * Camadas empilháveis controladas pelo usuário (Fundo IA, recortes PNG transparentes de reação, formas, setas de destaque e caixas de texto com estilo).
   * Botão de exportação que gera o arquivo PNG/JPG final otimizado (< 2MB).
 * **Tarefas Técnicas:**
-  * Criar componente de Canvas Interativo (usando Fabric.js ou Canvas API padrão) em React no Next.js.
+  * Criar componente de Canvas Interativo baseado na **Canvas API nativa do HTML5** com manipulação direta de pixels via javascript em React no Next.js.
   * Rota no backend para gerar imagem de fundo via IA Text-to-Image.
 
 ---
@@ -227,7 +227,11 @@ gantt
     * Coluna Esquerda: Editor de roteiro interativo com badges de cena.
     * Coluna Central: Remotion Video Player integrado e Linha do tempo horizontal rolável com blocos de duração proporcional.
     * Coluna Direita: Seletor de vozes, mini preview da thumbnail (clicar abre modal de edição canvas), metadados de publicação e botões de ação final.
-  * Tema visual Dark Mode com transições suaves e design premium de alto contraste.
+  * Integração de **Zustand** para gerenciar a sincronização do frame ativo, áudio duration e dados editados em tempo real entre as três colunas de maneira performática.
+  * Atualização dinâmica do progresso de render do Remotion consumindo a stream de **Server-Sent Events (SSE)** exposta pelo Fastify.
+  * Utilização do cliente **Axios** encapsulado em React hooks customizados para chamadas de APIs e mutações de dados.
+  * Design visual Dark Mode utilizando a biblioteca **Radix UI / Shadcn UI** combinada com **Tailwind CSS**.
 * **Tarefas Técnicas:**
-  * Desenvolver os painéis da dashboard em Next.js.
-  * Integrar chamadas de API com Tailwind CSS / CSS Modules estruturados.
+  * Desenvolver a dashboard com Next.js App Router e componentes do Radix/Shadcn.
+  * Configurar a store global do Zustand para controle unificado de estados (roteiro, timeline, preview).
+  * Implementar hooks de conexão Axios e de escuta do endpoint SSE.
