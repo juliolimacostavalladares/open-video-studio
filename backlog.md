@@ -32,32 +32,36 @@ gantt
 
 ## Sprint 1: Fundação & Infraestrutura Full-Stack (Configurações)
 
-### US-INF-01: Setup do Monorepo com Turborepo, TSConfigs Strict-Beast, Path Aliases & Hoisting Estrito
+### US-INF-01: Setup do Monorepo com Turborepo, TSConfigs Strict-Beast, Path Aliases, Portas Fixas & Hoisting Estrito
 * **Story:**
-  Como desenvolvedor do projeto, quero configurar a estrutura de monorepo utilizando Turborepo (com cacheamento de envs), hoisting estrito, TSConfigs Strict-Beast compartilhados e aliases de importação absolutos locais, para que a integridade de dependências, checagem de tipos estrita (sem `any`) e imports limpos de todas as aplicações seja centralizada e livre de efeitos colaterais.
+  Como desenvolvedor do projeto, quero configurar a estrutura de monorepo utilizando Turborepo (com cacheamento de envs), hoisting estrito, TSConfigs Strict-Beast, aliases de caminhos e portas fixas de desenvolvimento com CORS restrito, para que a integridade de dependências, checagem de tipos estrita (sem `any`), portas limpas e comunicação segura entre as APIs seja centralizada e livre de efeitos colaterais.
 * **Critérios de Aceite:**
   * O diretório raiz deve estar inicializado com Turborepo (`turbo.json` configurado).
   * O `turbo.json` deve mapear as variáveis de ambiente críticas (ex: `DATABASE_URL`, `NEXT_PUBLIC_API_URL`) para invalidar e recriar o cache de compilação quando os valores mudarem na VPS.
   * O workspace do pnpm deve operar com **Hoisting Estrito** (sem `shamefully-hoist=true` no `.npmrc`), garantindo que cada sub-projeto declare suas próprias dependências explícitas.
   * Criação de pacotes compartilhados: `packages/tsconfig` (configuração base com `strict: true`, `noImplicitAny: true`, `strictNullChecks: true`, `noUnusedLocals: true` e `noUnusedParameters: true`) e `packages/eslint-config` (regras lint).
   * Configurar aliases de caminho absoluto local (`@/*`) estendidos nos tsconfigs de cada app (`apps/web` e `apps/backend-node`) para evitar caminhos relativos longos (ex: `../../`).
+  * **Portas Fixas & CORS:** Mapeamento de portas padrão (`3000` web Next.js, `4000` backend-node Fastify, `8000` python FastAPI) e middleware de CORS configurado nas APIs para aceitar requisições de origens específicas informadas dinamicamente no `.env`.
   * Criação das aplicações: `apps/web` (Next.js), `apps/backend-node` (Fastify com TypeScript estrito) e `apps/backend-python` (FastAPI com **Poetry**).
 * **Tarefas Técnicas:**
   * Inicializar workspace do pnpm (`pnpm-workspace.yaml`).
   * Configurar `turbo.json` com mapeamento de `globalEnv` e `env` por tarefa.
   * Inicializar projeto Poetry em `apps/backend-python/pyproject.toml`.
+  * Implementar middleware de CORS dinâmico no Fastify e FastAPI.
 
-### US-INF-02: Serviços Containerizados (Bridge Network, Public Read Buckets) & Validação de Ambiente (Zod)
+### US-INF-02: Serviços Containerizados (Bridge Network, Public Read Buckets), Fila BullMQ & Validação de Ambiente (Zod)
 * **Story:**
-  Como arquiteto do sistema, quero definir a infraestrutura de serviços via Docker Compose com rede dedicada, configurar buckets públicos no MinIO e criar esquemas de validação Zod para variáveis de ambiente, para que a inicialização do projeto falhe imediatamente (fail-fast) se houver alguma configuração incorreta.
+  Como arquiteto do sistema, quero definir a infraestrutura de serviços via Docker Compose com rede dedicada, configurar buckets públicos no MinIO, regras de robustez da fila BullMQ e criar esquemas de validação Zod para variáveis de ambiente, para que a inicialização do projeto falhe imediatamente (fail-fast) se houver alguma configuração incorreta.
 * **Critérios de Aceite:**
   * O arquivo `docker-compose.yml` deve expor as portas de PostgreSQL (`5432`), Redis (`6379`) e MinIO (`9000` API, `9001` Console).
   * Os containers devem rodar conectados a uma rede isolada do tipo bridge (`open-video-studio-net`), permitindo que se comuniquem por nomes DNS e que o proxy do Coolify se associe a ela para expor as portas.
   * **MinIO Auto-initialization & Security:** O backend Fastify deve verificar no startup se os buckets obrigatórios (`videos`, `voices`, `assets`, `thumbnails`) existem no MinIO, criando-os programaticamente e configurando a política de **Leitura Pública Anônima (Public Read)** para `voices`, `assets` e `thumbnails` (a escrita/upload continua restrita e autenticada via backend).
+  * **Configuração da Fila BullMQ:** Fila robusta configurada com concorrência estrita de 1 worker simultâneo por canal, tentativas limitadas a 3 com exponencial backoff (atraso de 2s, 4s, 8s) e limpeza automática de metadados de jobs concluídos no Redis.
   * Cada aplicação (`apps/web` e `apps/backend-node`) deve carregar e validar o `.env` no startup através de um schema do **Zod**, lançando erro impeditivo em caso de falha.
 * **Tarefas Técnicas:**
   * Escrever `docker-compose.yml` com a declaração da rede customizada `open-video-studio-net`.
   * Implementar script de inicialização e política de leitura pública de buckets no backend Fastify via MinIO SDK.
+  * Configurar fila do BullMQ no backend Node com opções de retry, backoff e auto-cleanup.
   * Implementar módulo utilitário de validação de ambiente com Zod no backend e frontend.
 
 ### US-INF-03: Modelagem de Dados (Prisma ORM, Connection Singleton) & Compatibilidade Docker
