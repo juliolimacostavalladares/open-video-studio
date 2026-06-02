@@ -32,22 +32,18 @@ gantt
 
 ## Sprint 1: Fundação & Infraestrutura Full-Stack (Configurações)
 
-### US-INF-01: Setup do Monorepo com Turborepo & TSConfigs Compartilhados
+### US-INF-01: Setup do Monorepo com Turborepo, TSConfigs & Hoisting Estrito
 * **Story:**
-  Como desenvolvedor do projeto, quero configurar a estrutura de monorepo utilizando Turborepo e arquivos base de TypeScript/ESLint compartilhados, para que o gerenciamento de dependências, builds e linting de todas as aplicações seja centralizado e de alta performance.
+  Como desenvolvedor do projeto, quero configurar a estrutura de monorepo utilizando Turborepo (com cacheamento de envs), hoisting estrito e TSConfigs compartilhados, para que a integridade de dependências e builds de todas as aplicações seja centralizado e livre de efeitos colaterais.
 * **Critérios de Aceite:**
   * O diretório raiz deve estar inicializado com Turborepo (`turbo.json` configurado).
-  * Criação dos seguintes pacotes compartilhados em `packages/`:
-    * `packages/tsconfig`: Configurações TypeScript base (Node, React, Library).
-    * `packages/eslint-config`: Regras de linting centralizadas.
-    * `packages/database`: Prisma schema e client PostgreSQL.
-  * Criação das seguintes aplicações em `apps/`:
-    * `apps/web`: Next.js (Dashboard).
-    * `apps/backend-node`: Fastify API com TypeScript estrito (Rotas, BullMQ, YouTube API).
-    * `apps/backend-python`: FastAPI (TTS e clonagem de voz) gerenciada por **Poetry**.
+  * O `turbo.json` deve mapear as variáveis de ambiente críticas (ex: `DATABASE_URL`, `NEXT_PUBLIC_API_URL`) para invalidar e recriar o cache de compilação quando os valores mudarem na VPS.
+  * O workspace do pnpm deve operar com **Hoisting Estrito** (sem `shamefully-hoist=true` no `.npmrc`), garantindo que cada sub-projeto declare suas próprias dependências explícitas.
+  * Criação de pacotes compartilhados: `packages/tsconfig` (configs base TypeScript) e `packages/eslint-config` (regras lint).
+  * Criação das aplicações: `apps/web` (Next.js), `apps/backend-node` (Fastify com TypeScript estrito) e `apps/backend-python` (FastAPI com **Poetry**).
 * **Tarefas Técnicas:**
   * Inicializar workspace do pnpm (`pnpm-workspace.yaml`).
-  * Configurar scripts de build, dev e lint no root `package.json`.
+  * Configurar `turbo.json` com mapeamento de `globalEnv` e `env` por tarefa.
   * Inicializar projeto Poetry em `apps/backend-python/pyproject.toml`.
 
 ### US-INF-02: Serviços Containerizados & Validação de Ambiente (Zod)
@@ -60,19 +56,15 @@ gantt
   * Escrever `docker-compose.yml` com variáveis persistidas localmente.
   * Implementar módulo utilitário de validação de ambiente com Zod no backend e frontend.
 
-### US-INF-03: Modelagem de Dados com Prisma ORM & Deploy de Migrations
+### US-INF-03: Modelagem de Dados (Prisma ORM) & Compatibilidade Docker
 * **Story:**
-  Como desenvolvedor backend, quero configurar o Prisma ORM conectando ao PostgreSQL e estabelecer o fluxo de migração do banco, para gerenciar com segurança o estado de dados e atualizar o schema em produção automaticamente.
+  Como desenvolvedor backend, quero configurar o Prisma ORM e os alvos de binários de compatibilidade de SO, para rodar migrations e queries de banco de dados com segurança tanto no desenvolvimento local quanto no container Docker na VPS do Coolify.
 * **Critérios de Aceite:**
-  * Integração do Prisma no pacote `packages/database` mapeando as tabelas:
-    * `Channel`: Metadados do canal do YouTube e tokens OAuth2.
-    * `VoiceProfile`: Perfis de voz clonados (paths das amostras locais).
-    * `Project`: Projetos de vídeo (roteiro, status de render).
-    * `Scene`: Blocos de cena (texto, áudio path, mídia path, ordem).
-  * Execução da primeira migration do Prisma localmente.
-  * O pipeline de deploy no Coolify deve executar `prisma migrate deploy` antes de subir o novo container do Fastify, garantindo atualizações seguras de banco.
+  * Configurar `binaryTargets = ["native", "debian-openssl-1.1.x", "linux-musl-openssl-3.0.x"]` no `schema.prisma` para compatibilidade entre macOS/Windows de desenvolvimento e o container Linux (Debian/Alpine) do Coolify.
+  * Mapeamento de tabelas: `Channel` (tokens OAuth2), `VoiceProfile` (perfis TTS), `Project` (roteiro) e `Scene` (blocos de cena).
+  * O pipeline de deploy do Coolify deve rodar `prisma migrate deploy` na etapa de build/pre-deploy.
 * **Tarefas Técnicas:**
-  * Escrever o `schema.prisma`.
+  * Escrever o `schema.prisma` com `binaryTargets`.
   * Configurar scripts de migrations no monorepo.
 
 ### US-INF-04: CI/CD Pipeline (Coolify Webhook) & Git Hooks (Vitest / Pytest)
@@ -119,7 +111,7 @@ gantt
   Como editor de vídeo, quero que o Remotion combine programaticamente os arquivos de áudio de narração, as legendas geradas e as marcações temporais das cenas, para gerar a estrutura inicial do vídeo completo.
 * **Critérios de Aceite:**
   * O pacote `packages/remotion-video` deve conseguir ler o JSON estruturado de um projeto.
-  * Renderizar as cenas in sequência horizontal linear.
+  * Renderizar as cenas em sequência horizontal linear.
   * Gerar legendas animadas sobrepostas e sincronizadas com a duração exata do áudio de cada cena.
 * **Tarefas Técnicas:**
   * Escrever componentes React no Remotion para ler a estrutura de `Scenes`.
@@ -153,7 +145,7 @@ gantt
 * **Story:**
   Como designer do canal, quero criar e editar graficamente a capa do vídeo através de uma interface de canvas interativa, para maximizar o CTR dos lançamentos sem sair da plataforma.
 * **Critérios de Aceite:**
-  * Mesa de trabalho de canvas interativa (proporção 1280x720px) com suporte a arrastar e redimensionar elements.
+  * Mesa de trabalho de canvas interativa (proporção 1280x720px) com suporte a arrastar e redimensionar elementos.
   * Camadas empilháveis controladas pelo usuário (Fundo IA, recortes PNG transparentes de reação, formas, setas de destaque e caixas de texto com estilo).
   * Botão de exportação que gera o arquivo PNG/JPG final otimizado (< 2MB).
 * **Tarefas Técnicas:**
