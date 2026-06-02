@@ -55,11 +55,12 @@ gantt
 
 ### US-INF-02: Serviços Containerizados (Bridge Network, Public Read Buckets), Fila BullMQ & Validação de Ambiente (Zod)
 * **Story:**
-  Como arquiteto do sistema, quero definir a infraestrutura de serviços via Docker Compose com rede dedicada (incluindo o container pré-configurado do TTS Python), configurar buckets públicos no MinIO, regras de robustez da fila BullMQ e criar esquemas de validação Zod para variáveis de ambiente, para que a inicialização do projeto falhe imediatamente (fail-fast) se houver alguma configuração incorreta.
+  Como arquiteto do sistema, quero definir a infraestrutura de serviços via Docker Compose com rede dedicada (incluindo o container pré-configurado do TTS Python), configurar buckets públicos no MinIO com rotas distintas (interno/externo), regras de robustez da fila BullMQ e criar esquemas de validação Zod para variáveis de ambiente, para que a inicialização do projeto falhe imediatamente (fail-fast) se houver alguma configuração incorreta.
 * **Critérios de Aceite:**
   * O arquivo `docker-compose.yml` deve expor as portas de PostgreSQL (`5432`), Redis (`6379`), MinIO (`9000` API, `9001` Console) e o container pré-construído do **OmniVoice Studio (FastAPI Python TTS na porta 8000)**.
   * Os containers devem rodar conectados a uma rede isolada do tipo bridge (`open-video-studio-net`), permitindo que o Fastify se comunique com o container do Python TTS internamente via DNS (`http://omnivoice:8000`).
   * **MinIO Auto-initialization & Security:** O backend Fastify deve verificar no startup se os buckets obrigatórios (`videos`, `voices`, `assets`, `thumbnails`) existem no MinIO, criando-os programaticamente e configurando a política de **Leitura Pública Anônima (Public Read)** para `voices`, `assets` e `thumbnails` (a escrita/upload continua restrita e autenticada via backend).
+  * **Dual MinIO Endpoints:** Configuração de endpoints separados no `.env`: `MINIO_ENDPOINT_INTERNAL` (ex: `http://minio:9000`) para chamadas do backend Fastify e `MINIO_ENDPOINT_EXTERNAL` (ex: `http://localhost:9000` ou domínio público) para renderização de URLs de mídias consumidas pelo navegador do usuário.
   * **Configuração da Fila BullMQ:** Fila robusta configurada com concorrência estrita de 1 worker simultâneo por canal, tentativas limitadas a 3 com exponencial backoff (atraso de 2s, 4s, 8s) e limpeza automática de metadados de jobs concluídos no Redis.
   * **Validação de Ambiente Local (Zod):** Cada aplicação (`apps/web` e `apps/backend-node`) deve carregar e validar o `.env` no startup através de um esquema do **Zod isolado por pasta**. O frontend web não valida nem expõe as credenciais privadas do banco e Redis do backend.
 * **Tarefas Técnicas:**
@@ -81,17 +82,19 @@ gantt
   * Escrever o `schema.prisma` com `binaryTargets`.
   * Configurar scripts de migrations no monorepo.
 
-### US-INF-04: CI/CD Pipeline (Coolify Webhook) & Git Hooks (Vitest)
+### US-INF-04: CI/CD Pipeline (Coolify Webhook) & Git Hooks (Vitest, Remotion Chrome Dependencies)
 * **Story:**
-  Como engenheiro DevOps, quero configurar git hooks locais e uma pipeline CI/CD via GitHub Actions com verificações estritas de código Node/Web, para garantir que o deploy via webhook do Coolify só ocorra se todo o código estiver formatado, testado e 100% tipado.
+  Como engenheiro DevOps, quero configurar git hooks locais e uma pipeline CI/CD via GitHub Actions com verificações estritas e dependências de renderização Chromium headless no Docker, para garantir que o deploy via webhook do Coolify seja bem-sucedido e os renders de vídeo não travem por falta de dependências.
 * **Critérios de Aceite:**
   * **Git Hooks locais:** Husky + Lint-staged configurados no pre-commit executando ESLint e Prettier nos arquivos em staging.
   * **CI/CD Pipeline (GitHub Actions):**
     * Executa checagem de tipos estrita no Node (TypeScript strict mode, sem `any`).
     * Executa a suite de testes TDD: **Vitest** para aplicações Node/Web, integrado ao comando `turbo run test`.
     * Caso todas as etapas do runner self-hosted passem, envia uma requisição HTTP POST (Webhook) para o Coolify disparar o deploy na Hostinger VPS.
+  * **Remotion Headless Dependencies:** Configurar o Dockerfile da aplicação `backend-node` para instalar as dependências de sistema do Chrome headless (ex: `libnss3`, `libasound2`, `libxss1`) ou rodar `npx remotion install-dependencies` durante a montagem do container, garantindo que o renderizador de vídeo do Remotion rode perfeitamente na Hostinger VPS.
 * **Tarefas Técnicas:**
   * Configurar Husky e lint-staged no monorepo para checar arquivos `.js`, `.ts`, `.tsx` e `.json`.
+  * Configurar dependências do Remotion no Dockerfile do `apps/backend-node`.
   * Escrever `.github/workflows/deploy.yml` configurado para o runner self-hosted.
 
 ---
@@ -125,7 +128,7 @@ gantt
   Como editor de vídeo, quero que o Remotion combine programaticamente os arquivos de áudio de narração, as legendas geradas e as marcações temporais das cenas, para gerar a estrutura inicial do vídeo completo.
 * **Critérios de Aceite:**
   * O pacote `packages/remotion-video` deve conseguir ler o JSON estruturado de um projeto.
-  * Renderizar as cenas em sequência horizontal linear.
+  * Renderizar as cenas in sequência horizontal linear.
   * Gerar legendas animadas sobrepostas e sincronizadas com a duração exata do áudio de cada cena.
 * **Tarefas Técnicas:**
   * Escrever componentes React no Remotion para ler a estrutura de `Scenes`.
