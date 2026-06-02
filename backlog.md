@@ -17,7 +17,7 @@ gantt
     CI/CD & Git Hooks            :s4, after s3, 4d
     section Sprint 2: IA & Voz
     Script GPT-4o & Parser       :s5, after s4, 5d
-    TTS Local OmniVoice          :s6, after s5, 5d
+    TTS Integracao               :s6, after s5, 4d
     Remotion Core Engine         :s7, after s6, 4d
     section Sprint 3: Mídias & Fila
     APIs Pexels & MinIO Storage  :s8, after s7, 5d
@@ -34,7 +34,7 @@ gantt
 
 ### US-INF-01: Setup do Monorepo com Turborepo, TSConfigs Strict-Beast, Path Aliases, Portas Fixas & Hoisting Estrito
 * **Story:**
-  Como desenvolvedor do projeto, quero configurar a estrutura de monorepo utilizando Turborepo (com cacheamento de envs), hoisting estrito, TSConfigs Strict-Beast, namespace genérico de pacotes, aliases de caminhos e portas fixas de desenvolvimento com CORS restrito, para que a integridade de dependências, checagem de tipos estrita (sem `any`), portas limpas e comunicação segura entre as APIs seja centralizada e livre de efeitos colaterais.
+  Como desenvolvedor do projeto, quero configurar a estrutura de monorepo utilizando Turborepo (com cacheamento de envs), hoisting estrito, TSConfigs Strict-Beast, namespace genérico de pacotes, aliases de caminhos e portas de desenvolvimento com CORS restrito, para que a integridade de dependências, checagem de tipos estrita (sem `any`), portas limpas e comunicação segura entre as APIs seja centralizada e livre de efeitos colaterais.
 * **Critérios de Aceite:**
   * O diretório raiz deve estar inicializado com Turborepo (`turbo.json` configurado).
   * O `turbo.json` deve mapear as variáveis de ambiente críticas (ex: `DATABASE_URL`, `NEXT_PUBLIC_API_URL`) para invalidar e recriar o cache de compilação quando os valores mudarem na VPS.
@@ -44,25 +44,26 @@ gantt
     * `@repo/eslint-config`: Configurações de ESLint base do monorepo.
     * `@repo/database`: Prisma schema e client PostgreSQL.
   * Configurar aliases de caminho absoluto local (`@/*`) estendidos nos tsconfigs de cada app (`apps/web` e `apps/backend-node`) para evitar caminhos relativos longos (ex: `../../`).
-  * **Portas Fixas & CORS:** Mapeamento de portas padrão (`3000` web Next.js, `4000` backend-node Fastify, `8000` python FastAPI) e middleware de CORS configurado nas APIs para aceitar requisições de origens específicas informadas dinamicamente no `.env`.
-  * Criação das aplicações: `apps/web` (Next.js), `apps/backend-node` (Fastify com TypeScript estrito) e `apps/backend-python` (FastAPI com **Poetry**).
+  * **Portas Fixas & CORS:** Mapeamento de portas padrão (`3000` web Next.js, `4000` backend-node Fastify) e middleware de CORS configurado nas APIs para aceitar requisições de origens específicas informadas dinamicamente no `.env`.
+  * Criação das aplicações em `apps/`:
+    * `apps/web`: Next.js (Dashboard).
+    * `apps/backend-node`: Fastify API com TypeScript estrito (Rotas, BullMQ, YouTube API).
 * **Tarefas Técnicas:**
   * Inicializar workspace do pnpm (`pnpm-workspace.yaml`).
   * Configurar `turbo.json` com mapeamento de `globalEnv` e `env` por tarefa.
-  * Inicializar projeto Poetry em `apps/backend-python/pyproject.toml`.
-  * Implementar middleware de CORS dinâmico no Fastify e FastAPI.
+  * Implementar middleware de CORS dinâmico no Fastify.
 
 ### US-INF-02: Serviços Containerizados (Bridge Network, Public Read Buckets), Fila BullMQ & Validação de Ambiente (Zod)
 * **Story:**
-  Como arquiteto do sistema, quero definir a infraestrutura de serviços via Docker Compose com rede dedicada, configurar buckets públicos no MinIO, regras de robustez da fila BullMQ e criar esquemas de validação Zod para variáveis de ambiente, para que a inicialização do projeto falhe imediatamente (fail-fast) se houver alguma configuração incorreta.
+  Como arquiteto do sistema, quero definir a infraestrutura de serviços via Docker Compose com rede dedicada (incluindo o container pré-configurado do TTS Python), configurar buckets públicos no MinIO, regras de robustez da fila BullMQ e criar esquemas de validação Zod para variáveis de ambiente, para que a inicialização do projeto falhe imediatamente (fail-fast) se houver alguma configuração incorreta.
 * **Critérios de Aceite:**
-  * O arquivo `docker-compose.yml` deve expor as portas de PostgreSQL (`5432`), Redis (`6379`) e MinIO (`9000` API, `9001` Console).
-  * Os containers devem rodar conectados a uma rede isolada do tipo bridge (`open-video-studio-net`), permitindo que se comuniquem por nomes DNS e que o proxy do Coolify se associe a ela para expor as portas.
+  * O arquivo `docker-compose.yml` deve expor as portas de PostgreSQL (`5432`), Redis (`6379`), MinIO (`9000` API, `9001` Console) e o container pré-construído do **OmniVoice Studio (FastAPI Python TTS na porta 8000)**.
+  * Os containers devem rodar conectados a uma rede isolada do tipo bridge (`open-video-studio-net`), permitindo que o Fastify se comunique com o container do Python TTS internamente via DNS (`http://omnivoice:8000`).
   * **MinIO Auto-initialization & Security:** O backend Fastify deve verificar no startup se os buckets obrigatórios (`videos`, `voices`, `assets`, `thumbnails`) existem no MinIO, criando-os programaticamente e configurando a política de **Leitura Pública Anônima (Public Read)** para `voices`, `assets` e `thumbnails` (a escrita/upload continua restrita e autenticada via backend).
   * **Configuração da Fila BullMQ:** Fila robusta configurada com concorrência estrita de 1 worker simultâneo por canal, tentativas limitadas a 3 com exponencial backoff (atraso de 2s, 4s, 8s) e limpeza automática de metadados de jobs concluídos no Redis.
   * **Validação de Ambiente Local (Zod):** Cada aplicação (`apps/web` e `apps/backend-node`) deve carregar e validar o `.env` no startup através de um esquema do **Zod isolado por pasta**. O frontend web não valida nem expõe as credenciais privadas do banco e Redis do backend.
 * **Tarefas Técnicas:**
-  * Escrever `docker-compose.yml` com a declaração da rede customizada `open-video-studio-net`.
+  * Escrever `docker-compose.yml` com a declaração da rede customizada `open-video-studio-net` e do container do TTS Python.
   * Implementar script de inicialização e política de leitura pública de buckets no backend Fastify via MinIO SDK.
   * Configurar fila do BullMQ no backend Node com opções de retry, backoff e auto-cleanup.
   * Implementar schemas de Zod de ambiente locais em `apps/web/src/env.ts` e `apps/backend-node/src/env.ts`.
@@ -80,18 +81,17 @@ gantt
   * Escrever o `schema.prisma` com `binaryTargets`.
   * Configurar scripts de migrations no monorepo.
 
-### US-INF-04: CI/CD Pipeline (Coolify Webhook) & Git Hooks (Vitest / Pytest, Ruff / Mypy)
+### US-INF-04: CI/CD Pipeline (Coolify Webhook) & Git Hooks (Vitest)
 * **Story:**
-  Como engenheiro DevOps, quero configurar git hooks locais e uma pipeline CI/CD via GitHub Actions com verificações estritas de código Node e Python, para garantir que o deploy via webhook do Coolify só ocorra se todo o código estiver formatado, testado e 100% tipado.
+  Como engenheiro DevOps, quero configurar git hooks locais e uma pipeline CI/CD via GitHub Actions com verificações estritas de código Node/Web, para garantir que o deploy via webhook do Coolify só ocorra se todo o código estiver formatado, testado e 100% tipado.
 * **Critérios de Aceite:**
-  * **Git Hooks locais:** Husky + Lint-staged configurados no pre-commit executando ESLint/Prettier (para JS/TS) e **Ruff** (para linting/formatação rápida do Python) nos arquivos em staging.
+  * **Git Hooks locais:** Husky + Lint-staged configurados no pre-commit executando ESLint e Prettier nos arquivos em staging.
   * **CI/CD Pipeline (GitHub Actions):**
-    * Executa checagem de tipos estrita no Node (TypeScript strict mode, sem `any`) e checagem de tipos estática no Python (**Mypy**).
-    * Executa a suite de testes TDD: **Vitest** para aplicações Node/Web e **Pytest** para Python backend, integrados ao comando `turbo run test`.
+    * Executa checagem de tipos estrita no Node (TypeScript strict mode, sem `any`).
+    * Executa a suite de testes TDD: **Vitest** para aplicações Node/Web, integrado ao comando `turbo run test`.
     * Caso todas as etapas do runner self-hosted passem, envia uma requisição HTTP POST (Webhook) para o Coolify disparar o deploy na Hostinger VPS.
 * **Tarefas Técnicas:**
-  * Configurar Husky e lint-staged no monorepo para checar arquivos `.js`, `.ts`, `.tsx` e `.py`.
-  * Configurar Ruff e Mypy nas dependências de desenvolvimento do Poetry em `backend-python`.
+  * Configurar Husky e lint-staged no monorepo para checar arquivos `.js`, `.ts`, `.tsx` e `.json`.
   * Escrever `.github/workflows/deploy.yml` configurado para o runner self-hosted.
 
 ---
@@ -109,23 +109,23 @@ gantt
   * Implementar integração com OpenAI SDK.
   * Criar algoritmo de regex/parsing de tags de cena em Node.js.
 
-### US-AI-02: Narração TTS Segmentada por Cenas (Python Backend)
+### US-AI-02: Integração com Container Python TTS (OmniVoice)
 * **Story:**
-  Como criador de conteúdo, quero que o sistema gere a narração de voz para cada cena individualmente a partir do texto do roteiro usando perfis de voz clonados locais, para otimizar o tempo de regeneração de áudios.
+  Como criador de conteúdo, quero que o sistema envie os blocos de texto do roteiro para o container do Python TTS via requisições HTTP internas e salve os arquivos de áudio gerados, para realizar a narração por cenas.
 * **Critérios de Aceite:**
-  * Endpoint em `backend-python` (FastAPI) que receba um texto e o ID da voz do canal.
-  * Geração local de áudio (`.wav`/`.mp3`) de alta fidelidade rodando OmniVoice Studio localmente.
-  * Gravação dos arquivos de áudio de forma indexada por cena no storage (MinIO).
+  * O backend Node se conecta ao container Python TTS via rede interna (`http://omnivoice:8000`).
+  * Envia o texto da cena e o ID da voz do canal.
+  * O backend Node recebe o arquivo de áudio gerado (`.wav`/`.mp3`) e grava no storage (MinIO).
 * **Tarefas Técnicas:**
-  * Configurar runtime Python com dependências do OmniVoice Studio (coqui-tts/similar).
-  * Expor API de síntese e integração com MinIO SDK em Python.
+  * Implementar cliente HTTP no Fastify para integração com a API do OmniVoice.
+  * Configurar uploads do buffer de áudio recebido para o MinIO.
 
 ### US-AI-03: Engine de Composição no Remotion
 * **Story:**
   Como editor de vídeo, quero que o Remotion combine programaticamente os arquivos de áudio de narração, as legendas geradas e as marcações temporais das cenas, para gerar a estrutura inicial do vídeo completo.
 * **Critérios de Aceite:**
   * O pacote `packages/remotion-video` deve conseguir ler o JSON estruturado de um projeto.
-  * Renderizar as cenas in sequência horizontal linear.
+  * Renderizar as cenas em sequência horizontal linear.
   * Gerar legendas animadas sobrepostas e sincronizadas com a duração exata do áudio de cada cena.
 * **Tarefas Técnicas:**
   * Escrever componentes React no Remotion para ler a estrutura de `Scenes`.
