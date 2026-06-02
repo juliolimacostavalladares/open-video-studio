@@ -39,7 +39,7 @@ gantt
   * O diretório raiz deve estar inicializado com Turborepo (`turbo.json` configurado).
   * O `turbo.json` deve mapear as variáveis de ambiente críticas (ex: `DATABASE_URL`, `NEXT_PUBLIC_API_URL`) para invalidar e recriar o cache de compilação quando os valores mudarem na VPS.
   * O workspace do pnpm deve operar com **Hoisting Estrito** (sem `shamefully-hoist=true` no `.npmrc`), garantindo que cada sub-projeto declare suas próprias dependências explícitas.
-  * **Nomenclatura de Pacotes (@repo/):** Criação de pacotes compartilhados sob o escopo `@repo/`:
+  * **Nomenclatura de Pacotes (@repo/):** Criação de pacotes compartilhados sob o escopo `@repo/` (evitando a criação de um pacote compartilhado de UI `@repo/ui` para simplificar a arquitetura no MVP, mantendo os componentes de Radix UI/Shadcn UI locais no app frontend):
     * `@repo/tsconfig`: Configurações base do TypeScript usando ESM estrito (`"module": "NodeNext"`, `"moduleResolution": "NodeNext"`).
     * `@repo/eslint-config`: Configurações de ESLint base do monorepo, contendo a configuração padrão do Next.js para o frontend e regras recomendadas simplificadas para TypeScript no backend.
     * `@repo/database`: Prisma schema, client PostgreSQL e script de seed.
@@ -124,10 +124,12 @@ gantt
     * Executa checagem de tipos estrita no Node (TypeScript strict mode, sem `any`).
     * Executa a suite de testes TDD: **Vitest** para aplicações Node/Web, integrado ao comando `turbo run test`.
     * Caso todas as etapas do runner self-hosted passem, envia uma requisição HTTP POST (Webhook) para o Coolify disparar o deploy na Hostinger VPS.
+  * **Next.js Standalone Deploy:** Configurar o Dockerfile da aplicação `apps/web` com compilação multi-stage utilizando o output `standalone` do Next.js para otimizar o tamanho da imagem final e simplificar a execução no Coolify.
   * **Remotion Headless Dependencies:** Configurar o Dockerfile da aplicação `backend-node` (que executa a engine do Remotion de forma acoplada) baseado em Node Debian (bullseye-slim), instalando as dependências de sistema do Chrome headless (como `libnss3`, `libasound2`, `libxss1`, `libxtst6`, `libgbm1`, etc.) via apt-get para garantir o correto funcionamento da renderização na VPS.
 * **Tarefas Técnicas:**
   * Configurar Husky e lint-staged no monorepo para checar arquivos `.js`, `.ts`, `.tsx` e `.json`.
   * Configurar banco de testes no docker-compose e setup do script de teste do Vitest no backend e frontend.
+  * Criar o Dockerfile standalone em `apps/web/Dockerfile`.
   * Configurar dependências do Remotion/Chromium no Dockerfile do `apps/backend-node`.
   * Escrever `.github/workflows/deploy.yml` configurado para o runner self-hosted.
 
@@ -227,7 +229,9 @@ gantt
     * Coluna Esquerda: Editor de roteiro interativo com badges de cena.
     * Coluna Central: Remotion Video Player integrado e Linha do tempo horizontal rolável com blocos de duração proporcional.
     * Coluna Direita: Seletor de vozes, mini preview da thumbnail (clicar abre modal de edição canvas), metadados de publicação e botões de ação final.
-  * Integração de **Zustand** para gerenciar a sincronização do frame ativo, áudio duration e dados editados em tempo real entre as três colunas de maneira performática.
+  * Integração de **Zustand** para gerenciar a sincronização do frame ativo, áudio duration, exibição global de notificações via **Sonner Toast / Radix** e dados de cena editados em tempo real de maneira performática.
+  * Sessões de usuário e tokens sensíveis (como os tokens OAuth2 do YouTube) armazenados e persistidos por meio de **Cookies HttpOnly** seguros controlados pelo backend Fastify (protegidos contra XSS no navegador).
+  * Interface e textos estritamente em **Português (PT-BR)**, sem pacotes adicionais de internacionalização (i18n) para simplificar o MVP.
   * Atualização dinâmica do progresso de render do Remotion consumindo a stream de **Server-Sent Events (SSE)** exposta pelo Fastify.
   * Utilização do cliente **Axios** encapsulado em React hooks customizados para chamadas de APIs e mutações de dados.
   * Design visual Dark Mode utilizando a biblioteca **Radix UI / Shadcn UI** combinada com **Tailwind CSS**.
