@@ -32,28 +32,31 @@ gantt
 
 ## Sprint 1: Fundação & Infraestrutura Full-Stack (Configurações)
 
-### US-INF-01: Setup do Monorepo com Turborepo, TSConfigs & Hoisting Estrito
+### US-INF-01: Setup do Monorepo com Turborepo, TSConfigs Strict-Beast & Hoisting Estrito
 * **Story:**
-  Como desenvolvedor do projeto, quero configurar a estrutura de monorepo utilizando Turborepo (com cacheamento de envs), hoisting estrito e TSConfigs compartilhados, para que a integridade de dependências e builds de todas as aplicações seja centralizado e livre de efeitos colaterais.
+  Como desenvolvedor do projeto, quero configurar a estrutura de monorepo utilizando Turborepo (com cacheamento de envs), hoisting estrito e TSConfigs Strict-Beast compartilhados, para que a integridade de dependências, checagem de tipos estrita (sem `any`) e builds de todas as aplicações seja centralizada e livre de efeitos colaterais.
 * **Critérios de Aceite:**
   * O diretório raiz deve estar inicializado com Turborepo (`turbo.json` configurado).
   * O `turbo.json` deve mapear as variáveis de ambiente críticas (ex: `DATABASE_URL`, `NEXT_PUBLIC_API_URL`) para invalidar e recriar o cache de compilação quando os valores mudarem na VPS.
   * O workspace do pnpm deve operar com **Hoisting Estrito** (sem `shamefully-hoist=true` no `.npmrc`), garantindo que cada sub-projeto declare suas próprias dependências explícitas.
-  * Criação de pacotes compartilhados: `packages/tsconfig` (configs base TypeScript) e `packages/eslint-config` (regras lint).
+  * Criação de pacotes compartilhados: `packages/tsconfig` (configuração base com `strict: true`, `noImplicitAny: true`, `strictNullChecks: true`, `noUnusedLocals: true` e `noUnusedParameters: true`) e `packages/eslint-config` (regras lint).
   * Criação das aplicações: `apps/web` (Next.js), `apps/backend-node` (Fastify com TypeScript estrito) e `apps/backend-python` (FastAPI com **Poetry**).
 * **Tarefas Técnicas:**
   * Inicializar workspace do pnpm (`pnpm-workspace.yaml`).
   * Configurar `turbo.json` com mapeamento de `globalEnv` e `env` por tarefa.
   * Inicializar projeto Poetry em `apps/backend-python/pyproject.toml`.
 
-### US-INF-02: Serviços Containerizados & Validação de Ambiente (Zod)
+### US-INF-02: Serviços Containerizados (Bridge Network) & Validação de Ambiente (Zod)
 * **Story:**
-  Como arquiteto do sistema, quero definir a infraestrutura de serviços via Docker Compose e criar esquemas de validação Zod para variáveis de ambiente, para que a inicialização do projeto falhe imediatamente (fail-fast) se houver alguma configuração incorreta de credenciais ou portas.
+  Como arquiteto do sistema, quero definir a infraestrutura de serviços via Docker Compose com rede dedicada e criar esquemas de validação Zod para variáveis de ambiente, para que a inicialização do projeto falhe imediatamente (fail-fast) se houver alguma configuração incorreta de credenciais ou portas.
 * **Critérios de Aceite:**
   * O arquivo `docker-compose.yml` deve expor as portas de PostgreSQL (`5432`), Redis (`6379`) e MinIO (`9000` API, `9001` Console).
+  * Os containers devem rodar conectados a uma rede isolada do tipo bridge (`open-video-studio-net`), permitindo que se comuniquem por nomes DNS e que o proxy do Coolify se associe a ela para expor as portas.
+  * **MinIO Auto-initialization:** O backend Fastify ou um script de inicialização deve verificar no startup se os buckets obrigatórios (`videos`, `voices`, `assets`) já existem no MinIO, criando-os programaticamente em caso de ausência.
   * Cada aplicação (`apps/web` e `apps/backend-node`) deve carregar e validar o `.env` no startup através de um schema do **Zod**, lançando erro impeditivo em caso de falha.
 * **Tarefas Técnicas:**
-  * Escrever `docker-compose.yml` com variáveis persistidas localmente.
+  * Escrever `docker-compose.yml` com a declaração da rede customizada `open-video-studio-net`.
+  * Implementar script ou classe de inicialização de buckets no backend Fastify.
   * Implementar módulo utilitário de validação de ambiente com Zod no backend e frontend.
 
 ### US-INF-03: Modelagem de Dados (Prisma ORM) & Compatibilidade Docker
@@ -111,7 +114,7 @@ gantt
   Como editor de vídeo, quero que o Remotion combine programaticamente os arquivos de áudio de narração, as legendas geradas e as marcações temporais das cenas, para gerar a estrutura inicial do vídeo completo.
 * **Critérios de Aceite:**
   * O pacote `packages/remotion-video` deve conseguir ler o JSON estruturado de um projeto.
-  * Renderizar as cenas em sequência horizontal linear.
+  * Renderizar as cenas in sequência horizontal linear.
   * Gerar legendas animadas sobrepostas e sincronizadas com a duração exata do áudio de cada cena.
 * **Tarefas Técnicas:**
   * Escrever componentes React no Remotion para ler a estrutura de `Scenes`.
