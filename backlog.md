@@ -46,12 +46,13 @@ gantt
   * Configurar aliases de caminho absoluto local (`@/*`) estendidos nos tsconfigs de cada app (`apps/web` e `apps/backend-node`) para evitar caminhos relativos longos (ex: `../../`).
   * **Portas Fixas & CORS:** Mapeamento de portas padrão (`3000` web Next.js, `4000` backend-node Fastify) e middleware de CORS configurado nas APIs para aceitar requisições de origens específicas informadas dinamicamente no `.env`.
   * Criação das aplicações em `apps/`:
-    * `apps/web`: Next.js (Dashboard) configurada com **App Router**, utilizando **Tailwind CSS** para estilização visual, **Radix UI / Shadcn UI** para base de componentes interativos e **Zustand** para gerenciamento de estado global.
+    * `apps/web`: Next.js 14 (Dashboard, com React 18 para compatibilidade garantida com Remotion) configurada com **App Router**, utilizando **Tailwind CSS v4** (configuração puramente baseada em arquivos CSS) para estilização visual, **Radix UI / Shadcn UI** para base de componentes interativos e **Zustand** para gerenciamento de estado global. O arquivo `next.config.js` deve ser configurado com `transpilePackages: ['@remotion/player', '@remotion/transitions']` para evitar erros de importação CommonJS/ESM.
     * `apps/backend-node`: Fastify API com TypeScript estrito (Rotas, BullMQ, YouTube API).
+  * **Ordenação de Estilos (Prettier):** Incluir o plugin `prettier-plugin-tailwindcss` no arquivo base de configuração do Prettier para ordenação automática e consistente das classes do Tailwind CSS em todo o monorepo.
 * **Tarefas Técnicas:**
   * Inicializar workspace do pnpm (`pnpm-workspace.yaml`).
   * Configurar `turbo.json` com mapeamento de `globalEnv` e `env` por tarefa.
-  * Configurar os pacotes base `@repo/tsconfig` e `@repo/eslint-config`.
+  * Configurar os pacotes base `@repo/tsconfig` e `@repo/eslint-config`, além do `prettier-plugin-tailwindcss` na raiz.
   * Implementar middleware de CORS dinâmico no Fastify.
 
 ### US-INF-02: Serviços Containerizados (Bridge Network, Public Read Buckets, Redis DB 1, Bull Board), Fila BullMQ & Validação de Ambiente (Zod)
@@ -233,9 +234,9 @@ gantt
   * Sessões de usuário e tokens sensíveis (como os tokens OAuth2 do YouTube) armazenados e persistidos por meio de **Cookies HttpOnly** seguros controlados pelo backend Fastify (protegidos contra XSS no navegador).
   * Interface e textos estritamente em **Português (PT-BR)**, sem pacotes adicionais de internacionalização (i18n) para simplificar o MVP.
   * Atualização dinâmica do progresso de render do Remotion consumindo a stream de **Server-Sent Events (SSE)** exposta pelo Fastify.
-  * Utilização do cliente **Axios** encapsulado em React hooks customizados para chamadas de APIs e mutações de dados.
+  * Utilização do cliente **Axios** encapsulado em React hooks customizados para chamadas de APIs e mutações de dados, apontando diretamente para o endpoint absoluto fornecido pela variável `NEXT_PUBLIC_API_URL` com CORS configurado.
   * Design visual Dark Mode utilizando a biblioteca **Radix UI / Shadcn UI** combinada com **Tailwind CSS**.
 * **Tarefas Técnicas:**
   * Desenvolver a dashboard com Next.js App Router e componentes do Radix/Shadcn.
   * Configurar a store global do Zustand para controle unificado de estados (roteiro, timeline, preview).
-  * Implementar hooks de conexão Axios e de escuta do endpoint SSE.
+  * Implementar hooks de conexão Axios (configurados com `NEXT_PUBLIC_API_URL`) e de escuta do endpoint SSE.
