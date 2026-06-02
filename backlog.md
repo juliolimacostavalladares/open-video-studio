@@ -146,11 +146,3 @@ gantt
   * Criar o Dockerfile standalone em `apps/web/Dockerfile`.
   * Configurar dependências do Remotion/Chromium no Dockerfile do `apps/backend-node`.
   * Escrever `.github/workflows/deploy.yml` configurado para o runner self-hosted.
-
----
-  * Design visual Dark Mode utilizando a biblioteca **Radix UI / Shadcn UI** combinada com **Tailwind CSS**.
-* **Tarefas Técnicas:**
-  * Desenvolver a dashboard com Next.js App Router e componentes do Radix/Shadcn.
-  * Configurar a store global do Zustand para controle unificado de estados (roteiro, timeline, preview).
-  * Implementar hooks de conexão Axios (configurados com `NEXT_PUBLIC_API_URL`) e de escuta do endpoint SSE.
-  * Implementar utilitário de injeção e carregamento de fontes do Google Fonts no Canvas e no Player do Remotion.
