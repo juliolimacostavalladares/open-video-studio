@@ -45,7 +45,9 @@ gantt
     * `@repo/database`: Prisma schema, client PostgreSQL e script de seed.
     * `@repo/types`: Definições TypeScript compartilhadas e schemas de validação Zod para unificar tipos de requisição/resposta entre Fastify e Next.js.
   * Configurar aliases de caminho absoluto local (`@/*`) estendidos nos tsconfigs de cada app (`apps/web` e `apps/backend-node`) para evitar caminhos relativos longos (ex: `../../`).
-  * **Configuração do next.config.js:** Registrar as rotas autorizadas sob `images.remotePatterns` para carregar mídias de stock (Pexels, Pixabay) e o domínio externo do MinIO (`MINIO_ENDPOINT_EXTERNAL`) no componente `<Image>` do Next.js.
+  * **Configuração do next.config.js:** 
+    * Registrar as rotas autorizadas sob `images.remotePatterns` para carregar mídias de stock (Pexels, Pixabay) e o domínio externo do MinIO (`MINIO_ENDPOINT_EXTERNAL`) no componente `<Image>` do Next.js.
+    * Configurar cabeçalhos estritos de **Content Security Policy (CSP)** limitando a execução de scripts e conexões apenas a origens seguras e autorizadas (como fonts.gstatic.com para Google Fonts, o domínio do backend Fastify e os domínios do MinIO/Pexels/Pixabay), mitigando ataques de script injection (XSS) e vazamento de dados.
   * **Portas Fixas & CORS:** Mapeamento de portas padrão (`3000` web Next.js, `4000` backend-node Fastify) e middleware de CORS configurado nas APIs para aceitar requisições de origens específicas informadas dinamicamente no `.env`.
   * Criação das aplicações em `apps/`:
     * `apps/web`: Next.js 14 (Dashboard, com React 18 para compatibilidade garantida com Remotion) configurada com **App Router**, utilizando **Tailwind CSS v4** (configuração puramente baseada em arquivos CSS) para estilização visual, **Radix UI / Shadcn UI** para base de componentes interativos e **Zustand** para gerenciamento de estado global. O arquivo `next.config.js` deve ser configurado com `transpilePackages: ['@remotion/player', '@remotion/transitions']` para evitar erros de importação CommonJS/ESM.
@@ -68,7 +70,7 @@ gantt
   * **Dual MinIO Endpoints:** Configuração de endpoints separados no `.env`: `MINIO_ENDPOINT_INTERNAL` (ex: `http://minio:9000`) para chamadas do backend Fastify e `MINIO_ENDPOINT_EXTERNAL` (ex: `http://localhost:9000` ou domínio público) para renderização de URLs de mídias consumidas pelo navegador do usuário.
   * **Configuração da Fila BullMQ & Redis DB 1:** Fila robusta configurada com concorrência estrita de 1 worker simultâneo por canal, tentativas limitadas a 3 com exponencial backoff (atraso de 2s, 4s, 8s) e limpeza automática de metadados de jobs concluídos no Redis. O BullMQ deve se conectar usando o índice 1 do Redis (`redis://localhost:6379/1`) para isolar os dados de filas de outros caches.
   * **Painel Administrativo da Fila (Bull Board):** Configurar o painel visual do Bull Board acoplado a uma rota administrativa no backend Fastify (ex: `/admin/queues`), protegida por Basic Authentication (credenciais informadas via `.env`).
-  * **Validação de Ambiente Local (Zod):** Cada aplicação (`apps/web` e `apps/backend-node`) deve carregar e validar o `.env` no startup através de um esquema do **Zod isolado por pasta**. O frontend web não valida nem expõe as credenciais privadas do banco e Redis do backend.
+  * **Validação de Ambiente Local & Segurança de Chaves (Zod):** Cada aplicação (`apps/web` e `apps/backend-node`) deve carregar e validar o `.env` no startup através de um esquema do **Zod isolado por pasta**. O frontend web não valida nem expõe as credenciais privadas do banco e Redis do backend. O schema do Zod do frontend (`apps/web`) deve forçar a validação estrita das variáveis de ambiente de forma que qualquer tentativa de importação de variáveis secretas não prefixadas com `NEXT_PUBLIC_` resulte em erro de compilação imediato no build.
   * **Tabela de Variáveis de Ambiente (.env.example):**
     | Variável | Descrição | Exemplo Padrão |
     | :--- | :--- | :--- |
@@ -123,7 +125,9 @@ gantt
 * **Critérios de Aceite:**
   * **Git Hooks locais:** Husky + Lint-staged configurados no pre-commit executando ESLint e Prettier nos arquivos em staging.
   * **Suíte de Testes Isolada com Vitest:** Configurar testes de integração usando o banco de dados dedicado `open_video_studio_test` na porta `5433` (`DATABASE_TEST_URL`) rodando em container específico para isolar e validar a integridade do Prisma sem corromper os dados locais de desenvolvimento.
-  * **CI/CD Pipeline (GitHub Actions):**
+  * **CI/CD Pipeline & Auditoria de Segurança (GitHub Actions):**
+    * A instalação de pacotes nos ambientes de CI/CD e VPS (Coolify) deve ser feita estritamente utilizando a flag `pnpm install --frozen-lockfile` para garantir a imutabilidade das dependências do lockfile.
+    * **Auditoria de Vulnerabilidades npm:** O pipeline deve executar um passo de `pnpm audit --audit-level=high` para escanear a árvore de dependências e bloquear builds caso existam vulnerabilidades conhecidas classificadas como High ou Critical.
     * Executa checagem de tipos estrita no Node (TypeScript strict mode, sem `any`).
     * Executa a suite de testes TDD: **Vitest** para aplicações Node/Web, integrado ao comando `turbo run test`.
     * Executa testes de ponta a ponta (E2E) com **Playwright** no CI/CD para validar os fluxos críticos de renderização de mídias e navegação da dashboard.
