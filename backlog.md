@@ -30,61 +30,61 @@ gantt
 
 ---
 
-## Sprint 1: Fundação & Infraestrutura Full-Stack
+## Sprint 1: Fundação & Infraestrutura Full-Stack (Configurações)
 
-### US-INF-01: Setup do Monorepo com Turborepo
+### US-INF-01: Setup do Monorepo com Turborepo & TSConfigs Compartilhados
 * **Story:**
-  Como desenvolvedor do projeto, quero configurar a estrutura de monorepo utilizando Turborepo, para que o gerenciamento de dependências, builds, linting e formatação de código de todas as aplicações seja unificado e de alta performance.
+  Como desenvolvedor do projeto, quero configurar a estrutura de monorepo utilizando Turborepo e arquivos base de TypeScript/ESLint compartilhados, para que o gerenciamento de dependências, builds e linting de todas as aplicações seja centralizado e de alta performance.
 * **Critérios de Aceite:**
   * O diretório raiz deve estar inicializado com Turborepo (`turbo.json` configurado).
-  * Devem ser criadas as seguintes aplicações em `apps/`:
+  * Criação dos seguintes pacotes compartilhados em `packages/`:
+    * `packages/tsconfig`: Configurações TypeScript base (Node, React, Library).
+    * `packages/eslint-config`: Regras de linting centralizadas.
+    * `packages/database`: Prisma schema e client PostgreSQL.
+  * Criação das seguintes aplicações em `apps/`:
     * `apps/web`: Next.js (Dashboard).
-    * `apps/backend-node`: Express/Fastify (Rotas, BullMQ, YouTube API).
+    * `apps/backend-node`: Fastify API com TypeScript estrito (Rotas, BullMQ, YouTube API).
     * `apps/backend-python`: FastAPI (TTS e clonagem de voz).
-  * Devem ser criados os seguintes pacotes em `packages/`:
-    * `packages/database`: Prisma schema e client.
-    * `packages/remotion-video`: Estrutura base de composições de vídeo.
 * **Tarefas Técnicas:**
   * Inicializar workspace do pnpm (`pnpm-workspace.yaml`).
-  * Configurar scripts de build, dev e lint no root `package.json` integrados ao `turbo`.
+  * Configurar scripts de build, dev e lint no root `package.json`.
 
-### US-INF-02: Serviços Containerizados (Docker Compose)
+### US-INF-02: Serviços Containerizados & Validação de Ambiente (Zod)
 * **Story:**
-  Como arquiteto do sistema, quero definir e configurar os serviços auxiliares em um arquivo `docker-compose.yml`, para que o banco de dados PostgreSQL, o storage MinIO e o Redis (BullMQ) possam ser inicializados localmente e na VPS de forma consistente.
+  Como arquiteto do sistema, quero definir a infraestrutura de serviços via Docker Compose e criar esquemas de validação Zod para variáveis de ambiente, para que a inicialização do projeto falhe imediatamente (fail-fast) se houver alguma configuração incorreta de credenciais ou portas.
 * **Critérios de Aceite:**
-  * O arquivo `docker-compose.yml` deve expor as portas de:
-    * PostgreSQL (porta `5432`).
-    * Redis (porta `6379`).
-    * MinIO (porta `9000` API, `9001` Console).
-  * Todos os volumes de dados dos containers devem ser persistidos localmente (pastas ignoradas no `.gitignore`).
+  * O arquivo `docker-compose.yml` deve expor as portas de PostgreSQL (`5432`), Redis (`6379`) e MinIO (`9000` API, `9001` Console).
+  * Cada aplicação (`apps/web` e `apps/backend-node`) deve carregar e validar o `.env` no startup através de um schema do **Zod**, lançando erro impeditivo em caso de falha.
 * **Tarefas Técnicas:**
-  * Escrever `docker-compose.yml` com variáveis de ambiente configuráveis via arquivo `.env`.
+  * Escrever `docker-compose.yml` com variáveis persistidas localmente.
+  * Implementar módulo utilitário de validação de ambiente com Zod no backend e frontend.
 
-### US-INF-03: Modelagem de Dados & Prisma Setup
+### US-INF-03: Modelagem de Dados com Prisma ORM (PostgreSQL)
 * **Story:**
-  Como desenvolvedor backend, quero configurar o Prisma ORM e modelar as tabelas no PostgreSQL, para gerenciar com segurança o estado de canais, perfis de voz, projetos de vídeo e metadados.
+  Como desenvolvedor backend, quero configurar o Prisma ORM conectando ao PostgreSQL, para gerenciar com segurança o estado de canais, perfis de voz, projetos de vídeo e metadados.
 * **Critérios de Aceite:**
-  * Configuração do cliente do Prisma no pacote `packages/database`.
-  * Criação do schema inicial contendo as entidades:
-    * `Channel`: Informações do canal do YouTube e tokens OAuth2 de publicação.
-    * `VoiceProfile`: Perfis de voz clonados (nome da voz, path do áudio de amostra).
-    * `Project`: Projetos de vídeo (título, descrição, roteiro bruto, status de renderização).
-    * `Scene`: Blocos de cena (texto TTS, path da narração gerada, URL da mídia associada, ordem).
-  * Execução da primeira migration do Prisma com sucesso no banco local.
+  * Integração do Prisma no pacote `packages/database` mapeando as tabelas:
+    * `Channel`: Metadados do canal do YouTube e tokens OAuth2.
+    * `VoiceProfile`: Perfis de voz clonados (paths das amostras locais).
+    * `Project`: Projetos de vídeo (roteiro, status de render).
+    * `Scene`: Blocos de cena (texto, áudio path, mídia path, ordem).
+  * Execução da primeira migration do Prisma com sucesso no banco de dados local PostgreSQL.
 * **Tarefas Técnicas:**
-  * Escrever as entidades no `schema.prisma`.
-  * Configurar script `db:migrate` e `db:generate` no monorepo.
+  * Escrever o `schema.prisma` com relações adequadas.
+  * Configurar script `db:migrate` e `db:generate` no Turborepo.
 
-### US-INF-04: CI/CD & Git Hooks (Self-hosted)
+### US-INF-04: CI/CD Pipeline (Coolify Webhook) & Git Hooks (Lint-staged)
 * **Story:**
-  Como engenheiro DevOps, quero configurar um workflow do GitHub Actions e git hooks, para garantir automação de deploys para a VPS via Coolify e padronização do código antes de cada commit.
+  Como engenheiro DevOps, quero configurar git hooks locais e uma pipeline CI/CD via GitHub Actions com verificações estritas, para garantir que o deploy via webhook do Coolify só ocorra se o código estiver 100% tipado (sem `any`), formatado e testado.
 * **Critérios de Aceite:**
-  * Configuração do Husky no repositório com hook de `pre-commit` executando testes rápidos, prettier e linter.
-  * Criação de workflow `.github/workflows/deploy.yml` configurado para rodar em runner self-hosted conectado à Hostinger VPS.
-  * O workflow deve validar o build do Turborepo e disparar a atualização de containers no Coolify.
+  * **Git Hooks locais:** Husky + Lint-staged configurados no pre-commit executando apenas ESLint e Prettier nos arquivos em staging.
+  * **CI/CD Pipeline (GitHub Actions):**
+    * Executa checagem de tipos estrita (TypeScript strict mode, proibido tipo `any`).
+    * Executa a suite de testes TDD (Test-Driven Development) unitários e de integração.
+    * Caso todas as etapas do runner self-hosted passem, envia uma requisição HTTP POST (Webhook) para o Coolify disparar o deploy na Hostinger VPS.
 * **Tarefas Técnicas:**
-  * Configurar Husky e lint-staged.
-  * Escrever arquivos yaml do GitHub Actions.
+  * Configurar Husky e lint-staged no monorepo.
+  * Escrever `.github/workflows/deploy.yml` configurado para o runner self-hosted.
 
 ---
 
@@ -99,13 +99,13 @@ gantt
   * O backend deve processar a resposta e salvar o roteiro no banco de dados, criando registros de `Scene` para cada tag encontrada.
 * **Tarefas Técnicas:**
   * Implementar integração com OpenAI SDK.
-  * Criar algoritmo de regex/parsing de tags de cena in Node.js.
+  * Criar algoritmo de regex/parsing de tags de cena em Node.js.
 
 ### US-AI-02: Narração TTS Segmentada por Cenas (Python Backend)
 * **Story:**
   Como criador de conteúdo, quero que o sistema gere a narração de voz para cada cena individualmente a partir do texto do roteiro usando perfis de voz clonados locais, para otimizar o tempo de regeneração de áudios.
 * **Critérios de Aceite:**
-  * Endpoint in `backend-python` (FastAPI) que receba um texto e o ID da voz do canal.
+  * Endpoint em `backend-python` (FastAPI) que receba um texto e o ID da voz do canal.
   * Geração local de áudio (`.wav`/`.mp3`) de alta fidelidade rodando OmniVoice Studio localmente.
   * Gravação dos arquivos de áudio de forma indexada por cena no storage (MinIO).
 * **Tarefas Técnicas:**
@@ -184,5 +184,5 @@ gantt
     * Coluna Direita: Seletor de vozes, mini preview da thumbnail (clicar abre modal de edição canvas), metadados de publicação e botões de ação final.
   * Tema visual Dark Mode com transições suaves e design premium de alto contraste.
 * **Tarefas Técnicas:**
-  * Desenvolver os painéis da dashboard em Next.js.
+  * Desenvolver os painéis da dashboard in Next.js.
   * Integrar chamadas de API com Tailwind CSS / CSS Modules estruturados.
