@@ -44,10 +44,11 @@ gantt
   * Criação das seguintes aplicações em `apps/`:
     * `apps/web`: Next.js (Dashboard).
     * `apps/backend-node`: Fastify API com TypeScript estrito (Rotas, BullMQ, YouTube API).
-    * `apps/backend-python`: FastAPI (TTS e clonagem de voz).
+    * `apps/backend-python`: FastAPI (TTS e clonagem de voz) gerenciada por **Poetry**.
 * **Tarefas Técnicas:**
   * Inicializar workspace do pnpm (`pnpm-workspace.yaml`).
   * Configurar scripts de build, dev e lint no root `package.json`.
+  * Inicializar projeto Poetry em `apps/backend-python/pyproject.toml`.
 
 ### US-INF-02: Serviços Containerizados & Validação de Ambiente (Zod)
 * **Story:**
@@ -59,28 +60,29 @@ gantt
   * Escrever `docker-compose.yml` com variáveis persistidas localmente.
   * Implementar módulo utilitário de validação de ambiente com Zod no backend e frontend.
 
-### US-INF-03: Modelagem de Dados com Prisma ORM (PostgreSQL)
+### US-INF-03: Modelagem de Dados com Prisma ORM & Deploy de Migrations
 * **Story:**
-  Como desenvolvedor backend, quero configurar o Prisma ORM conectando ao PostgreSQL, para gerenciar com segurança o estado de canais, perfis de voz, projetos de vídeo e metadados.
+  Como desenvolvedor backend, quero configurar o Prisma ORM conectando ao PostgreSQL e estabelecer o fluxo de migração do banco, para gerenciar com segurança o estado de dados e atualizar o schema em produção automaticamente.
 * **Critérios de Aceite:**
   * Integração do Prisma no pacote `packages/database` mapeando as tabelas:
     * `Channel`: Metadados do canal do YouTube e tokens OAuth2.
     * `VoiceProfile`: Perfis de voz clonados (paths das amostras locais).
     * `Project`: Projetos de vídeo (roteiro, status de render).
     * `Scene`: Blocos de cena (texto, áudio path, mídia path, ordem).
-  * Execução da primeira migration do Prisma com sucesso no banco de dados local PostgreSQL.
+  * Execução da primeira migration do Prisma localmente.
+  * O pipeline de deploy no Coolify deve executar `prisma migrate deploy` antes de subir o novo container do Fastify, garantindo atualizações seguras de banco.
 * **Tarefas Técnicas:**
-  * Escrever o `schema.prisma` com relações adequadas.
-  * Configurar script `db:migrate` e `db:generate` no Turborepo.
+  * Escrever o `schema.prisma`.
+  * Configurar scripts de migrations no monorepo.
 
-### US-INF-04: CI/CD Pipeline (Coolify Webhook) & Git Hooks (Lint-staged)
+### US-INF-04: CI/CD Pipeline (Coolify Webhook) & Git Hooks (Vitest / Pytest)
 * **Story:**
   Como engenheiro DevOps, quero configurar git hooks locais e uma pipeline CI/CD via GitHub Actions com verificações estritas, para garantir que o deploy via webhook do Coolify só ocorra se o código estiver 100% tipado (sem `any`), formatado e testado.
 * **Critérios de Aceite:**
   * **Git Hooks locais:** Husky + Lint-staged configurados no pre-commit executando apenas ESLint e Prettier nos arquivos em staging.
   * **CI/CD Pipeline (GitHub Actions):**
     * Executa checagem de tipos estrita (TypeScript strict mode, proibido tipo `any`).
-    * Executa a suite de testes TDD (Test-Driven Development) unitários e de integração.
+    * Executa a suite de testes TDD: **Vitest** para aplicações Node/Web e **Pytest** para Python backend, integrados ao comando `turbo run test`.
     * Caso todas as etapas do runner self-hosted passem, envia uma requisição HTTP POST (Webhook) para o Coolify disparar o deploy na Hostinger VPS.
 * **Tarefas Técnicas:**
   * Configurar Husky e lint-staged no monorepo.
@@ -117,7 +119,7 @@ gantt
   Como editor de vídeo, quero que o Remotion combine programaticamente os arquivos de áudio de narração, as legendas geradas e as marcações temporais das cenas, para gerar a estrutura inicial do vídeo completo.
 * **Critérios de Aceite:**
   * O pacote `packages/remotion-video` deve conseguir ler o JSON estruturado de um projeto.
-  * Renderizar as cenas em sequência horizontal linear.
+  * Renderizar as cenas in sequência horizontal linear.
   * Gerar legendas animadas sobrepostas e sincronizadas com a duração exata do áudio de cada cena.
 * **Tarefas Técnicas:**
   * Escrever componentes React no Remotion para ler a estrutura de `Scenes`.
@@ -151,7 +153,7 @@ gantt
 * **Story:**
   Como designer do canal, quero criar e editar graficamente a capa do vídeo através de uma interface de canvas interativa, para maximizar o CTR dos lançamentos sem sair da plataforma.
 * **Critérios de Aceite:**
-  * Mesa de trabalho de canvas interativa (proporção 1280x720px) com suporte a arrastar e redimensionar elementos.
+  * Mesa de trabalho de canvas interativa (proporção 1280x720px) com suporte a arrastar e redimensionar elements.
   * Camadas empilháveis controladas pelo usuário (Fundo IA, recortes PNG transparentes de reação, formas, setas de destaque e caixas de texto com estilo).
   * Botão de exportação que gera o arquivo PNG/JPG final otimizado (< 2MB).
 * **Tarefas Técnicas:**
@@ -184,5 +186,5 @@ gantt
     * Coluna Direita: Seletor de vozes, mini preview da thumbnail (clicar abre modal de edição canvas), metadados de publicação e botões de ação final.
   * Tema visual Dark Mode com transições suaves e design premium de alto contraste.
 * **Tarefas Técnicas:**
-  * Desenvolver os painéis da dashboard in Next.js.
+  * Desenvolver os painéis da dashboard em Next.js.
   * Integrar chamadas de API com Tailwind CSS / CSS Modules estruturados.
