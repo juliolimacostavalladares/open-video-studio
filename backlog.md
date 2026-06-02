@@ -43,7 +43,9 @@ gantt
     * `@repo/tsconfig`: Configurações base do TypeScript usando ESM estrito (`"module": "NodeNext"`, `"moduleResolution": "NodeNext"`).
     * `@repo/eslint-config`: Configurações de ESLint base do monorepo, contendo a configuração padrão do Next.js para o frontend e regras recomendadas simplificadas para TypeScript no backend.
     * `@repo/database`: Prisma schema, client PostgreSQL e script de seed.
+    * `@repo/types`: Definições TypeScript compartilhadas e schemas de validação Zod para unificar tipos de requisição/resposta entre Fastify e Next.js.
   * Configurar aliases de caminho absoluto local (`@/*`) estendidos nos tsconfigs de cada app (`apps/web` e `apps/backend-node`) para evitar caminhos relativos longos (ex: `../../`).
+  * **Configuração do next.config.js:** Registrar as rotas autorizadas sob `images.remotePatterns` para carregar mídias de stock (Pexels, Pixabay) e o domínio externo do MinIO (`MINIO_ENDPOINT_EXTERNAL`) no componente `<Image>` do Next.js.
   * **Portas Fixas & CORS:** Mapeamento de portas padrão (`3000` web Next.js, `4000` backend-node Fastify) e middleware de CORS configurado nas APIs para aceitar requisições de origens específicas informadas dinamicamente no `.env`.
   * Criação das aplicações em `apps/`:
     * `apps/web`: Next.js 14 (Dashboard, com React 18 para compatibilidade garantida com Remotion) configurada com **App Router**, utilizando **Tailwind CSS v4** (configuração puramente baseada em arquivos CSS) para estilização visual, **Radix UI / Shadcn UI** para base de componentes interativos e **Zustand** para gerenciamento de estado global. O arquivo `next.config.js` deve ser configurado com `transpilePackages: ['@remotion/player', '@remotion/transitions']` para evitar erros de importação CommonJS/ESM.
@@ -124,12 +126,14 @@ gantt
   * **CI/CD Pipeline (GitHub Actions):**
     * Executa checagem de tipos estrita no Node (TypeScript strict mode, sem `any`).
     * Executa a suite de testes TDD: **Vitest** para aplicações Node/Web, integrado ao comando `turbo run test`.
+    * Executa testes de ponta a ponta (E2E) com **Playwright** no CI/CD para validar os fluxos críticos de renderização de mídias e navegação da dashboard.
     * Caso todas as etapas do runner self-hosted passem, envia uma requisição HTTP POST (Webhook) para o Coolify disparar o deploy na Hostinger VPS.
   * **Next.js Standalone Deploy:** Configurar o Dockerfile da aplicação `apps/web` com compilação multi-stage utilizando o output `standalone` do Next.js para otimizar o tamanho da imagem final e simplificar a execução no Coolify.
   * **Remotion Headless Dependencies:** Configurar o Dockerfile da aplicação `backend-node` (que executa a engine do Remotion de forma acoplada) baseado em Node Debian (bullseye-slim), instalando as dependências de sistema do Chrome headless (como `libnss3`, `libasound2`, `libxss1`, `libxtst6`, `libgbm1`, etc.) via apt-get para garantir o correto funcionamento da renderização na VPS.
 * **Tarefas Técnicas:**
   * Configurar Husky e lint-staged no monorepo para checar arquivos `.js`, `.ts`, `.tsx` e `.json`.
   * Configurar banco de testes no docker-compose e setup do script de teste do Vitest no backend e frontend.
+  * Configurar a suíte de testes E2E com Playwright na pasta correspondente.
   * Criar o Dockerfile standalone em `apps/web/Dockerfile`.
   * Configurar dependências do Remotion/Chromium no Dockerfile do `apps/backend-node`.
   * Escrever `.github/workflows/deploy.yml` configurado para o runner self-hosted.
@@ -191,9 +195,10 @@ gantt
   * Fila de jobs implementada via BullMQ conectada ao Redis.
   * Somente 1 renderização simultânea de vídeo por canal é permitida por worker do backend.
   * O status da renderização ("Aguardando na Fila", "Renderizando", "Concluído", "Falha") deve ser salvo e transmitido via Server-Sent Events (SSE) para o frontend.
+  * **Flags CLI do Remotion:** A execução do renderizador de vídeo pelo worker do BullMQ deve rodar o comando CLI do Remotion configurando todos os parâmetros de renderização (como codec h264, qualidade/crf, escala de saída, limites de CPU e memória) por meio de flags passadas na linha de comando (`npx remotion render --codec=h264 ...`), sem utilizar arquivo de configuração específico.
 * **Tarefas Técnicas:**
   * Configurar fila BullMQ em `backend-node`.
-  * Escrever worker de execução remota de render do Remotion CLI.
+  * Escrever worker de execução remota de render do Remotion CLI estruturando e concatenando as flags do compilador de forma robusta.
 
 ### US-MED-03: Editor de Thumbnail Multicamadas
 * **Story:**
@@ -235,8 +240,10 @@ gantt
   * Interface e textos estritamente em **Português (PT-BR)**, sem pacotes adicionais de internacionalização (i18n) para simplificar o MVP.
   * Atualização dinâmica do progresso de render do Remotion consumindo a stream de **Server-Sent Events (SSE)** exposta pelo Fastify.
   * Utilização do cliente **Axios** encapsulado em React hooks customizados para chamadas de APIs e mutações de dados, apontando diretamente para o endpoint absoluto fornecido pela variável `NEXT_PUBLIC_API_URL` com CORS configurado.
+  * Carregamento dinâmico de fontes do **Google Fonts** com base no Brand Kit do canal ativado, injetando folhas de estilos customizadas temporárias no canvas de thumbnail e utilizando as APIs do Next.js/Remotion para renderização correta de legendas.
   * Design visual Dark Mode utilizando a biblioteca **Radix UI / Shadcn UI** combinada com **Tailwind CSS**.
 * **Tarefas Técnicas:**
   * Desenvolver a dashboard com Next.js App Router e componentes do Radix/Shadcn.
   * Configurar a store global do Zustand para controle unificado de estados (roteiro, timeline, preview).
   * Implementar hooks de conexão Axios (configurados com `NEXT_PUBLIC_API_URL`) e de escuta do endpoint SSE.
+  * Implementar utilitário de injeção e carregamento de fontes do Google Fonts no Canvas e no Player do Remotion.
