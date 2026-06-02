@@ -39,6 +39,9 @@ gantt
   * O diretório raiz deve estar inicializado com Turborepo (`turbo.json` configurado).
   * O `turbo.json` deve mapear as variáveis de ambiente críticas (ex: `DATABASE_URL`, `NEXT_PUBLIC_API_URL`) para invalidar e recriar o cache de compilação quando os valores mudarem na VPS.
   * O workspace do pnpm deve operar com **Hoisting Estrito** (sem `shamefully-hoist=true` no `.npmrc`), garantindo que cada sub-projeto declare suas próprias dependências explícitas.
+  * **Segurança na Cadeia de Dependências (.npmrc):** Configurar o arquivo `.npmrc` na raiz com:
+    * `ignore-scripts=true` para desativar a execução automática de scripts de pós-instalação de dependências de terceiros, prevenindo ataques de execução de comandos maliciosos no install.
+    * `save-exact=true` para salvar sempre a versão exata do pacote sem prefixos caret (`^`) ou tilde (`~`), prevenindo downloads automáticos de pacotes secundários comprometidos.
   * **Nomenclatura de Pacotes (@repo/):** Criação de pacotes compartilhados sob o escopo `@repo/` (evitando a criação de um pacote compartilhado de UI `@repo/ui` para simplificar a arquitetura no MVP, mantendo os componentes de Radix UI/Shadcn UI locais no app frontend):
     * `@repo/tsconfig`: Configurações base do TypeScript usando ESM estrito (`"module": "NodeNext"`, `"moduleResolution": "NodeNext"`).
     * `@repo/eslint-config`: Configurações de ESLint base do monorepo, contendo a configuração padrão do Next.js para o frontend e regras recomendadas simplificadas para TypeScript no backend.
@@ -113,17 +116,19 @@ gantt
     * `Project` (Roteiros criados e status)
     * `Scene` (Cenas associadas aos projetos)
   * O pipeline de deploy do Coolify deve rodar `prisma migrate deploy` na etapa de build/pre-deploy.
+  * **Prisma Generation Explícito:** Como `ignore-scripts=true` está ativo nas configurações do pnpm, o comando de geração do Prisma Client (`npx prisma generate`) deve ser configurado como uma tarefa técnica explícita a ser rodada de forma segura nas etapas pós-migração e compilação do backend.
 * **Tarefas Técnicas:**
   * Escrever a classe/arquivo do Prisma Client Singleton em `packages/database/src/client.ts`.
   * Escrever o script de seed básico em `packages/database/prisma/seed.ts`.
   * Escrever o `schema.prisma` com `binaryTargets` e tabelas mapeadas.
-  * Configurar scripts de migrations e seeding no monorepo.
+  * Configurar scripts de migrations, seeding e comandos manuais de prisma generate nos pacotes.
 
 ### US-INF-04: CI/CD Pipeline (Coolify Webhook) & Git Hooks (Vitest, Remotion Chrome Dependencies)
 * **Story:**
   Como engenheiro DevOps, quero configurar git hooks locais, um banco de dados de testes isolado e uma pipeline CI/CD via GitHub Actions com verificações estritas e dependências de renderização Chromium headless no Docker, para garantir que o deploy via webhook do Coolify seja bem-sucedido e os renders de vídeo não travem por falta de dependências.
 * **Critérios de Aceite:**
   * **Git Hooks locais:** Husky + Lint-staged configurados no pre-commit executando ESLint e Prettier nos arquivos em staging.
+  * **Auditoria de Lockfile (lockfile-lint):** Configurar validação de metadados do lockfile (`lockfile-lint`) localmente no pre-commit (via lint-staged) e no CI/CD, garantindo que todas as dependências instaladas resolvam para o registro npm oficial (`https://registry.npmjs.org/`) e prevenindo ataques de substituição de host ou injeção maliciosa.
   * **Suíte de Testes Isolada com Vitest:** Configurar testes de integração usando o banco de dados dedicado `open_video_studio_test` na porta `5433` (`DATABASE_TEST_URL`) rodando em container específico para isolar e validar a integridade do Prisma sem corromper os dados locais de desenvolvimento.
   * **CI/CD Pipeline & Auditoria de Segurança (GitHub Actions):**
     * A instalação de pacotes nos ambientes de CI/CD e VPS (Coolify) deve ser feita estritamente utilizando a flag `pnpm install --frozen-lockfile` para garantir a imutabilidade das dependências do lockfile.
