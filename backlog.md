@@ -32,69 +32,103 @@ gantt
 
 ## Sprint 1: Fundação & Infraestrutura Full-Stack (Configurações)
 
-### US-INF-01: Setup do Monorepo com Turborepo, TSConfigs Strict-Beast, Path Aliases, Portas Fixas & Hoisting Estrito
+### US-INF-01: Setup do Monorepo com Turborepo, TSConfigs Strict-Beast (NodeNext), Path Aliases & Hoisting Estrito
 * **Story:**
-  Como desenvolvedor do projeto, quero configurar a estrutura de monorepo utilizando Turborepo (com cacheamento de envs), hoisting estrito, TSConfigs Strict-Beast, namespace genérico de pacotes, aliases de caminhos e portas de desenvolvimento com CORS restrito, para que a integridade de dependências, checagem de tipos estrita (sem `any`), portas limpas e comunicação segura entre as APIs seja centralizada e livre de efeitos colaterais.
+  Como desenvolvedor do projeto, quero configurar a estrutura de monorepo utilizando Turborepo (com cacheamento de envs), hoisting estrito, TSConfigs Strict-Beast com resolução ESM (NodeNext), namespace genérico de pacotes, aliases de caminhos e portas de desenvolvimento com CORS restrito, para que a integridade de dependências, checagem de tipos estrita (sem `any`), portas limpas e comunicação segura entre as APIs seja centralizada e livre de efeitos colaterais.
 * **Critérios de Aceite:**
   * O diretório raiz deve estar inicializado com Turborepo (`turbo.json` configurado).
   * O `turbo.json` deve mapear as variáveis de ambiente críticas (ex: `DATABASE_URL`, `NEXT_PUBLIC_API_URL`) para invalidar e recriar o cache de compilação quando os valores mudarem na VPS.
   * O workspace do pnpm deve operar com **Hoisting Estrito** (sem `shamefully-hoist=true` no `.npmrc`), garantindo que cada sub-projeto declare suas próprias dependências explícitas.
   * **Nomenclatura de Pacotes (@repo/):** Criação de pacotes compartilhados sob o escopo `@repo/`:
-    * `@repo/tsconfig`: Configurações base do TypeScript.
-    * `@repo/eslint-config`: Configurações de ESLint base do monorepo.
-    * `@repo/database`: Prisma schema e client PostgreSQL.
+    * `@repo/tsconfig`: Configurações base do TypeScript usando ESM estrito (`"module": "NodeNext"`, `"moduleResolution": "NodeNext"`).
+    * `@repo/eslint-config`: Configurações de ESLint base do monorepo, contendo a configuração padrão do Next.js para o frontend e regras recomendadas simplificadas para TypeScript no backend.
+    * `@repo/database`: Prisma schema, client PostgreSQL e script de seed.
   * Configurar aliases de caminho absoluto local (`@/*`) estendidos nos tsconfigs de cada app (`apps/web` e `apps/backend-node`) para evitar caminhos relativos longos (ex: `../../`).
   * **Portas Fixas & CORS:** Mapeamento de portas padrão (`3000` web Next.js, `4000` backend-node Fastify) e middleware de CORS configurado nas APIs para aceitar requisições de origens específicas informadas dinamicamente no `.env`.
   * Criação das aplicações em `apps/`:
-    * `apps/web`: Next.js (Dashboard).
+    * `apps/web`: Next.js (Dashboard) configurada para utilizar **Tailwind CSS** para estilização visual.
     * `apps/backend-node`: Fastify API com TypeScript estrito (Rotas, BullMQ, YouTube API).
 * **Tarefas Técnicas:**
   * Inicializar workspace do pnpm (`pnpm-workspace.yaml`).
   * Configurar `turbo.json` com mapeamento de `globalEnv` e `env` por tarefa.
+  * Configurar os pacotes base `@repo/tsconfig` e `@repo/eslint-config`.
   * Implementar middleware de CORS dinâmico no Fastify.
 
-### US-INF-02: Serviços Containerizados (Bridge Network, Public Read Buckets), Fila BullMQ & Validação de Ambiente (Zod)
+### US-INF-02: Serviços Containerizados (Bridge Network, Public Read Buckets, Redis DB 1, Bull Board), Fila BullMQ & Validação de Ambiente (Zod)
 * **Story:**
-  Como arquiteto do sistema, quero definir a infraestrutura de serviços via Docker Compose com rede dedicada (incluindo o container pré-configurado do TTS Python), configurar buckets públicos no MinIO com rotas distintas (interno/externo), regras de robustez da fila BullMQ e criar esquemas de validação Zod para variáveis de ambiente, para que a inicialização do projeto falhe imediatamente (fail-fast) se houver alguma configuração incorreta.
+  Como arquiteto do sistema, quero definir a infraestrutura de serviços via Docker Compose com rede dedicada (incluindo o container pré-configurado do TTS Python), configurar buckets públicos no MinIO com rotas distintas (interno/externo), isolamento de fila no Redis DB 1, painel de monitoramento visual Bull Board e criar esquemas de validação Zod para variáveis de ambiente, para que a inicialização do projeto falhe imediatamente (fail-fast) se houver alguma configuração incorreta.
 * **Critérios de Aceite:**
-  * O arquivo `docker-compose.yml` deve expor as portas de PostgreSQL (`5432`), Redis (`6379`), MinIO (`9000` API, `9001` Console) e o container pré-construído do **OmniVoice Studio (FastAPI Python TTS na porta 8000)**.
+  * O arquivo `docker-compose.yml` deve expor as portas de PostgreSQL (`5432`), PostgreSQL de Testes (`5433`), Redis (`6379`), MinIO (`9000` API, `9001` Console) e o container pré-construído do **OmniVoice Studio (FastAPI Python TTS na porta 8000)**.
+  * A imagem do container do TTS `omnivoice` deve ser configurada utilizando uma variável de ambiente parametrizada com valor padrão no `docker-compose.yml`: `${OMNIVOICE_IMAGE:-omnivoice:latest}`, permitindo alterar a imagem no `.env`.
   * Os containers devem rodar conectados a uma rede isolada do tipo bridge (`open-video-studio-net`), permitindo que o Fastify se comunique com o container do Python TTS internamente via DNS (`http://omnivoice:8000`).
   * **MinIO Auto-initialization & Security:** O backend Fastify deve verificar no startup se os buckets obrigatórios (`videos`, `voices`, `assets`, `thumbnails`) existem no MinIO, criando-os programaticamente e configurando a política de **Leitura Pública Anônima (Public Read)** para `voices`, `assets` e `thumbnails` (a escrita/upload continua restrita e autenticada via backend).
   * **Dual MinIO Endpoints:** Configuração de endpoints separados no `.env`: `MINIO_ENDPOINT_INTERNAL` (ex: `http://minio:9000`) para chamadas do backend Fastify e `MINIO_ENDPOINT_EXTERNAL` (ex: `http://localhost:9000` ou domínio público) para renderização de URLs de mídias consumidas pelo navegador do usuário.
-  * **Configuração da Fila BullMQ:** Fila robusta configurada com concorrência estrita de 1 worker simultâneo por canal, tentativas limitadas a 3 com exponencial backoff (atraso de 2s, 4s, 8s) e limpeza automática de metadados de jobs concluídos no Redis.
+  * **Configuração da Fila BullMQ & Redis DB 1:** Fila robusta configurada com concorrência estrita de 1 worker simultâneo por canal, tentativas limitadas a 3 com exponencial backoff (atraso de 2s, 4s, 8s) e limpeza automática de metadados de jobs concluídos no Redis. O BullMQ deve se conectar usando o índice 1 do Redis (`redis://localhost:6379/1`) para isolar os dados de filas de outros caches.
+  * **Painel Administrativo da Fila (Bull Board):** Configurar o painel visual do Bull Board acoplado a uma rota administrativa no backend Fastify (ex: `/admin/queues`), protegida por Basic Authentication (credenciais informadas via `.env`).
   * **Validação de Ambiente Local (Zod):** Cada aplicação (`apps/web` e `apps/backend-node`) deve carregar e validar o `.env` no startup através de um esquema do **Zod isolado por pasta**. O frontend web não valida nem expõe as credenciais privadas do banco e Redis do backend.
+  * **Tabela de Variáveis de Ambiente (.env.example):**
+    | Variável | Descrição | Exemplo Padrão |
+    | :--- | :--- | :--- |
+    | `NODE_ENV` | Modo de ambiente | `development` |
+    | `PORT` | Porta do backend Fastify | `4000` |
+    | `DATABASE_URL` | URL de conexão PostgreSQL principal | `postgresql://postgres:postgres@localhost:5432/open_video_studio?schema=public` |
+    | `DATABASE_TEST_URL` | URL de conexão PostgreSQL para suíte de testes | `postgresql://postgres:postgres@localhost:5433/open_video_studio_test?schema=public` |
+    | `REDIS_URL` | URL do Redis (inclui DB index 1 para BullMQ) | `redis://localhost:6379/1` |
+    | `MINIO_ROOT_USER` | Usuário administrador do MinIO | `minioadmin` |
+    | `MINIO_ROOT_PASSWORD` | Senha administradora do MinIO | `minioadmin` |
+    | `MINIO_ENDPOINT_INTERNAL` | Endpoint do MinIO para chamadas do backend | `http://localhost:9000` |
+    | `MINIO_ENDPOINT_EXTERNAL` | Endpoint do MinIO exposto ao navegador | `http://localhost:9000` |
+    | `OMNIVOICE_IMAGE` | Imagem docker para o serviço Python TTS | `omnivoice:latest` |
+    | `OPENAI_API_KEY` | Chave de acesso à API do OpenAI (GPT-4o) | `sk-proj-...` |
+    | `PEXELS_API_KEY` | Chave da API de mídias stock Pexels | `your_pexels_key` |
+    | `PIXABAY_API_KEY` | Chave da API de mídias stock Pixabay | `your_pixabay_key` |
+    | `YOUTUBE_CLIENT_ID` | OAuth2 Client ID do Google Cloud Console | `google_client_id` |
+    | `YOUTUBE_CLIENT_SECRET` | OAuth2 Client Secret do Google Cloud Console | `google_client_secret` |
+    | `YOUTUBE_REDIRECT_URI` | URI de redirecionamento para o OAuth2 callback | `http://localhost:4000/api/v1/auth/callback/youtube` |
+    | `BULL_BOARD_USERNAME` | Usuário para o painel Bull Board | `admin` |
+    | `BULL_BOARD_PASSWORD` | Senha para o painel Bull Board | `admin` |
+    | `ALLOWED_ORIGINS` | Origens autorizadas para CORS no Fastify | `http://localhost:3000` |
 * **Tarefas Técnicas:**
-  * Escrever `docker-compose.yml` com a declaração da rede customizada `open-video-studio-net` e do container do TTS Python.
+  * Escrever `docker-compose.yml` com a declaração da rede customizada `open-video-studio-net`, do container do TTS Python com imagem parametrizada e do container `postgres_test` de testes.
   * Implementar script de inicialização e política de leitura pública de buckets no backend Fastify via MinIO SDK.
-  * Configurar fila do BullMQ no backend Node com opções de retry, backoff e auto-cleanup.
+  * Configurar fila do BullMQ no backend Node com opções de retry, backoff e auto-cleanup apontando para o Redis DB index 1.
+  * Configurar a rota e middleware do Bull Board com Basic Auth no Fastify.
   * Implementar schemas de Zod de ambiente locais em `apps/web/src/env.ts` e `apps/backend-node/src/env.ts`.
 
-### US-INF-03: Modelagem de Dados (Prisma ORM, Connection Singleton) & Compatibilidade Docker
+### US-INF-03: Modelagem de Dados (Prisma ORM, Connection Singleton, Seeding) & Compatibilidade Docker
 * **Story:**
-  Como desenvolvedor backend, quero configurar o Prisma ORM como Singleton global e os alvos de binários de compatibilidade de SO, para rodar migrations e queries de banco de dados de forma segura sem esgotar o pool de conexões com o PostgreSQL local e em produção.
+  Como desenvolvedor backend, quero configurar o Prisma ORM como Singleton global com script de seed e os alvos de binários de compatibilidade de SO, para rodar migrations, popular dados iniciais e executar queries de banco de dados de forma segura sem esgotar o pool de conexões com o PostgreSQL local e em produção.
 * **Critérios de Aceite:**
   * **Prisma Client Singleton:** O cliente do Prisma deve ser instanciado como um objeto global único (singleton) no pacote `@repo/database` para reutilizar conexões abertas e evitar o erro 'too many clients' do PostgreSQL durante o hot reloading.
+  * **Prisma Database Seeding:** Criação de script `prisma/seed.ts` em `@repo/database` executado automaticamente após cada migrate para popular o banco com canais de teste e perfis de vozes padrões.
   * Configurar `binaryTargets = ["native", "debian-openssl-1.1.x", "linux-musl-openssl-3.0.x"]` no `schema.prisma` para compatibilidade entre macOS/Windows de desenvolvimento e o container Linux (Debian/Alpine) do Coolify.
-  * Mapeamento de tabelas: `Channel` (tokens OAuth2), `VoiceProfile` (perfis TTS), `Project` (roteiro) e `Scene` (blocos de cena).
+  * Mapeamento inicial das tabelas básicas (colunas detalhadas e relações serão refinadas conforme o desenvolvimento de cada sprint):
+    * `Channel` (Cadastro de canais e tokens de autenticação)
+    * `VoiceProfile` (Perfis de vozes salvas na biblioteca)
+    * `Project` (Roteiros criados e status)
+    * `Scene` (Cenas associadas aos projetos)
   * O pipeline de deploy do Coolify deve rodar `prisma migrate deploy` na etapa de build/pre-deploy.
 * **Tarefas Técnicas:**
   * Escrever a classe/arquivo do Prisma Client Singleton em `packages/database/src/client.ts`.
-  * Escrever o `schema.prisma` com `binaryTargets`.
-  * Configurar scripts de migrations no monorepo.
+  * Escrever o script de seed básico em `packages/database/prisma/seed.ts`.
+  * Escrever o `schema.prisma` com `binaryTargets` e tabelas mapeadas.
+  * Configurar scripts de migrations e seeding no monorepo.
 
 ### US-INF-04: CI/CD Pipeline (Coolify Webhook) & Git Hooks (Vitest, Remotion Chrome Dependencies)
 * **Story:**
-  Como engenheiro DevOps, quero configurar git hooks locais e uma pipeline CI/CD via GitHub Actions com verificações estritas e dependências de renderização Chromium headless no Docker, para garantir que o deploy via webhook do Coolify seja bem-sucedido e os renders de vídeo não travem por falta de dependências.
+  Como engenheiro DevOps, quero configurar git hooks locais, um banco de dados de testes isolado e uma pipeline CI/CD via GitHub Actions com verificações estritas e dependências de renderização Chromium headless no Docker, para garantir que o deploy via webhook do Coolify seja bem-sucedido e os renders de vídeo não travem por falta de dependências.
 * **Critérios de Aceite:**
   * **Git Hooks locais:** Husky + Lint-staged configurados no pre-commit executando ESLint e Prettier nos arquivos em staging.
+  * **Suíte de Testes Isolada com Vitest:** Configurar testes de integração usando o banco de dados dedicado `open_video_studio_test` na porta `5433` (`DATABASE_TEST_URL`) rodando em container específico para isolar e validar a integridade do Prisma sem corromper os dados locais de desenvolvimento.
   * **CI/CD Pipeline (GitHub Actions):**
     * Executa checagem de tipos estrita no Node (TypeScript strict mode, sem `any`).
     * Executa a suite de testes TDD: **Vitest** para aplicações Node/Web, integrado ao comando `turbo run test`.
     * Caso todas as etapas do runner self-hosted passem, envia uma requisição HTTP POST (Webhook) para o Coolify disparar o deploy na Hostinger VPS.
-  * **Remotion Headless Dependencies:** Configurar o Dockerfile da aplicação `backend-node` para instalar as dependências de sistema do Chrome headless (ex: `libnss3`, `libasound2`, `libxss1`) ou rodar `npx remotion install-dependencies` durante a montagem do container, garantindo que o renderizador de vídeo do Remotion rode perfeitamente na Hostinger VPS.
+  * **Remotion Headless Dependencies:** Configurar o Dockerfile da aplicação `backend-node` (que executa a engine do Remotion de forma acoplada) baseado em Node Debian (bullseye-slim), instalando as dependências de sistema do Chrome headless (como `libnss3`, `libasound2`, `libxss1`, `libxtst6`, `libgbm1`, etc.) via apt-get para garantir o correto funcionamento da renderização na VPS.
 * **Tarefas Técnicas:**
   * Configurar Husky e lint-staged no monorepo para checar arquivos `.js`, `.ts`, `.tsx` e `.json`.
-  * Configurar dependências do Remotion no Dockerfile do `apps/backend-node`.
+  * Configurar banco de testes no docker-compose e setup do script de teste do Vitest no backend e frontend.
+  * Configurar dependências do Remotion/Chromium no Dockerfile do `apps/backend-node`.
   * Escrever `.github/workflows/deploy.yml` configurado para o runner self-hosted.
 
 ---
