@@ -1,0 +1,29 @@
+# Dependency directories
+node_modules
+/apps/*/node_modules
+/packages/*/node_modules
+
+# Next.js build output
+.next
+/out
+
+# Dist / build outputs
+dist
+build
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Turborepo cache
+.turbo
+
+# Local data directories (Docker Compose volumes)
+/data
+
+# OS generated files
+.DS_Store
+Thumbs.db

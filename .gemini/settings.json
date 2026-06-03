@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "plane": {
+      "command": "uvx",
+      "args": [
+        "plane-mcp-server"
+      ],
+      "env": {
+        "PLANE_API_KEY": "plane_api_18520f8aa9484a7384da46523e9a443b",
+        "PLANE_WORKSPACE_SLUG": "motionstudio",
+        "PLANE_BASE_URL": "https://plane-emeh.srv1667220.hstgr.cloud"
+      }
+    }
+  }
+}
