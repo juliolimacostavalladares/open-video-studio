@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Default",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "inlineSources": false,
+    "isolatedModules": true,
+    "moduleResolution": "NodeNext",
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "@repo/*": ["./*"]
+    },
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "module": "NodeNext",
+    "lib": ["es2022"],
+    "target": "es2022"
+  },
+  "exclude": ["node_modules"]
+}
