@@ -9,10 +9,61 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_DB: open_video_studio
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - open-video-studio-net
+
+  postgres_test:
+    image: postgres:16-alpine
+    container_name: open-video-studio-postgres-test
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: open_video_studio_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    networks:
+      - open-video-studio-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: open-video-studio-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - open-video-studio-net
+
+  minio:
+    image: minio/minio:latest
+    container_name: open-video-studio-minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - open-video-studio-net
+
+  omnivoice:
+    image: ${OMNIVOICE_IMAGE:-omnivoice:latest}
+    container_name: open-video-studio-omnivoice
+    restart: always
+    ports:
+      - "8000:8000"
     networks:
       - open-video-studio-net
 
@@ -22,3 +73,6 @@ networks:
 
 volumes:
   postgres_data:
+  postgres_test_data:
+  redis_data:
+  minio_data:
