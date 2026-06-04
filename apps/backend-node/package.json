@@ -15,7 +15,12 @@
     "@fastify/cors": "9.0.1",
     "dotenv": "16.4.5",
     "@repo/types": "workspace:*",
-    "@aws-sdk/client-s3": "3.577.0"
+    "@aws-sdk/client-s3": "3.577.0",
+    "bullmq": "5.8.3",
+    "ioredis": "5.4.1",
+    "@bull-board/api": "5.21.3",
+    "@bull-board/fastify": "5.21.3",
+    "@fastify/basic-auth": "5.1.1"
   },
   "devDependencies": {
     "tsx": "4.7.1",

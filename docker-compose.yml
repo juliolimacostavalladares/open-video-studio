@@ -41,7 +41,7 @@ services:
       - open-video-studio-net
 
   minio:
-    image: minio/minio:RELEASE.2024-05-10T01-39-38Z
+    image: minio/minio:latest
     container_name: open-video-studio-minio
     restart: always
     environment:
