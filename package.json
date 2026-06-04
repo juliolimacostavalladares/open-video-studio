@@ -16,7 +16,7 @@
     "@typescript-eslint/eslint-plugin": "8.60.1",
     "@typescript-eslint/parser": "8.60.1",
     "cross-env": "10.1.0",
-    "eslint": "9.1.1",
+    "eslint": "8.57.0",
     "husky": "9.0.11",
     "lint-staged": "17.0.7",
     "lockfile-lint": "5.0.0",
@@ -27,7 +27,7 @@
   "packageManager": "pnpm@10.32.1",
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "cross-env ESLINT_USE_FLAT_CONFIG=false eslint --fix",
+      "eslint --fix",
       "prettier --write"
     ],
     "*.{json,md,css}": [

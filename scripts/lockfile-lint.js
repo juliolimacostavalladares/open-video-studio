@@ -14,7 +14,24 @@ const ALLOWED_HOSTS = ['registry.npmjs.org', 'registry.yarnpkg.com'];
 
 // Regex to capture all HTTP/HTTPS urls inside the lockfile
 const urlRegex = /https?:\/\/[^\/\s\)\"\']+/g;
-const urls = content.match(urlRegex) || [];
+const urls = [];
+
+const lines = content.split('\n');
+for (const line of lines) {
+  // Skip deprecation warnings and general metadata URLs
+  if (
+    line.includes('deprecated:') ||
+    line.includes('homepage:') ||
+    line.includes('bugs:') ||
+    line.includes('funding:')
+  ) {
+    continue;
+  }
+  const matches = line.match(urlRegex);
+  if (matches) {
+    urls.push(...matches);
+  }
+}
 
 let hasErrors = false;
 

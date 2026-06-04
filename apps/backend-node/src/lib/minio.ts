@@ -1,4 +1,9 @@
-import { S3Client, CreateBucketCommand, HeadBucketCommand, PutBucketPolicyCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  CreateBucketCommand,
+  HeadBucketCommand,
+  PutBucketPolicyCommand,
+} from '@aws-sdk/client-s3';
 import { env } from '../env.js';
 
 // Initialize S3Client configured for local MinIO compatibility
@@ -21,16 +26,25 @@ export async function initializeMinIO() {
       // Check if the bucket already exists
       await minioClient.send(new HeadBucketCommand({ Bucket: bucket }));
       console.log(`MinIO bucket "${bucket}" already exists.`);
-    } catch (err: any) {
+    } catch (err) {
+      const error = err as unknown as {
+        name?: string;
+        $metadata?: { httpStatusCode?: number };
+      };
       // Create bucket if NotFound (404)
-      if (err.name === 'NotFound' || err.$metadata?.httpStatusCode === 404) {
+      if (
+        error.name === 'NotFound' ||
+        error.$metadata?.httpStatusCode === 404
+      ) {
         console.log(`MinIO bucket "${bucket}" not found. Creating...`);
         await minioClient.send(new CreateBucketCommand({ Bucket: bucket }));
         console.log(`MinIO bucket "${bucket}" created successfully.`);
 
         // Apply Public Read policy if required
         if (publicBuckets.includes(bucket)) {
-          console.log(`Applying public read policy to MinIO bucket "${bucket}"...`);
+          console.log(
+            `Applying public read policy to MinIO bucket "${bucket}"...`,
+          );
           const policy = {
             Version: '2012-10-17',
             Statement: [
@@ -47,12 +61,17 @@ export async function initializeMinIO() {
             new PutBucketPolicyCommand({
               Bucket: bucket,
               Policy: JSON.stringify(policy),
-            })
+            }),
           );
-          console.log(`Public read policy applied to MinIO bucket "${bucket}" successfully.`);
+          console.log(
+            `Public read policy applied to MinIO bucket "${bucket}" successfully.`,
+          );
         }
       } else {
-        console.error(`Unexpected error checking/creating MinIO bucket "${bucket}":`, err);
+        console.error(
+          `Unexpected error checking/creating MinIO bucket "${bucket}":`,
+          err,
+        );
         throw err;
       }
     }
