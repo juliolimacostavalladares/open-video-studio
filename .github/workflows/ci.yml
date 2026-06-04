@@ -7,7 +7,15 @@ on:
     branches: [master]
 
 jobs:
+  cleanup:
+    runs-on: self-hosted
+    steps:
+      - name: Clean root-owned files via Docker
+        run: |
+          docker run --rm -v /home/github-runner/actions-runner/_work/open-video-studio/open-video-studio:/work -w /work alpine rm -rf apps/web/test-results apps/web/playwright-report || true
+
   validate:
+    needs: cleanup
     runs-on: self-hosted
     steps:
       - name: Checkout repository
