@@ -4,6 +4,7 @@ import { env } from './env.js';
 import { initializeMinIO } from './lib/minio.js';
 import { setupBullBoard } from './lib/bullboard.js';
 import './lib/queue.js'; // Start background worker
+import { prisma } from '@repo/database';
 
 const fastify = Fastify({
   logger: true,
@@ -34,6 +35,11 @@ const port = env.PORT;
 const host = '0.0.0.0'; // Bind to all network interfaces for containerization
 
 try {
+  // Verify Database Connection (Prisma Client)
+  console.log('Verifying database connection...');
+  await prisma.$connect();
+  console.log('✅ Database connected successfully!');
+
   // Initialize MinIO buckets and policies
   console.log('Initializing MinIO buckets...');
   await initializeMinIO();

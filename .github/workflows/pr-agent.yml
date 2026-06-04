@@ -15,6 +15,81 @@ jobs:
       pull-requests: write
       contents: write
     steps:
+      - name: Resolve Stale PR-Agent Discussions
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Query GraphQL to list all unresolved review threads
+            const query = `
+              query($owner: String!, $repo: String!, $prNumber: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $prNumber) {
+                    reviewThreads(first: 100) {
+                      nodes {
+                        id
+                        isResolved
+                        comments(first: 1) {
+                          nodes {
+                            author {
+                              login
+                            }
+                            body
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            try {
+              const result = await github.graphql(query, { owner, repo, prNumber });
+              const threads = result.repository.pullRequest.reviewThreads.nodes;
+              console.log(`🔍 Found ${threads.length} total review threads. Checking for stale bot threads to resolve...`);
+
+              for (const thread of threads) {
+                if (thread.isResolved) continue;
+
+                const comments = thread.comments.nodes;
+                if (comments.length === 0) continue;
+
+                const firstComment = comments[0];
+                const author = firstComment.author ? firstComment.author.login : '';
+                
+                // Identify if the thread was started by the GitHub actions bot or belongs to PR-Agent
+                const isBot = author === 'github-actions[bot]' || author === 'github-actions' || author.includes('pr-agent');
+                const isPrAgentComment = firstComment.body && (
+                  firstComment.body.includes('Suggestion:') || 
+                  firstComment.body.includes('Suggested change') ||
+                  firstComment.body.includes('pr-agent') ||
+                  firstComment.body.includes('PR-Agent')
+                );
+
+                if (isBot || isPrAgentComment) {
+                  console.log(`✅ Resolving stale bot review thread: ${thread.id}`);
+                  const mutation = `
+                    mutation($threadId: ID!) {
+                      resolveReviewThread(input: {threadId: $threadId}) {
+                        thread {
+                          id
+                          isResolved
+                        }
+                      }
+                    }
+                  `;
+                  await github.graphql(mutation, { threadId: thread.id });
+                }
+              }
+            } catch (error) {
+              console.error('⚠️ Error resolving review threads:', error.message);
+            }
+
       - name: PR Agent action
         id: pragent
         uses: the-pr-agent/pr-agent@main
@@ -35,47 +110,3 @@ jobs:
           PR_CODE_SUGGESTIONS.PERSISTENT_COMMENT: "false"
           PR_CODE_SUGGESTIONS.COMMITABLE_CODE_SUGGESTIONS: "true"
           PR_REVIEWER.ENABLE_REVIEW_LABELS_SECURITY: "true"
-
-      - name: Auto Approve Owner PR (Conditional)
-        if: |
-          github.event_name == 'pull_request' && 
-          github.event.pull_request.user.login == 'juliolimacostavalladares' && 
-          steps.pragent.outputs.review != ''
-        uses: actions/github-script@v6
-        env:
-          REVIEW_JSON: ${{ steps.pragent.outputs.review }}
-        with:
-          script: |
-            const reviewData = JSON.parse(process.env.REVIEW_JSON);
-            console.log('PR-Agent Review Data:', JSON.stringify(reviewData, null, 2));
-            
-            let hasSecurityConcerns = false;
-            const security = reviewData.security_concerns || (reviewData.review && reviewData.review.security_concerns);
-            
-            if (security) {
-              const secText = security.toLowerCase().trim();
-              if (
-                secText !== '' && 
-                secText !== 'none' && 
-                secText !== 'no' && 
-                secText !== 'false' && 
-                !secText.includes('no security concerns')
-              ) {
-                hasSecurityConcerns = true;
-                console.log('🚨 Security concerns detected:', security);
-              }
-            }
-            
-            if (hasSecurityConcerns) {
-              console.log('⚠️ PR approval skipped due to security concerns.');
-              return;
-            }
-            
-            console.log('✅ No security concerns found. Approving PR...');
-            await github.rest.pulls.createReview({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-              event: 'APPROVE',
-              body: 'Auto-approved by GitHub Actions for repository owner (No security issues found by PR-Agent)'
-            });
