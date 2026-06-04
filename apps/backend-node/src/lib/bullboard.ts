@@ -4,14 +4,26 @@ import { FastifyAdapter } from '@bull-board/fastify';
 import { videoRenderQueue } from './queue.js';
 import basicAuth from '@fastify/basic-auth';
 import type { FastifyInstance } from 'fastify';
+import { env } from '../env.js';
+import crypto from 'node:crypto';
+
+function safeCompare(a: string, b: string): boolean {
+  const hashA = crypto.createHash('sha256').update(a).digest();
+  const hashB = crypto.createHash('sha256').update(b).digest();
+  return crypto.timingSafeEqual(hashA, hashB);
+}
 
 export async function setupBullBoard(fastify: FastifyInstance) {
   // Register Basic Authentication plugin
   await fastify.register(basicAuth, {
     validate: async (username, password, _req, _reply) => {
-      const expectedUsername = process.env.BULL_BOARD_USERNAME || 'admin';
-      const expectedPassword = process.env.BULL_BOARD_PASSWORD || 'admin';
-      if (username !== expectedUsername || password !== expectedPassword) {
+      const expectedUsername = env.BULL_BOARD_USERNAME;
+      const expectedPassword = env.BULL_BOARD_PASSWORD;
+      
+      const usernameMatch = safeCompare(username, expectedUsername);
+      const passwordMatch = safeCompare(password, expectedPassword);
+      
+      if (!usernameMatch || !passwordMatch) {
         throw new Error('Unauthorized');
       }
     },
