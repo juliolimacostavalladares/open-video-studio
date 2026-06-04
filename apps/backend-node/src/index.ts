@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
-import { execSync } from 'child_process';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import path from 'path';
 import { createRequire } from 'module';
 import { env } from './env.js';
@@ -40,22 +41,27 @@ const host = '0.0.0.0'; // Bind to all network interfaces for containerization
 try {
   // Automatic Migrations & Seeding in development
   if (env.NODE_ENV === 'development') {
-    console.log('🔄 Running automatic database migrations & seeding in development...');
+    console.log('🔄 Running automatic database migrations & seeding in development (asynchronous)...');
     try {
       const require = createRequire(import.meta.url);
       const dbPackageJsonPath = require.resolve('@repo/database/package.json');
       const dbPackagePath = path.dirname(dbPackageJsonPath);
 
-      execSync('npx prisma migrate dev --skip-generate --skip-seed', {
+      const execAsync = promisify(exec);
+
+      // Run prisma migrate deploy asynchronously to avoid event loop blocking
+      const { stdout: migrateStdout, stderr: migrateStderr } = await execAsync('npx prisma migrate deploy', {
         cwd: dbPackagePath,
-        stdio: 'inherit',
       });
+      console.log(migrateStdout);
+      if (migrateStderr) console.error(migrateStderr);
       console.log('✅ Migrations applied successfully.');
 
-      execSync('npx prisma db seed', {
+      const { stdout: seedStdout, stderr: seedStderr } = await execAsync('npx prisma db seed', {
         cwd: dbPackagePath,
-        stdio: 'inherit',
       });
+      console.log(seedStdout);
+      if (seedStderr) console.error(seedStderr);
       console.log('🌱 Database seeded successfully.');
     } catch (error) {
       console.error('❌ Failed to run auto migrations/seed:', error);
