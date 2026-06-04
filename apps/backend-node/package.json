@@ -1,0 +1,26 @@
+{
+  "name": "backend-node",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint src/**/*.ts"
+  },
+  "dependencies": {
+    "fastify": "4.26.2",
+    "@fastify/cors": "9.0.1",
+    "dotenv": "16.4.5",
+    "@repo/types": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "4.7.1",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.19.6",
+    "@repo/tsconfig": "workspace:*",
+    "@repo/eslint-config": "workspace:*"
+  }
+}
