@@ -51,7 +51,15 @@ jobs:
         run: pnpm test
 
       - name: Run E2E Tests inside Playwright Docker Container
-        run: docker run --rm -v $(pwd):/work -w /work --network=host mcr.microsoft.com/playwright:v1.60.0-jammy /bin/bash -c "npm install -g pnpm@10.32.1 && pnpm --filter web test:e2e"
+        run: |
+          docker run --rm -v $(pwd):/work -w /work --network=host mcr.microsoft.com/playwright:v1.60.0-jammy /bin/bash -c "
+            npm install -g pnpm@10.32.1 &&
+            pnpm --filter web test:e2e;
+            status=\$?;
+            rm -rf apps/web/test-results apps/web/playwright-report;
+            exit \$status
+          "
+
 
 
       - name: Stop Docker Services
