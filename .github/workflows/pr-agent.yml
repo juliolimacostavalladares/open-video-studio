@@ -50,7 +50,13 @@ jobs:
             
             if (security) {
               const secText = security.toLowerCase().trim();
-              if (secText !== '' && secText !== 'none' && !secText.includes('no security concerns')) {
+              if (
+                secText !== '' && 
+                secText !== 'none' && 
+                secText !== 'no' && 
+                secText !== 'false' && 
+                !secText.includes('no security concerns')
+              ) {
                 hasSecurityConcerns = true;
                 console.log('🚨 Security concerns detected:', security);
               }
