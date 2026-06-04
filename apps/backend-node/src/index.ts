@@ -2,6 +2,8 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import dotenv from 'dotenv';
 import { initializeMinIO } from './lib/minio.js';
+import { setupBullBoard } from './lib/bullboard.js';
+import './lib/queue.js'; // Start background worker
 
 // Load environment variables from .env
 dotenv.config();
@@ -26,6 +28,9 @@ await fastify.register(cors, {
     cb(new Error('Not allowed by CORS'), false);
   },
 });
+
+// Register protected admin queues dashboard
+await setupBullBoard(fastify);
 
 // Simple health check endpoint
 fastify.get('/health', async (_request, _reply) => {
