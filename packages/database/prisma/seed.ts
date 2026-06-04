@@ -48,8 +48,8 @@ async function main() {
       id: 'channel-test-uuid-0001',
       name: 'Studio Test Channel',
       provider: 'youtube',
-      accessToken: 'ya29.fake-access-token-for-testing-purposes-only',
-      refreshToken: '1//fake-refresh-token-1234567890',
+      encryptedAccessToken: 'dummy_encrypted_access_token',
+      encryptedRefreshToken: 'dummy_encrypted_refresh_token',
       tokenExpiry: new Date(Date.now() + 3600 * 1000), // 1 hour from now
     },
   ];

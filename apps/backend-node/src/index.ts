@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import { execSync } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 import { env } from './env.js';
 import { initializeMinIO } from './lib/minio.js';
 import { setupBullBoard } from './lib/bullboard.js';
@@ -42,9 +43,9 @@ try {
   if (env.NODE_ENV === 'development') {
     console.log('🔄 Running automatic database migrations & seeding in development...');
     try {
-      const __filename = fileURLToPath(import.meta.url);
-      const __dirname = path.dirname(__filename);
-      const dbPackagePath = path.resolve(__dirname, '../../../packages/database');
+      const require = createRequire(import.meta.url);
+      const dbPackageJsonPath = require.resolve('@repo/database/package.json');
+      const dbPackagePath = path.dirname(dbPackageJsonPath);
 
       execSync('npx prisma migrate dev --skip-generate --skip-seed', {
         cwd: dbPackagePath,
