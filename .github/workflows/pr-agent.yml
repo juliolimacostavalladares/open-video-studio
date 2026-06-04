@@ -31,6 +31,10 @@ jobs:
           github_action_config.auto_describe: "true"
           github_action_config.auto_improve: "true"
           github_action_config.pr_actions: '["opened", "reopened", "ready_for_review", "synchronize"]'
+          PR_REVIEWER.PERSISTENT_COMMENT: "false"
+          PR_CODE_SUGGESTIONS.PERSISTENT_COMMENT: "false"
+          PR_CODE_SUGGESTIONS.COMMITABLE_CODE_SUGGESTIONS: "true"
+          PR_REVIEWER.ENABLE_REVIEW_LABELS_SECURITY: "true"
 
       - name: Auto Approve Owner PR (Conditional)
         if: |
