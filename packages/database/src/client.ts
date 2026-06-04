@@ -60,7 +60,7 @@ export const prisma = basePrisma.$extends({
       encryptedAccessToken: {
         needs: { encryptedAccessToken: true },
         compute(channel) {
-          return decrypt(channel.encryptedAccessToken);
+          return channel.encryptedAccessToken ? decrypt(channel.encryptedAccessToken) : '';
         },
       },
       encryptedRefreshToken: {

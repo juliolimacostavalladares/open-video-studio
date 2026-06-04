@@ -59,6 +59,7 @@ jobs:
             const prBranch     = process.env.PR_BRANCH;
             const prUser       = process.env.PR_USER;
             const marker       = `<!-- pr-agent-issue-for-pr-${prNumber} -->`;
+            const statusMarker = `<!-- pr-agent-status-comment-for-pr-${prNumber} -->`;
 
             // ── 0. Ensure the label exists ────────────────────────────────────
             try {
@@ -106,14 +107,16 @@ jobs:
             }
 
             // 1.2 Extract Key Issues
-            const insights = review.key_issues_to_review || review.insights || [];
+            const rawInsights = review.key_issues_to_review || review.insights || [];
+            const insights = Array.isArray(rawInsights) ? rawInsights : [];
             for (const item of insights) {
               const detail = item.insight || item.description || item.title || JSON.stringify(item);
               if (detail) problems.push({ type: '🔍 Key Issue', detail: detail.trim() });
             }
 
             // 1.3 Extract General Issues
-            const generalIssues = review.possible_issues || review.issues || [];
+            const rawGeneralIssues = review.possible_issues || review.issues || [];
+            const generalIssues = Array.isArray(rawGeneralIssues) ? rawGeneralIssues : [];
             for (const item of generalIssues) {
               const detail = item.issue || item.description || item.title || JSON.stringify(item);
               if (detail) problems.push({ type: '⚠️ Issue', detail: detail.trim() });
@@ -194,7 +197,8 @@ jobs:
             }
 
             // ── 4. Close resolved issues (no longer reported by PR-Agent) ─────
-            for (const [title, issue] of activeIssuesMap.entries()) {
+            const activeIssuesArray = Array.from(activeIssuesMap.entries());
+            for (const [title, issue] of activeIssuesArray) {
               const stillOpen = openedTitles.has(title);
               if (!stillOpen) {
                 await github.rest.issues.update({
@@ -215,31 +219,94 @@ jobs:
               }
             }
 
-            // ── 5. Conditional Auto-Approve ───────────────────────────────────
+            // ── 5. Manage PR central status comment ───────────────────────────
             const activeIssuesCount = activeIssuesMap.size;
             console.log(`Final active issues count for PR #${prNumber}: ${activeIssuesCount}`);
 
+            const comments = await github.paginate(
+              github.rest.issues.listComments,
+              {
+                owner:        context.repo.owner,
+                repo:         context.repo.repo,
+                issue_number: prNumber,
+              }
+            );
+
+            const existingStatusComment = comments.find(c =>
+              c.body && c.body.includes(statusMarker)
+            );
+
+            const statusLines = [
+              `# 🤖 PR-Agent Review Status`,
+              '',
+              activeIssuesCount > 0
+                ? `🚫 **Auto-approve Bloqueado:** Existem **${activeIssuesCount} issue(s) pendentes** de resolução.`
+                : `✅ **Pronto para Merge:** Todos os problemas apontados pelo PR-Agent foram resolvidos!`,
+              '',
+              `### 📋 Rastreamento de Issues`,
+            ];
+
             if (activeIssuesCount > 0) {
-              console.log(`🚫 Auto-approve blocked: ${activeIssuesCount} active issue(s) remaining.`);
-              
+              statusLines.push('');
+              statusLines.push('#### 🔴 Pendentes:');
+              for (const issue of activeIssuesMap.values()) {
+                statusLines.push(`- [ ] #${issue.number} — ${issue.title}`);
+              }
+            }
+
+            // Find all closed issues associated with this PR to show as resolved
+            const allIssuesForPr = await github.paginate(
+              github.rest.issues.listForRepo,
+              {
+                owner:  context.repo.owner,
+                repo:   context.repo.repo,
+                labels: LABEL_NAME,
+                state:  'all',
+              }
+            );
+            const prClosedIssues = allIssuesForPr.filter(i =>
+              i.state === 'closed' && i.body && i.body.includes(marker)
+            );
+
+            if (prClosedIssues.length > 0) {
+              statusLines.push('');
+              statusLines.push('#### 🟢 Resolvidas:');
+              for (const issue of prClosedIssues) {
+                statusLines.push(`- [x] ~~#${issue.number} — ${issue.title}~~`);
+              }
+            }
+
+            statusLines.push('');
+            statusLines.push('---');
+            statusLines.push(`_Última atualização em ${new Date().toLocaleString('pt-BR')}_`);
+            statusLines.push(statusMarker);
+
+            const statusBody = statusLines.join('\n');
+
+            if (existingStatusComment) {
+              await github.rest.issues.updateComment({
+                owner:      context.repo.owner,
+                repo:       context.repo.repo,
+                comment_id: existingStatusComment.id,
+                body:       statusBody,
+              });
+              console.log('🔄 Updated central status comment on the PR.');
+            } else {
               await github.rest.issues.createComment({
                 owner:        context.repo.owner,
                 repo:         context.repo.repo,
                 issue_number: prNumber,
-                body: [
-                  '## 🚫 Auto-approve Bloqueado',
-                  '',
-                  `Existem **${activeIssuesCount} issue(s) pendentes** de resolução:`,
-                  '',
-                  ...Array.from(activeIssuesMap.values()).map(i => `- [ ] #${i.number} — ${i.title}`),
-                  '',
-                  '_Faça um commit resolvendo os problemas e o review será refeito automaticamente._',
-                ].join('\n'),
+                body:         statusBody,
               });
+              console.log('📝 Created central status comment on the PR.');
+            }
+
+            // ── 6. Conditional Auto-Approve ───────────────────────────────────
+            if (activeIssuesCount > 0) {
+              console.log(`🚫 Auto-approve blocked: ${activeIssuesCount} active issue(s) remaining.`);
               return;
             }
 
-            // If no issues and owner PR, auto-approve
             if (prUser === 'juliolimacostavalladares') {
               console.log('✅ All issues resolved and no concerns found. Auto-approving PR...');
               await github.rest.pulls.createReview({
