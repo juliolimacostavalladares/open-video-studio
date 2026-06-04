@@ -9,14 +9,14 @@ generator client {
 }
 
 model Channel {
-  id           String   @id @default(uuid())
-  name         String
-  provider     String
-  accessToken  String
-  refreshToken String?
-  tokenExpiry  DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                    String    @id @default(uuid())
+  name                  String
+  provider              String
+  encryptedAccessToken  String
+  encryptedRefreshToken String?
+  tokenExpiry           DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 }
 
 model VoiceProfile {
