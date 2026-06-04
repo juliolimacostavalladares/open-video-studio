@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@repo/types": "workspace:*",
@@ -22,6 +23,7 @@
     "zustand": "4.5.2"
   },
   "devDependencies": {
+    "@playwright/test": "1.60.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@tailwindcss/postcss": "^4.0.0",
