@@ -15,7 +15,13 @@ describe('Database ORM & Encryption Tests', () => {
   it('should successfully connect to the test database', async () => {
     const result = await prisma.$queryRaw`SELECT 1 as result`;
     expect(result).toBeDefined();
-    expect((result as any)[0].result).toBe(1);
+
+    const rows = result as unknown as { result: number }[];
+    const firstRow = rows[0];
+    if (!firstRow) {
+      throw new Error('No rows returned');
+    }
+    expect(firstRow.result).toBe(1);
   });
 
   it('should encrypt tokens on creation and decrypt on retrieval', async () => {
@@ -47,6 +53,9 @@ describe('Database ORM & Encryption Tests', () => {
 
     expect(rawDbChannels).toHaveLength(1);
     const dbRow = rawDbChannels[0];
+    if (!dbRow) {
+      throw new Error('No db channel row returned');
+    }
 
     // Verify it starts with the encryption prefix 'enc:' and is not plaintext
     expect(dbRow.encryptedAccessToken).not.toBe(rawAccessToken);
