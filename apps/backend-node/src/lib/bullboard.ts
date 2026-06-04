@@ -4,13 +4,14 @@ import { FastifyAdapter } from '@bull-board/fastify';
 import { videoRenderQueue } from './queue.js';
 import basicAuth from '@fastify/basic-auth';
 import type { FastifyInstance } from 'fastify';
+import { env } from '../env.js';
 
 export async function setupBullBoard(fastify: FastifyInstance) {
   // Register Basic Authentication plugin
   await fastify.register(basicAuth, {
     validate: async (username, password, _req, _reply) => {
-      const expectedUsername = process.env.BULL_BOARD_USERNAME || 'admin';
-      const expectedPassword = process.env.BULL_BOARD_PASSWORD || 'admin';
+      const expectedUsername = env.BULL_BOARD_USERNAME;
+      const expectedPassword = env.BULL_BOARD_PASSWORD;
       if (username !== expectedUsername || password !== expectedPassword) {
         throw new Error('Unauthorized');
       }

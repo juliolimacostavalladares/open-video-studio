@@ -1,27 +1,19 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
-import dotenv from 'dotenv';
+import { env } from './env.js';
 import { initializeMinIO } from './lib/minio.js';
 import { setupBullBoard } from './lib/bullboard.js';
 import './lib/queue.js'; // Start background worker
-
-// Load environment variables from .env
-dotenv.config();
 
 const fastify = Fastify({
   logger: true,
 });
 
-// Parse allowed origins from environment variable
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim())
-  : [];
-
 // Register dynamic CORS middleware
 await fastify.register(cors, {
   origin: (origin, cb) => {
     // Allow local development tools/testing or requests with no origin (like mobile/curl)
-    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+    if (!origin || env.allowedOrigins.length === 0 || env.allowedOrigins.includes(origin)) {
       cb(null, true);
       return;
     }
@@ -38,7 +30,7 @@ fastify.get('/health', async (_request, _reply) => {
 });
 
 // Listen config
-const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+const port = env.PORT;
 const host = '0.0.0.0'; // Bind to all network interfaces for containerization
 
 try {

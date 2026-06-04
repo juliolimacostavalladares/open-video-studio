@@ -1,7 +1,8 @@
 import { Queue, Worker } from 'bullmq';
 import { Redis } from 'ioredis';
+import { env } from '../env.js';
 
-const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379/1';
+const redisUrl = env.REDIS_URL;
 
 // Initialize Redis connection
 export const connection = new Redis(redisUrl, {

@@ -1,12 +1,13 @@
 import { S3Client, CreateBucketCommand, HeadBucketCommand, PutBucketPolicyCommand } from '@aws-sdk/client-s3';
+import { env } from '../env.js';
 
 // Initialize S3Client configured for local MinIO compatibility
 export const minioClient = new S3Client({
-  endpoint: process.env.MINIO_ENDPOINT_INTERNAL || 'http://localhost:9000',
+  endpoint: env.MINIO_ENDPOINT_INTERNAL,
   region: 'us-east-1', // Dummy region required by S3 SDK
   credentials: {
-    accessKeyId: process.env.MINIO_ROOT_USER || 'minioadmin',
-    secretAccessKey: process.env.MINIO_ROOT_PASSWORD || 'minioadmin',
+    accessKeyId: env.MINIO_ROOT_USER,
+    secretAccessKey: env.MINIO_ROOT_PASSWORD,
   },
   forcePathStyle: true, // Required for MinIO
 });
