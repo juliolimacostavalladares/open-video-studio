@@ -1,5 +1,8 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import { execSync } from 'child_process';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { env } from './env.js';
 import { initializeMinIO } from './lib/minio.js';
 import { setupBullBoard } from './lib/bullboard.js';
@@ -35,6 +38,31 @@ const port = env.PORT;
 const host = '0.0.0.0'; // Bind to all network interfaces for containerization
 
 try {
+  // Automatic Migrations & Seeding in development
+  if (env.NODE_ENV === 'development') {
+    console.log('🔄 Running automatic database migrations & seeding in development...');
+    try {
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      const dbPackagePath = path.resolve(__dirname, '../../../packages/database');
+
+      execSync('npx prisma migrate dev --skip-generate --skip-seed', {
+        cwd: dbPackagePath,
+        stdio: 'inherit',
+      });
+      console.log('✅ Migrations applied successfully.');
+
+      execSync('npx prisma db seed', {
+        cwd: dbPackagePath,
+        stdio: 'inherit',
+      });
+      console.log('🌱 Database seeded successfully.');
+    } catch (error) {
+      console.error('❌ Failed to run auto migrations/seed:', error);
+      process.exit(1);
+    }
+  }
+
   // Verify Database Connection (Prisma Client)
   console.log('Verifying database connection...');
   await prisma.$connect();

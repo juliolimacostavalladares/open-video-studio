@@ -6,12 +6,18 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "prisma:generate": "prisma generate"
+    "prisma:generate": "prisma generate",
+    "build": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.14.0"
   },
   "devDependencies": {
-    "prisma": "^5.14.0"
+    "@repo/tsconfig": "workspace:*",
+    "prisma": "^5.14.0",
+    "tsx": "^4.7.1"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

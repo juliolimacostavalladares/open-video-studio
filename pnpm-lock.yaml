@@ -149,9 +149,15 @@ importers:
         specifier: ^5.14.0
         version: 5.22.0(prisma@5.22.0)
     devDependencies:
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
       prisma:
         specifier: ^5.14.0
         version: 5.22.0
+      tsx:
+        specifier: ^4.7.1
+        version: 4.7.1
 
   packages/eslint-config:
     dependencies:
