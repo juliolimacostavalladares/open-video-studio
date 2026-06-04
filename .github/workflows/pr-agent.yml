@@ -31,3 +31,41 @@ jobs:
           github_action_config.auto_describe: "true"
           github_action_config.auto_improve: "true"
           github_action_config.pr_actions: '["opened", "reopened", "ready_for_review", "synchronize"]'
+
+      - name: Auto Approve Owner PR (Conditional)
+        if: |
+          github.event_name == 'pull_request' && 
+          github.event.pull_request.user.login == 'juliolimacostavalladares' && 
+          steps.pragent.outputs.review != ''
+        uses: actions/github-script@v6
+        env:
+          REVIEW_JSON: ${{ steps.pragent.outputs.review }}
+        with:
+          script: |
+            const reviewData = JSON.parse(process.env.REVIEW_JSON);
+            console.log('PR-Agent Review Data:', JSON.stringify(reviewData, null, 2));
+            
+            let hasSecurityConcerns = false;
+            const security = reviewData.security_concerns || (reviewData.review && reviewData.review.security_concerns);
+            
+            if (security) {
+              const secText = security.toLowerCase().trim();
+              if (secText !== '' && secText !== 'none' && !secText.includes('no security concerns')) {
+                hasSecurityConcerns = true;
+                console.log('🚨 Security concerns detected:', security);
+              }
+            }
+            
+            if (hasSecurityConcerns) {
+              console.log('⚠️ PR approval skipped due to security concerns.');
+              return;
+            }
+            
+            console.log('✅ No security concerns found. Approving PR...');
+            await github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              event: 'APPROVE',
+              body: 'Auto-approved by GitHub Actions for repository owner (No security issues found by PR-Agent)'
+            });
