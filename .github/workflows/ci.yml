@@ -51,7 +51,7 @@ jobs:
         run: pnpm test
 
       - name: Install Playwright Browsers
-        run: npx playwright install chromium
+        run: pnpm --filter web exec playwright install chromium
 
       - name: Run E2E Tests
         run: pnpm test:e2e
