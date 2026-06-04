@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import dotenv from 'dotenv';
+import { initializeMinIO } from './lib/minio.js';
 // Load environment variables from .env
 dotenv.config();
 const fastify = Fastify({
@@ -29,6 +30,9 @@ fastify.get('/health', async (_request, _reply) => {
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
 const host = '0.0.0.0'; // Bind to all network interfaces for containerization
 try {
+    // Initialize MinIO buckets and policies
+    console.log('Initializing MinIO buckets...');
+    await initializeMinIO();
     await fastify.listen({ port, host });
 }
 catch (err) {
