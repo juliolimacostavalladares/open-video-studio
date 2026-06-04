@@ -5,6 +5,13 @@ import { videoRenderQueue } from './queue.js';
 import basicAuth from '@fastify/basic-auth';
 import type { FastifyInstance } from 'fastify';
 import { env } from '../env.js';
+import crypto from 'node:crypto';
+
+function safeCompare(a: string, b: string): boolean {
+  const hashA = crypto.createHash('sha256').update(a).digest();
+  const hashB = crypto.createHash('sha256').update(b).digest();
+  return crypto.timingSafeEqual(hashA, hashB);
+}
 
 export async function setupBullBoard(fastify: FastifyInstance) {
   // Register Basic Authentication plugin
@@ -12,7 +19,11 @@ export async function setupBullBoard(fastify: FastifyInstance) {
     validate: async (username, password, _req, _reply) => {
       const expectedUsername = env.BULL_BOARD_USERNAME;
       const expectedPassword = env.BULL_BOARD_PASSWORD;
-      if (username !== expectedUsername || password !== expectedPassword) {
+      
+      const usernameMatch = safeCompare(username, expectedUsername);
+      const passwordMatch = safeCompare(password, expectedPassword);
+      
+      if (!usernameMatch || !passwordMatch) {
         throw new Error('Unauthorized');
       }
     },
