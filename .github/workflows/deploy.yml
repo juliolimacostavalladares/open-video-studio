@@ -1,8 +1,11 @@
-name: Deploy Pipeline
+name: CI/CD Deploy to Coolify
 
 on:
   push:
     branches: [master]
+
+env:
+  REGISTRY: ghcr.io
 
 jobs:
   cleanup:
@@ -12,9 +15,13 @@ jobs:
         run: |
           docker run --rm -v /home/github-runner/actions-runner/_work/open-video-studio/open-video-studio:/work -w /work alpine rm -rf apps/web/test-results apps/web/playwright-report apps/web/.next || true
 
-  deploy:
+  build-test-deploy:
     needs: cleanup
     runs-on: self-hosted
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -73,22 +80,64 @@ jobs:
         if: always()
         run: docker compose down
 
-      - name: Trigger Coolify Webhook Deployments
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # --- WEB APP DOCKER BUILD & PUSH ---
+      - name: Extract metadata (tags, labels) for Web App
+        id: meta-web
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/web
+          tags: |
+            type=raw,value=latest
+
+      - name: Build and push Web App Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: true
+          tags: ${{ steps.meta-web.outputs.tags }}
+          labels: ${{ steps.meta-web.outputs.labels }}
+
+      # --- BACKEND DOCKER BUILD & PUSH ---
+      - name: Extract metadata (tags, labels) for Backend
+        id: meta-backend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/backend
+          tags: |
+            type=raw,value=latest
+
+      - name: Build and push Backend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/backend-node/Dockerfile
+          push: true
+          tags: ${{ steps.meta-backend.outputs.tags }}
+          labels: ${{ steps.meta-backend.outputs.labels }}
+
+      # --- COOLIFY DEPLOY TRIGGER ---
+      - name: Trigger Coolify Web App Redeploy Webhook
+        if: ${{ secrets.COOLIFY_WEBHOOK_WEB != '' }}
         run: |
-          echo "Triggering Coolify deployment webhooks..."
-          
-          # Web App Deploy Webhook
-          if [ -n "${{ secrets.COOLIFY_WEBHOOK_URL_WEB }}" ]; then
-            echo "Triggering Web deployment..."
-            curl -X POST -d '{}' -s -S "${{ secrets.COOLIFY_WEBHOOK_URL_WEB }}"
-          else
-            echo "Warning: COOLIFY_WEBHOOK_URL_WEB secret not set."
-          fi
-          
-          # Backend Deploy Webhook
-          if [ -n "${{ secrets.COOLIFY_WEBHOOK_URL_BACKEND }}" ]; then
-            echo "Triggering Backend deployment..."
-            curl -X POST -d '{}' -s -S "${{ secrets.COOLIFY_WEBHOOK_URL_BACKEND }}"
-          else
-            echo "Warning: COOLIFY_WEBHOOK_URL_BACKEND secret not set."
-          fi
+          echo "Triggering Coolify Web App Redeploy Webhook..."
+          curl -X POST "${{ secrets.COOLIFY_WEBHOOK_WEB }}" \
+               -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+               -H "Content-Type: application/json" \
+               -d '{}'
+
+      - name: Trigger Coolify Backend Redeploy Webhook
+        if: ${{ secrets.COOLIFY_WEBHOOK_BACKEND != '' }}
+        run: |
+          echo "Triggering Coolify Backend Redeploy Webhook..."
+          curl -X POST "${{ secrets.COOLIFY_WEBHOOK_BACKEND }}" \
+               -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+               -H "Content-Type: application/json" \
+               -d '{}'
