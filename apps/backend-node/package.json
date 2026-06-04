@@ -16,6 +16,7 @@
     "@bull-board/fastify": "5.21.3",
     "@fastify/basic-auth": "5.1.1",
     "@fastify/cors": "9.0.1",
+    "@repo/database": "workspace:*",
     "@repo/types": "workspace:*",
     "bullmq": "5.8.3",
     "dotenv": "16.4.5",
