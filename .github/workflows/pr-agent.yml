@@ -8,7 +8,7 @@ on:
 
 jobs:
   pr_agent_job:
-    if: ${{ github.event.sender.type != 'Bot' }}
+    if: false # Desativado temporariamente sem deletar o arquivo
     runs-on: self-hosted
     permissions:
       issues: write
