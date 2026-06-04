@@ -2,13 +2,14 @@ import { PrismaClient } from '@prisma/client';
 import { encrypt, decrypt } from './encryption.js';
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: any;
+  prisma: PrismaClient;
 };
 
-const basePrisma = new PrismaClient();
+// Use the existing base PrismaClient instance or create a new one to prevent multiple connections in development
+const basePrisma = globalForPrisma.prisma || new PrismaClient();
 
 // Add custom client extension to automatically encrypt/decrypt Channel token fields
-export const prisma = basePrisma.$extends({
+export const prisma = globalForPrisma.prisma || (basePrisma.$extends({
   query: {
     channel: {
       async create({ args, query }) {
@@ -22,7 +23,32 @@ export const prisma = basePrisma.$extends({
         }
         return query(args);
       },
+      async createMany({ args, query }) {
+        if (args.data) {
+          const dataArray = Array.isArray(args.data) ? args.data : [args.data];
+          for (const item of dataArray) {
+            if (item.encryptedAccessToken) {
+              item.encryptedAccessToken = encrypt(item.encryptedAccessToken);
+            }
+            if (item.encryptedRefreshToken) {
+              item.encryptedRefreshToken = encrypt(item.encryptedRefreshToken);
+            }
+          }
+        }
+        return query(args);
+      },
       async update({ args, query }) {
+        if (args.data) {
+          if (typeof args.data.encryptedAccessToken === 'string') {
+            args.data.encryptedAccessToken = encrypt(args.data.encryptedAccessToken);
+          }
+          if (typeof args.data.encryptedRefreshToken === 'string') {
+            args.data.encryptedRefreshToken = encrypt(args.data.encryptedRefreshToken);
+          }
+        }
+        return query(args);
+      },
+      async updateMany({ args, query }) {
         if (args.data) {
           if (typeof args.data.encryptedAccessToken === 'string') {
             args.data.encryptedAccessToken = encrypt(args.data.encryptedAccessToken);
@@ -71,8 +97,9 @@ export const prisma = basePrisma.$extends({
       },
     },
   },
-}) as unknown as PrismaClient;
+}) as unknown as PrismaClient);
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
 }
+
