@@ -1,0 +1,94 @@
+name: Deploy Pipeline
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  cleanup:
+    runs-on: self-hosted
+    steps:
+      - name: Clean root-owned files via Docker
+        run: |
+          docker run --rm -v /home/github-runner/actions-runner/_work/open-video-studio/open-video-studio:/work -w /work alpine rm -rf apps/web/test-results apps/web/playwright-report apps/web/.next || true
+
+  deploy:
+    needs: cleanup
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10.32.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Vulnerability Audit
+        run: pnpm audit --audit-level=high
+
+      - name: Validate lockfile URLs and HTTPS registry
+        run: pnpm lockfile-lint
+
+      - name: Run ESLint
+        run: pnpm lint
+
+      - name: Run Build
+        run: pnpm build
+
+      - name: Start Docker Services
+        run: |
+          docker compose up -d postgres_test redis
+          echo "Waiting for PostgreSQL to be ready..."
+          until docker exec open-video-studio-postgres-test pg_isready -U postgres; do
+            sleep 1
+          done
+
+      - name: Deploy Database Migrations to Test DB
+        run: DATABASE_URL="postgresql://postgres:postgres@localhost:5433/open_video_studio_test?schema=public" pnpm --filter @repo/database exec prisma migrate deploy
+
+      - name: Run Unit & Integration Tests
+        run: pnpm test
+
+      - name: Run E2E Tests inside Playwright Docker Container
+        run: |
+          docker run --rm -v $(pwd):/work -w /work --network=host mcr.microsoft.com/playwright:v1.60.0-jammy /bin/bash -c "
+            npm install -g pnpm@10.32.1 &&
+            pnpm --filter web test:e2e;
+            status=\$?;
+            rm -rf apps/web/test-results apps/web/playwright-report apps/web/.next;
+            exit \$status
+          "
+
+      - name: Stop Docker Services
+        if: always()
+        run: docker compose down
+
+      - name: Trigger Coolify Webhook Deployments
+        run: |
+          echo "Triggering Coolify deployment webhooks..."
+          
+          # Web App Deploy Webhook
+          if [ -n "${{ secrets.COOLIFY_WEBHOOK_URL_WEB }}" ]; then
+            echo "Triggering Web deployment..."
+            curl -X POST -d '{}' -s -S "${{ secrets.COOLIFY_WEBHOOK_URL_WEB }}"
+          else
+            echo "Warning: COOLIFY_WEBHOOK_URL_WEB secret not set."
+          fi
+          
+          # Backend Deploy Webhook
+          if [ -n "${{ secrets.COOLIFY_WEBHOOK_URL_BACKEND }}" ]; then
+            echo "Triggering Backend deployment..."
+            curl -X POST -d '{}' -s -S "${{ secrets.COOLIFY_WEBHOOK_URL_BACKEND }}"
+          else
+            echo "Warning: COOLIFY_WEBHOOK_URL_BACKEND secret not set."
+          fi
