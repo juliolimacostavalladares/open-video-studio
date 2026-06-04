@@ -2,7 +2,6 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { execSync } from 'child_process';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 import { env } from './env.js';
 import { initializeMinIO } from './lib/minio.js';
