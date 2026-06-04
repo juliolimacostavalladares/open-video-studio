@@ -37,10 +37,9 @@ jobs:
           PR_REVIEWER.ENABLE_REVIEW_LABELS_SECURITY: "true"
 
       # ─────────────────────────────────────────────────────────────────────────
-      # Step 2: Parse review output → open GitHub Issues for every problem found,
-      #         close issues that were resolved since the last push.
+      # Step 2: Unified Issue Tracking & Conditional Auto-Approve Gate
       # ─────────────────────────────────────────────────────────────────────────
-      - name: Create/Close Issues from PR-Agent Review
+      - name: Manage Issues & Auto-Approve
         if: github.event_name == 'pull_request' && steps.pragent.outputs.review != ''
         uses: actions/github-script@v6
         env:
@@ -49,6 +48,7 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_URL: ${{ github.event.pull_request.html_url }}
           PR_BRANCH: ${{ github.head_ref }}
+          PR_USER: ${{ github.event.pull_request.user.login }}
         with:
           script: |
             const LABEL_NAME   = 'pr-agent-issue';
@@ -57,6 +57,8 @@ jobs:
             const prTitle      = process.env.PR_TITLE;
             const prUrl        = process.env.PR_URL;
             const prBranch     = process.env.PR_BRANCH;
+            const prUser       = process.env.PR_USER;
+            const marker       = `<!-- pr-agent-issue-for-pr-${prNumber} -->`;
 
             // ── 0. Ensure the label exists ────────────────────────────────────
             try {
@@ -80,39 +82,44 @@ jobs:
             try {
               reviewData = JSON.parse(process.env.REVIEW_JSON);
             } catch (e) {
-              console.log('⚠️  Could not parse REVIEW_JSON:', e.message);
+              console.log('⚠️ Could not parse REVIEW_JSON:', e.message);
               return;
             }
 
             const review = reviewData.review || reviewData;
-            console.log('Review keys:', Object.keys(review));
+            
+            // Safety guard: if review data does not contain expected keys, abort to avoid premature closure.
+            const hasExpectedKeys = ['security_concerns', 'key_issues_to_review', 'insights', 'possible_issues', 'issues'].some(k => k in review);
+            if (!hasExpectedKeys) {
+              console.log('⚠️ PR-Agent review output is empty or missing expected keys. Aborting issue updates to prevent premature closure.');
+              return;
+            }
 
-            // Collect all problem entries the review surfaced
             const problems = [];
 
-            // security_concerns (string)
+            // 1.1 Extract Security Concerns
             const sec = review.security_concerns || '';
             if (sec && sec.toLowerCase().trim() !== 'no' &&
                 sec.toLowerCase().trim() !== 'none' &&
                 !sec.toLowerCase().includes('no security concerns')) {
-              problems.push({ type: '🔐 Security Concern', detail: sec });
+              problems.push({ type: '🔐 Security Concern', detail: sec.trim() });
             }
 
-            // insights / key_issues_to_review (array of objects)
+            // 1.2 Extract Key Issues
             const insights = review.key_issues_to_review || review.insights || [];
             for (const item of insights) {
               const detail = item.insight || item.description || item.title || JSON.stringify(item);
-              if (detail) problems.push({ type: '🔍 Key Issue', detail });
+              if (detail) problems.push({ type: '🔍 Key Issue', detail: detail.trim() });
             }
 
-            // general issues from possible_issues / issues fields
+            // 1.3 Extract General Issues
             const generalIssues = review.possible_issues || review.issues || [];
             for (const item of generalIssues) {
               const detail = item.issue || item.description || item.title || JSON.stringify(item);
-              if (detail) problems.push({ type: '⚠️ Issue', detail });
+              if (detail) problems.push({ type: '⚠️ Issue', detail: detail.trim() });
             }
 
-            console.log(`Found ${problems.length} problem(s) in review.`);
+            console.log(`PR-Agent review found ${problems.length} problem(s).`);
 
             // ── 2. Fetch existing open pr-agent-issues for this PR ────────────
             const existingIssues = await github.paginate(
@@ -125,25 +132,31 @@ jobs:
               }
             );
 
+            // Use precise marker match to avoid false positives with other PR numbers
             const prIssues = existingIssues.filter(i =>
-              i.body && i.body.includes(`PR #${prNumber}`)
+              i.body && i.body.includes(marker)
             );
 
-            console.log(`Existing open issues for PR #${prNumber}: ${prIssues.length}`);
+            console.log(`Active open issues for PR #${prNumber}: ${prIssues.length}`);
+
+            // Keep track of issues active at the end of this run
+            const activeIssuesMap = new Map();
+            for (const issue of prIssues) {
+              activeIssuesMap.set(issue.title, issue);
+            }
 
             // ── 3. Open a new issue for each problem ──────────────────────────
             const openedTitles = new Set();
             for (const p of problems) {
               const issueTitle = `[PR-Agent] ${p.type} in PR #${prNumber} — ${prTitle}`;
 
-              // Avoid duplicates in same run
               if (openedTitles.has(issueTitle)) continue;
               openedTitles.add(issueTitle);
 
-              // Check if an identical open issue already exists
-              const duplicate = prIssues.find(i => i.title === issueTitle);
-              if (duplicate) {
-                console.log(`ℹ️  Issue already open: "${issueTitle}"`);
+              // Check if issue is already open in activeIssuesMap
+              const existingIssue = activeIssuesMap.get(issueTitle);
+              if (existingIssue) {
+                console.log(`ℹ️ Issue already open: "${issueTitle}"`);
                 continue;
               }
 
@@ -155,6 +168,7 @@ jobs:
                 '---',
                 `> **Source:** Automatic review by PR-Agent on push to \`${prBranch}\``,
                 `> **PR:** [${prTitle}](${prUrl}) (#${prNumber})`,
+                marker, // Hidden tracking marker
                 '',
                 '_This issue will be closed automatically once PR-Agent no longer reports this problem on a subsequent push._',
               ].join('\n');
@@ -168,8 +182,9 @@ jobs:
               });
 
               console.log(`✅ Opened issue #${created.data.number}: ${issueTitle}`);
+              activeIssuesMap.set(issueTitle, created.data);
 
-              // Link the issue as a comment on the PR
+              // Comment on the PR linking the new issue
               await github.rest.issues.createComment({
                 owner:        context.repo.owner,
                 repo:         context.repo.repo,
@@ -179,8 +194,8 @@ jobs:
             }
 
             // ── 4. Close resolved issues (no longer reported by PR-Agent) ─────
-            for (const issue of prIssues) {
-              const stillOpen = [...openedTitles].some(t => t === issue.title);
+            for (const [title, issue] of activeIssuesMap.entries()) {
+              const stillOpen = openedTitles.has(title);
               if (!stillOpen) {
                 await github.rest.issues.update({
                   owner:        context.repo.owner,
@@ -196,46 +211,17 @@ jobs:
                   body: `✅ Problema resolvido! PR-Agent não reportou mais este problema após novo push em \`${prBranch}\`. Issue fechada automaticamente.`,
                 });
                 console.log(`🔒 Closed resolved issue #${issue.number}`);
+                activeIssuesMap.delete(title);
               }
             }
 
-      # ─────────────────────────────────────────────────────────────────────────
-      # Step 3: Auto-approve ONLY if no open pr-agent-issues remain for this PR
-      # ─────────────────────────────────────────────────────────────────────────
-      - name: Auto Approve Owner PR (Conditional)
-        if: |
-          github.event_name == 'pull_request' &&
-          github.event.pull_request.user.login == 'juliolimacostavalladares' &&
-          steps.pragent.outputs.review != ''
-        uses: actions/github-script@v6
-        env:
-          REVIEW_JSON: ${{ steps.pragent.outputs.review }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        with:
-          script: |
-            const LABEL_NAME = 'pr-agent-issue';
-            const prNumber   = parseInt(process.env.PR_NUMBER);
+            // ── 5. Conditional Auto-Approve ───────────────────────────────────
+            const activeIssuesCount = activeIssuesMap.size;
+            console.log(`Final active issues count for PR #${prNumber}: ${activeIssuesCount}`);
 
-            // Check for open pr-agent-issues linked to this PR
-            const openIssues = await github.paginate(
-              github.rest.issues.listForRepo,
-              {
-                owner:  context.repo.owner,
-                repo:   context.repo.repo,
-                labels: LABEL_NAME,
-                state:  'open',
-              }
-            );
-
-            const prOpenIssues = openIssues.filter(i =>
-              i.body && i.body.includes(`PR #${prNumber}`)
-            );
-
-            if (prOpenIssues.length > 0) {
-              console.log(`🚫 Auto-approve bloqueado: ${prOpenIssues.length} issue(s) aberta(s) pelo PR-Agent para este PR.`);
-              console.log(prOpenIssues.map(i => `  #${i.number}: ${i.title}`).join('\n'));
-
-              // Post a blocking comment on the PR
+            if (activeIssuesCount > 0) {
+              console.log(`🚫 Auto-approve blocked: ${activeIssuesCount} active issue(s) remaining.`);
+              
               await github.rest.issues.createComment({
                 owner:        context.repo.owner,
                 repo:         context.repo.repo,
@@ -243,9 +229,9 @@ jobs:
                 body: [
                   '## 🚫 Auto-approve Bloqueado',
                   '',
-                  `Existem **${prOpenIssues.length} issue(s) abertas** pelo PR-Agent que precisam ser resolvidas antes do merge:`,
+                  `Existem **${activeIssuesCount} issue(s) pendentes** de resolução:`,
                   '',
-                  ...prOpenIssues.map(i => `- [ ] #${i.number} — ${i.title}`),
+                  ...Array.from(activeIssuesMap.values()).map(i => `- [ ] #${i.number} — ${i.title}`),
                   '',
                   '_Faça um commit resolvendo os problemas e o review será refeito automaticamente._',
                 ].join('\n'),
@@ -253,32 +239,14 @@ jobs:
               return;
             }
 
-            // Also check raw security_concerns from review JSON
-            let hasSecurityConcerns = false;
-            try {
-              const reviewData = JSON.parse(process.env.REVIEW_JSON);
-              const review = reviewData.review || reviewData;
-              const sec = review.security_concerns || '';
-              if (sec && sec.toLowerCase().trim() !== 'no' &&
-                  sec.toLowerCase().trim() !== 'none' &&
-                  !sec.toLowerCase().includes('no security concerns')) {
-                hasSecurityConcerns = true;
-                console.log('🚨 Security concerns detected in JSON:', sec);
-              }
-            } catch (e) {
-              console.log('Could not parse review JSON for security check:', e.message);
+            // If no issues and owner PR, auto-approve
+            if (prUser === 'juliolimacostavalladares') {
+              console.log('✅ All issues resolved and no concerns found. Auto-approving PR...');
+              await github.rest.pulls.createReview({
+                owner:       context.repo.owner,
+                repo:        context.repo.repo,
+                pull_number: prNumber,
+                event:       'APPROVE',
+                body:        'Auto-aprovado: todos os problemas apontados pelo PR-Agent foram resolvidos! ✅',
+              });
             }
-
-            if (hasSecurityConcerns) {
-              console.log('⚠️  PR approval skipped due to security concerns.');
-              return;
-            }
-
-            console.log('✅ Sem issues abertas e sem security concerns. Aprovando PR...');
-            await github.rest.pulls.createReview({
-              owner:       context.repo.owner,
-              repo:        context.repo.repo,
-              pull_number: prNumber,
-              event:       'APPROVE',
-              body:        'Auto-aprovado: nenhum problema detectado pelo PR-Agent. ✅',
-            });
