@@ -27,3 +27,7 @@ jobs:
           CONFIG.MODEL: "openai/ag/claude-opus-4-6-thinking"
           CONFIG.CUSTOM_MODEL_MAX_TOKENS: 32000
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github_action_config.auto_review: "true"
+          github_action_config.auto_describe: "true"
+          github_action_config.auto_improve: "true"
+          github_action_config.pr_actions: '["opened", "reopened", "ready_for_review", "synchronize"]'
