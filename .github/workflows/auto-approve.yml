@@ -12,6 +12,10 @@ jobs:
       pull-requests: write
     steps:
       - name: Approve PR
-        run: gh pr review "${{ github.event.pull_request.html_url }}" --approve
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews \
+            -d '{"event":"APPROVE","body":"Auto-approved by GitHub Actions for repository owner"}'
