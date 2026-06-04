@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Clean root-owned files via Docker
         run: |
-          docker run --rm -v /home/github-runner/actions-runner/_work/open-video-studio/open-video-studio:/work -w /work alpine rm -rf apps/web/test-results apps/web/playwright-report || true
+          docker run --rm -v /home/github-runner/actions-runner/_work/open-video-studio/open-video-studio:/work -w /work alpine rm -rf apps/web/test-results apps/web/playwright-report apps/web/.next || true
 
   validate:
     needs: cleanup
@@ -64,7 +64,7 @@ jobs:
             npm install -g pnpm@10.32.1 &&
             pnpm --filter web test:e2e;
             status=\$?;
-            rm -rf apps/web/test-results apps/web/playwright-report;
+            rm -rf apps/web/test-results apps/web/playwright-report apps/web/.next;
             exit \$status
           "
 
