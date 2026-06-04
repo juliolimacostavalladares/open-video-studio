@@ -17,6 +17,8 @@ model Channel {
   tokenExpiry           DateTime?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+
+  @@unique([name, provider])
 }
 
 model VoiceProfile {

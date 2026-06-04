@@ -4,17 +4,17 @@ import crypto from 'crypto';
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12;
 
-// Dev key fallback of exactly 32 bytes
-const DEFAULT_KEY = Buffer.from('dev_secret_key_32_bytes_long_!!!', 'utf8');
+// Generate a random key for development fallback at runtime so no static key is hardcoded in git
+const DEV_FALLBACK_KEY = crypto.randomBytes(32);
 
 function getEncryptionKey(): Buffer {
   const envKey = process.env.ENCRYPTION_KEY;
   if (!envKey) {
-    // Only warn in dev mode, in production it must fail if key is missing/invalid
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('❌ Missing ENCRYPTION_KEY environment variable in production mode!');
+    // Fail loudly in production or staging if the key is missing
+    if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
+      throw new Error('❌ Missing ENCRYPTION_KEY environment variable in production/staging mode!');
     }
-    return DEFAULT_KEY;
+    return DEV_FALLBACK_KEY;
   }
 
   // If env key is hex-encoded, parse it, otherwise hash it to ensure 32-byte key length
@@ -27,10 +27,27 @@ function getEncryptionKey(): Buffer {
 }
 
 /**
- * Encrypts cleartext string using AES-256-GCM
+ * Checks if a string matches the encrypted format: iv(12 bytes hex):data(hex):authTag(16 bytes hex)
+ */
+export function isEncrypted(text: string): boolean {
+  if (!text) return false;
+  const parts = text.split(':');
+  if (parts.length !== 3) return false;
+  const [iv, data, tag] = parts;
+  if (!iv || !data || !tag) return false;
+  return (
+    /^[0-9a-fA-F]{24}$/.test(iv) &&
+    /^[0-9a-fA-F]+$/.test(data) &&
+    /^[0-9a-fA-F]{32}$/.test(tag)
+  );
+}
+
+/**
+ * Encrypts cleartext string using AES-256-GCM. Prevents double-encryption.
  */
 export function encrypt(text: string): string {
   if (!text) return text;
+  if (isEncrypted(text)) return text;
   
   const key = getEncryptionKey();
   const iv = crypto.randomBytes(IV_LENGTH);
@@ -59,7 +76,9 @@ export function decrypt(cipherText: string): string {
   const tagPart = parts[2];
 
   if (parts.length !== 3 || !ivPart || !dataPart || !tagPart) {
-    // If not in the expected encrypted format, throw to notify invalid data
+    // If not in the expected encrypted format, return as-is or throw?
+    // Returning as-is helps with initial migration/plaintext transition if needed,
+    // but throwing is safer to notify invalid data.
     throw new Error('Invalid encrypted data format.');
   }
 
@@ -83,3 +102,4 @@ export function decrypt(cipherText: string): string {
     throw new Error('Decryption failed: data corruption or invalid key.');
   }
 }
+
