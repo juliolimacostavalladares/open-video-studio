@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../src/client.js';
 
 async function main() {
   console.log('🌱 Starting database seeding...');
@@ -48,8 +46,8 @@ async function main() {
       id: 'channel-test-uuid-0001',
       name: 'Studio Test Channel',
       provider: 'youtube',
-      encryptedAccessToken: 'dummy_encrypted_access_token',
-      encryptedRefreshToken: 'dummy_encrypted_refresh_token',
+      encryptedAccessToken: 'dummy_access_token',
+      encryptedRefreshToken: 'dummy_refresh_token',
       tokenExpiry: new Date(Date.now() + 3600 * 1000), // 1 hour from now
     },
   ];

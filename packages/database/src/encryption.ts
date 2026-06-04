@@ -5,7 +5,7 @@ const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12;
 
 // Dev key fallback of exactly 32 bytes
-const DEFAULT_KEY = Buffer.from('dev_secret_key_32_bytes_long_!!', 'utf8');
+const DEFAULT_KEY = Buffer.from('dev_secret_key_32_bytes_long_!!!', 'utf8');
 
 function getEncryptionKey(): Buffer {
   const envKey = process.env.ENCRYPTION_KEY;
@@ -59,8 +59,8 @@ export function decrypt(cipherText: string): string {
   const tagPart = parts[2];
 
   if (parts.length !== 3 || !ivPart || !dataPart || !tagPart) {
-    // Return original string if it is not in the expected encrypted format (allows migration of older values)
-    return cipherText;
+    // If not in the expected encrypted format, throw to notify invalid data
+    throw new Error('Invalid encrypted data format.');
   }
 
   try {
@@ -79,7 +79,7 @@ export function decrypt(cipherText: string): string {
     
     return decrypted.toString('utf8');
   } catch (error) {
-    console.error('❌ Decryption failed. Returning original cipherText.', error);
-    return cipherText;
+    console.error('❌ Decryption failed:', error);
+    throw new Error('Decryption failed: data corruption or invalid key.');
   }
 }
