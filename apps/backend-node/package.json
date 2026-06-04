@@ -14,7 +14,8 @@
     "fastify": "4.26.2",
     "@fastify/cors": "9.0.1",
     "dotenv": "16.4.5",
-    "@repo/types": "workspace:*"
+    "@repo/types": "workspace:*",
+    "@aws-sdk/client-s3": "3.577.0"
   },
   "devDependencies": {
     "tsx": "4.7.1",
