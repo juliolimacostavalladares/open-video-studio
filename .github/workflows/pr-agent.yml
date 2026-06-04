@@ -19,7 +19,11 @@ jobs:
         id: pragent
         uses: the-pr-agent/pr-agent@main
         env:
-          OPENAI__API_BASE: ${{ secrets.OPENAI_API_BASE }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI__KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
+          OPENAI__API_BASE: ${{ secrets.OPENAI_API_BASE }}
           CONFIG.MODEL: "openai/ag/claude-opus-4-6-thinking"
+          CONFIG.CUSTOM_MODEL_MAX_TOKENS: 32000
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
