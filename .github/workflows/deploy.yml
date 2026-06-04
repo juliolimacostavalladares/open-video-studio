@@ -125,19 +125,25 @@ jobs:
 
       # --- COOLIFY DEPLOY TRIGGER ---
       - name: Trigger Coolify Web App Redeploy Webhook
-        if: ${{ secrets.COOLIFY_WEBHOOK_WEB != '' }}
+        env:
+          COOLIFY_WEBHOOK_WEB: ${{ secrets.COOLIFY_WEBHOOK_WEB }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+        if: env.COOLIFY_WEBHOOK_WEB != ''
         run: |
           echo "Triggering Coolify Web App Redeploy Webhook..."
-          curl -X POST "${{ secrets.COOLIFY_WEBHOOK_WEB }}" \
-               -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+          curl -X POST "$COOLIFY_WEBHOOK_WEB" \
+               -H "Authorization: Bearer $COOLIFY_TOKEN" \
                -H "Content-Type: application/json" \
                -d '{}'
 
       - name: Trigger Coolify Backend Redeploy Webhook
-        if: ${{ secrets.COOLIFY_WEBHOOK_BACKEND != '' }}
+        env:
+          COOLIFY_WEBHOOK_BACKEND: ${{ secrets.COOLIFY_WEBHOOK_BACKEND }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+        if: env.COOLIFY_WEBHOOK_BACKEND != ''
         run: |
           echo "Triggering Coolify Backend Redeploy Webhook..."
-          curl -X POST "${{ secrets.COOLIFY_WEBHOOK_BACKEND }}" \
-               -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+          curl -X POST "$COOLIFY_WEBHOOK_BACKEND" \
+               -H "Authorization: Bearer $COOLIFY_TOKEN" \
                -H "Content-Type: application/json" \
                -d '{}'
