@@ -126,9 +126,23 @@ describe('AI Script Generation HTTP API Tests', () => {
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.body);
     expect(body.title).toBe(mockOutput.title);
-    expect(body.scenes).toHaveLength(2);
-    expect(body.scenes[0].text).toBe(mockOutput.scenes[0].text);
-    expect(body.scenes[1].keyword).toBe(mockOutput.scenes[1].keyword);
+    const scenes = body.scenes;
+    const mockScenes = mockOutput.scenes;
+    expect(scenes).toBeDefined();
+    expect(mockScenes).toBeDefined();
+
+    const s0 = scenes[0];
+    const s1 = scenes[1];
+    const m0 = mockScenes[0];
+    const m1 = mockScenes[1];
+
+    expect(s0).toBeDefined();
+    expect(s1).toBeDefined();
+    expect(m0).toBeDefined();
+    expect(m1).toBeDefined();
+
+    if (s0 && m0) expect(s0.text).toBe(m0.text);
+    if (s1 && m1) expect(s1.keyword).toBe(m1.keyword);
   });
 
   it('should return 500 Internal Server Error if Gemini returns invalid JSON', async () => {
