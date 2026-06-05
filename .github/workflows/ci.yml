@@ -7,7 +7,22 @@ on:
       - master
 
 jobs:
+  cleanup:
+    runs-on:
+      - self-hosted
+      - linux
+
+    steps:
+      - name: Clean generated artifacts
+        run: |
+          docker run --rm \
+            -v /home/github-runner/actions-runner/_work/open-video-studio/open-video-studio:/work \
+            -w /work \
+            alpine \
+            rm -rf apps/web/.next test-results playwright-report || true
+
   validate:
+    needs: cleanup
     runs-on:
       - self-hosted
       - linux
