@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  cleanup:
+    runs-on:
+      - self-hosted
+      - linux
+
+    steps:
+      - name: Clean generated artifacts
+        run: |
+          docker run --rm \
+            -v /home/github-runner/actions-runner/_work/open-video-studio/open-video-studio:/work \
+            -w /work \
+            alpine \
+            rm -rf apps/web/.next test-results playwright-report || true
+
+  validate:
+    needs: cleanup
+    runs-on:
+      - self-hosted
+      - linux
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test:unit
+
+      - name: Integration tests
+        run: pnpm test:integration
+
+  e2e:
+    needs:
+      - cleanup
+      - validate
+    runs-on:
+      - self-hosted
+      - linux
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: E2E tests
+        run: pnpm test:e2e

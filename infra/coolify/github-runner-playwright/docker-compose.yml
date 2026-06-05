@@ -1,0 +1,53 @@
+services:
+  github-runner-playwright:
+    image: mcr.microsoft.com/playwright:v1.56.1-noble
+    container_name: github-runner-playwright
+    restart: unless-stopped
+    environment:
+      GH_RUNNER_URL: ${GH_RUNNER_URL}
+      GH_RUNNER_TOKEN: ${GH_RUNNER_TOKEN}
+      GH_RUNNER_NAME: ${GH_RUNNER_NAME:-coolify-playwright-runner}
+      GH_RUNNER_LABELS: ${GH_RUNNER_LABELS:-self-hosted,linux,playwright}
+      GH_RUNNER_WORKDIR: ${GH_RUNNER_WORKDIR:-/runner/_work}
+      GH_RUNNER_VERSION: ${GH_RUNNER_VERSION:-2.327.1}
+      PNPM_VERSION: ${PNPM_VERSION:-10.32.1}
+      RUNNER_ALLOW_RUNASROOT: "1"
+    volumes:
+      - runner-data:/runner
+    working_dir: /runner
+    command:
+      - /bin/bash
+      - -lc
+      - |
+        set -euo pipefail
+
+        apt-get update
+        apt-get install -y curl jq unzip
+        corepack enable
+        corepack prepare "pnpm@${PNPM_VERSION}" --activate
+
+        if [ ! -f /runner/config.sh ]; then
+          mkdir -p /runner
+          cd /runner
+          curl -fsSL -o actions-runner.tar.gz "https://github.com/actions/runner/releases/download/v${GH_RUNNER_VERSION}/actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz"
+          tar xzf actions-runner.tar.gz
+          rm actions-runner.tar.gz
+        fi
+
+        cd /runner
+
+        if [ ! -f .runner ]; then
+          ./config.sh \
+            --unattended \
+            --url "${GH_RUNNER_URL}" \
+            --token "${GH_RUNNER_TOKEN}" \
+            --name "${GH_RUNNER_NAME}" \
+            --labels "${GH_RUNNER_LABELS}" \
+            --work "${GH_RUNNER_WORKDIR}" \
+            --replace
+        fi
+
+        exec ./run.sh
+
+volumes:
+  runner-data:
