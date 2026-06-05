@@ -2,6 +2,7 @@ import Fastify, { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import { env } from './env.js';
 import { setupBullBoard } from './lib/bullboard.js';
+import { scriptRoutes } from './routes/script.routes.js';
 
 export async function buildApp(): Promise<FastifyInstance> {
   const fastify = Fastify({
@@ -25,6 +26,9 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   // Register protected admin queues dashboard
   await setupBullBoard(fastify);
+
+  // Register script generation routes
+  await fastify.register(scriptRoutes, { prefix: '/api/script' });
 
   // Simple health check endpoint
   fastify.get('/health', async (_request, _reply) => {

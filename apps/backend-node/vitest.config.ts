@@ -12,5 +12,11 @@ export default defineConfig({
       PORT: '4001',
       ALLOWED_ORIGINS: 'http://localhost:3000',
     },
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/cypress/**',
+      '**/.{idea,git,cache,output,temp}/**',
+    ],
   },
 });
