@@ -45,6 +45,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install Playwright host dependencies
+        run: |
+          sudo npx playwright install-deps chromium
+          pnpm exec playwright install chromium
+
       - name: Verify Playwright host runtime
         run: node scripts/verify-playwright-host.mjs
 
