@@ -1,1 +1,1 @@
-# open-video-studio
+# Open Video Studio
