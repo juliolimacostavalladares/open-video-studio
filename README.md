@@ -26,8 +26,22 @@ Aplicacoes locais por padrao:
 - `pnpm lint`: lint dos workspaces e do pacote compartilhado
 - `pnpm typecheck`: typecheck de todos os workspaces
 - `pnpm test`: executa suites unit e integration
+- `pnpm test:e2e`: smoke E2E do app base
 - `pnpm test:unit`: valida o carregamento da configuracao compartilhada
 - `pnpm test:integration`: smoke de boot de `web` e `api`
+
+## Suites de teste
+
+- `tests/helpers`: helpers compartilhados de processo, espera e teardown
+- `tests/fixtures`: dados e portas padrao usados pelas suites
+- `tests/integration`: smoke checks entre camadas
+- `tests/e2e`: smoke do fluxo visivel do app base
+
+Fluxo recomendado:
+
+1. `pnpm test:unit`
+2. `pnpm test:integration`
+3. `pnpm test:e2e`
 
 ## Checklist de bootstrap local
 
