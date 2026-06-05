@@ -1,0 +1,24 @@
+{
+  "name": "open-video-studio",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "dev": "pnpm --parallel --filter web --filter api dev",
+    "build": "pnpm -r --if-present build",
+    "lint": "pnpm -r --if-present lint && eslint packages/config/src tests --ext .ts",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm run test:unit && pnpm run test:integration",
+    "test:unit": "vitest run --config vitest.unit.config.ts",
+    "test:integration": "vitest run --config vitest.integration.config.ts"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "@typescript-eslint/eslint-plugin": "8.48.0",
+    "@typescript-eslint/parser": "8.48.0",
+    "eslint": "8.57.1",
+    "prettier": "3.6.2",
+    "typescript": "5.9.3",
+    "vitest": "4.0.8"
+  }
+}
