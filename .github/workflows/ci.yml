@@ -28,9 +28,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright browser
-        run: pnpm exec playwright install chromium
-
       - name: Lint
         run: pnpm lint
 
@@ -43,5 +40,12 @@ jobs:
       - name: Integration tests
         run: pnpm test:integration
 
-      - name: E2E tests
-        run: pnpm test:e2e
+      - name: E2E tests in Playwright container
+        run: |
+          docker run --rm -v "$PWD":/work -w /work --network=host mcr.microsoft.com/playwright:v1.56.1-noble /bin/bash -lc "
+            npm install -g pnpm@10.32.1 &&
+            pnpm test:e2e;
+            status=\$?;
+            rm -rf test-results playwright-report;
+            exit \$status
+          "
