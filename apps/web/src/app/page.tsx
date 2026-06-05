@@ -1,101 +1,115 @@
-import Image from "next/image";
+'use client';
+
+import React, { useState } from 'react';
+import { Film } from 'lucide-react';
+import { ScriptForm } from '@/components/ScriptForm';
+import { ScriptTimeline } from '@/components/ScriptTimeline';
+import { GenerateScriptInput, GenerateScriptOutput } from '@repo/types';
+import { env } from '@/env';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [script, setScript] = useState<GenerateScriptOutput | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const handleGenerateScript = async (input: GenerateScriptInput) => {
+    setIsLoading(true);
+    setError(null);
+    setScript(null);
+
+    try {
+      const response = await fetch(
+        `${env.NEXT_PUBLIC_API_URL}/api/script/generate`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(input),
+        },
+      );
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(
+          errData.message ||
+            `Erro do servidor (${response.status}). Verifique as configurações de IA.`,
+        );
+      }
+
+      const data: GenerateScriptOutput = await response.json();
+      setScript(data);
+    } catch (err) {
+      console.error('Failed to generate script:', err);
+      setError(
+        (err as Error).message ||
+          'Ocorreu um erro inesperado ao se conectar com o servidor.',
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col bg-zinc-950 font-[family-name:var(--font-geist-sans)]">
+      {/* Top Navbar */}
+      <header className="sticky top-0 z-50 border-b border-zinc-900 bg-zinc-950/80 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+          <div className="flex items-center gap-2.5">
+            <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 p-2 text-white shadow-md shadow-indigo-500/10">
+              <Film className="h-5 w-5" />
+            </div>
+            <div>
+              <span className="text-sm font-bold tracking-tight text-zinc-100 md:text-base">
+                Open Video Studio
+              </span>
+              <span className="ml-2 hidden border-l border-zinc-800 pl-2 text-[10px] text-zinc-500 md:inline">
+                v1.0.0
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-xs font-semibold text-zinc-400">
+              Ciclo 2: AI & TTS
+            </span>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Workspace Area */}
+      <main className="mx-auto flex w-full max-w-7xl flex-grow flex-col gap-8 px-6 py-8">
+        {/* Intro Hero Section */}
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-extrabold tracking-tight text-zinc-100 md:text-3xl">
+            Produza Vídeos com{' '}
+            <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+              Inteligência Artificial
+            </span>
+          </h1>
+          <p className="max-w-2xl text-sm leading-relaxed text-zinc-500">
+            Escreva o roteiro estruturado cena a cena, defina narrações em
+            português e referências visuais com um clique para iniciar a criação
+            do seu conteúdo.
+          </p>
+        </div>
+
+        {/* Workspace Layout */}
+        <div className="flex flex-col items-start gap-8 lg:flex-row">
+          {/* Left Sidebar Form */}
+          <div className="sticky top-24 w-full shrink-0 lg:w-[380px]">
+            <ScriptForm onSubmit={handleGenerateScript} isLoading={isLoading} />
+          </div>
+
+          {/* Right Editor Timeline */}
+          <div className="flex min-h-[500px] w-full flex-1 rounded-2xl border border-zinc-900 bg-zinc-900/10 p-6">
+            <ScriptTimeline
+              script={script}
+              isLoading={isLoading}
+              error={error}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
