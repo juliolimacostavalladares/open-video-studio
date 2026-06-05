@@ -43,6 +43,23 @@ Fluxo recomendado:
 2. `pnpm test:integration`
 3. `pnpm test:e2e`
 
+## CI self-hosted
+
+O workflow de CI assume um runner self-hosted com label `playwright` e runtime de browser ja provisionado no host.
+
+Checklist minimo do runner:
+
+- Node.js 20
+- pnpm 10.32.1
+- Chromium e dependencias nativas do Playwright disponiveis
+- labels `self-hosted`, `linux` e `playwright`
+
+Arquivos de apoio:
+
+- `.github/workflows/ci.yml`: pipeline para runner provisionado
+- `scripts/verify-playwright-host.mjs`: smoke de runtime do Playwright no host
+- `infra/coolify/github-runner-playwright/docker-compose.yml`: compose base para subir o runner no Coolify
+
 ## Checklist de bootstrap local
 
 - `pnpm install` sem ajustes manuais

@@ -8,7 +8,10 @@ on:
 
 jobs:
   validate:
-    runs-on: self-hosted
+    runs-on:
+      - self-hosted
+      - linux
+      - playwright
 
     steps:
       - name: Checkout
@@ -28,6 +31,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Verify Playwright host runtime
+        run: node scripts/verify-playwright-host.mjs
+
       - name: Lint
         run: pnpm lint
 
@@ -40,12 +46,5 @@ jobs:
       - name: Integration tests
         run: pnpm test:integration
 
-      - name: E2E tests in Playwright container
-        run: |
-          docker run --rm -v "$PWD":/work -w /work --network=host mcr.microsoft.com/playwright:v1.56.1-noble /bin/bash -lc "
-            npm install -g pnpm@10.32.1 &&
-            pnpm test:e2e;
-            status=\$?;
-            rm -rf test-results playwright-report;
-            exit \$status
-          "
+      - name: E2E tests
+        run: pnpm test:e2e
