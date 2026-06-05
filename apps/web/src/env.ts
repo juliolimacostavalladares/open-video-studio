@@ -1,1 +1,1 @@
-export { env } from './env/client.js';
+export { env } from './env/client';
