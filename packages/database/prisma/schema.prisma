@@ -84,14 +84,16 @@ model Scene {
 }
 
 model VoiceProfile {
-  id         String             @id @default(cuid())
-  name       String
-  provider   String
-  samplePath String
-  status     VoiceProfileStatus @default(active)
-  createdAt  DateTime           @default(now())
-  updatedAt  DateTime           @updatedAt
-  scenes     Scene[]
+  id                    String             @id @default(cuid())
+  name                  String
+  provider              String
+  samplePath            String
+  sampleMimeType        String
+  sampleDurationSeconds Float
+  status                VoiceProfileStatus @default(active)
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+  scenes                Scene[]
 }
 
 model Asset {

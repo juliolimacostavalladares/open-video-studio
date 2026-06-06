@@ -1,13 +1,17 @@
+import multipart from "@fastify/multipart";
 import Fastify from "fastify";
 
 import { scriptEditorRoutes } from "./routes/script-editor.js";
 import { projectsRoutes } from "./routes/projects.js";
 import { scenesRoutes } from "./routes/scenes.js";
+import { voiceProfilesRoutes } from "./routes/voice-profiles.js";
 
 export function buildApiApp() {
   const app = Fastify({
     logger: false
   });
+
+  void app.register(multipart);
 
   app.get("/health", async () => {
     return {
@@ -19,6 +23,7 @@ export function buildApiApp() {
   app.register(projectsRoutes);
   app.register(scenesRoutes);
   app.register(scriptEditorRoutes);
+  app.register(voiceProfilesRoutes);
 
   return app;
 }
