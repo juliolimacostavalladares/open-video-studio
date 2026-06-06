@@ -1,18 +1,11 @@
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { join } from "node:path";
-import { tmpdir } from "node:os";
-
 import type { FastifyInstance } from "fastify";
 
 import { prisma } from "@repo/database";
-import { OmniVoiceStudioTTSBackend, createStorageService } from "@repo/infrastructure";
+import { OmniVoiceStudioTTSBackend } from "@repo/infrastructure";
 
-function stripAudioNamespace(samplePath: string) {
-  return samplePath.startsWith("audio/") ? samplePath.slice("audio/".length) : samplePath;
-}
+import { createVoiceSampleFile } from "./audio-support.js";
 
 export async function audioPreviewRoutes(app: FastifyInstance): Promise<void> {
-  const storage = createStorageService();
   const ttsBackend = new OmniVoiceStudioTTSBackend();
 
   app.post<{ Params: { id: string; sceneId: string } }>(
@@ -64,13 +57,9 @@ export async function audioPreviewRoutes(app: FastifyInstance): Promise<void> {
         return reply.status(404).send({ error: "NOT_FOUND", message: "Perfil de voz não encontrado" });
       }
 
-      const storedSample = await storage.getObject("audio", stripAudioNamespace(voiceProfile.samplePath));
-      const tempDir = await mkdtemp(join(tmpdir(), "open-video-studio-preview-"));
-      const tempSamplePath = join(tempDir, `${voiceProfile.id}.wav`);
+      const { cleanup, tempSamplePath } = await createVoiceSampleFile(voiceProfile.samplePath, `${voiceProfile.id}.wav`);
 
       try {
-        await writeFile(tempSamplePath, storedSample.body);
-
         const artifact = await ttsBackend.synthesize({
           text: scene.script,
           voiceProfile: {
@@ -87,7 +76,7 @@ export async function audioPreviewRoutes(app: FastifyInstance): Promise<void> {
 
         return reply.status(200).send(artifact.audio);
       } finally {
-        await rm(tempDir, { force: true, recursive: true });
+        await cleanup();
       }
     }
   );

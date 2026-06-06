@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   applyPreviewTransition,
@@ -18,8 +18,11 @@ interface VoiceProfile {
 }
 
 interface Scene {
+  audioPath?: string | null;
+  hasValidAudio?: boolean;
   id: string;
   script: string;
+  status?: string;
   title: string;
 }
 
@@ -50,52 +53,56 @@ export function VoiceProfileManager({
   const [previewSceneId, setPreviewSceneId] = useState<string | null>(null);
   const [previewSource, setPreviewSource] = useState<string | null>(null);
   const [previewStatus, setPreviewStatus] = useState<PreviewStatus>("idle");
+  const [renderMessage, setRenderMessage] = useState<string | null>(null);
   const [selectedVoiceProfileId, setSelectedVoiceProfileId] = useState<string | null>(initialVoiceProfileId);
   const [selectionStatus, setSelectionStatus] = useState<VoiceSelectionStatus>("idle");
+  const [sceneAudioMessage, setSceneAudioMessage] = useState<string | null>(null);
+  const [sceneAudioPending, setSceneAudioPending] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  const loadData = useCallback(async (signal?: AbortSignal) => {
+    const [profilesResponse, scenesResponse] = await Promise.all([
+      fetch(`${apiBaseUrl}/voice-profiles`, { cache: "no-store", signal }),
+      fetch(`${apiBaseUrl}/projects/${projectId}/scenes`, { cache: "no-store", signal })
+    ]);
+
+    if (!profilesResponse.ok) {
+      throw new Error(await parseError(profilesResponse));
+    }
+
+    if (!scenesResponse.ok) {
+      throw new Error(await parseError(scenesResponse));
+    }
+
+    const profilesBody = (await profilesResponse.json()) as VoiceProfile[];
+    const scenesBody = (await scenesResponse.json()) as { scenes: Scene[] };
+    setProfiles(profilesBody);
+    setScenes(scenesBody.scenes);
+  }, [apiBaseUrl, projectId]);
+
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
-    async function loadData() {
+    async function hydrate() {
       try {
-        const [profilesResponse, scenesResponse] = await Promise.all([
-          fetch(`${apiBaseUrl}/voice-profiles`, { cache: "no-store" }),
-          fetch(`${apiBaseUrl}/projects/${projectId}/scenes`, { cache: "no-store" })
-        ]);
-
-        if (!profilesResponse.ok) {
-          throw new Error(await parseError(profilesResponse));
-        }
-
-        if (!scenesResponse.ok) {
-          throw new Error(await parseError(scenesResponse));
-        }
-
-        const profilesBody = (await profilesResponse.json()) as VoiceProfile[];
-        const scenesBody = (await scenesResponse.json()) as { scenes: Scene[] };
-
-        if (!cancelled) {
-          setProfiles(profilesBody);
-          setScenes(scenesBody.scenes);
-        }
+        await loadData(controller.signal);
       } catch (error) {
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setErrorMessage(error instanceof Error ? error.message : "Erro ao carregar vozes");
         }
       } finally {
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setIsLoading(false);
         }
       }
     }
 
-    void loadData();
+    void hydrate();
 
     return () => {
-      cancelled = true;
+      controller.abort();
     };
-  }, [apiBaseUrl, projectId]);
+  }, [loadData]);
 
   useEffect(() => {
     return () => {
@@ -108,6 +115,8 @@ export function VoiceProfileManager({
   async function persistVoiceSelection() {
     setSelectionStatus((current) => applyVoiceSelectionTransition(current, "saveStart"));
     setErrorMessage(null);
+    setRenderMessage(null);
+    setSceneAudioMessage(null);
     setSuccessMessage(null);
 
     try {
@@ -123,6 +132,7 @@ export function VoiceProfileManager({
 
       setSelectionStatus(() => applyVoiceSelectionTransition("saving", "saveSuccess"));
       setSuccessMessage("Voz ativa salva no projeto");
+      await loadData();
     } catch (error) {
       setSelectionStatus(() => applyVoiceSelectionTransition("saving", "saveError"));
       setErrorMessage(error instanceof Error ? error.message : "Erro ao salvar voz do projeto");
@@ -163,6 +173,8 @@ export function VoiceProfileManager({
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setErrorMessage(null);
+    setRenderMessage(null);
+    setSceneAudioMessage(null);
     setSuccessMessage(null);
     setIsSubmitting(true);
 
@@ -199,6 +211,59 @@ export function VoiceProfileManager({
       setErrorMessage(error instanceof Error ? error.message : "Erro ao criar perfil de voz");
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleGenerateSceneAudio() {
+    setErrorMessage(null);
+    setRenderMessage(null);
+    setSceneAudioMessage(null);
+    setSceneAudioPending(true);
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/projects/${projectId}/scenes/audio/generate`, {
+        method: "POST"
+      });
+
+      if (!response.ok) {
+        throw new Error(await parseError(response));
+      }
+
+      const body = (await response.json()) as {
+        generatedCount: number;
+        scenes: Scene[];
+        skippedCount: number;
+      };
+
+      setScenes(body.scenes);
+      setSceneAudioMessage(
+        body.generatedCount === 0
+          ? "Todos os áudios já estavam válidos"
+          : `${body.generatedCount} cena(s) gerada(s), ${body.skippedCount} reaproveitada(s)`
+      );
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Erro ao gerar áudio por cena");
+    } finally {
+      setSceneAudioPending(false);
+    }
+  }
+
+  async function handleRenderValidation() {
+    setErrorMessage(null);
+    setRenderMessage(null);
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/projects/${projectId}/renders`, {
+        method: "POST"
+      });
+
+      if (!response.ok) {
+        throw new Error(await parseError(response));
+      }
+
+      setRenderMessage("Render enfileirado com sucesso");
+    } catch (error) {
+      setRenderMessage(error instanceof Error ? error.message : "Erro ao validar render");
     }
   }
 
@@ -362,6 +427,55 @@ export function VoiceProfileManager({
         </span>
       </div>
 
+      <div style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 16, flexWrap: "wrap" }}>
+        <button
+          id="generate-scene-audio"
+          type="button"
+          onClick={() => void handleGenerateSceneAudio()}
+          disabled={!selectedVoiceProfileId || sceneAudioPending || scenes.length === 0}
+          style={{
+            border: 0,
+            borderRadius: 10,
+            padding: "10px 16px",
+            background: sceneAudioPending ? "#334155" : "#14b8a6",
+            color: "#ecfeff",
+            cursor: !selectedVoiceProfileId || sceneAudioPending || scenes.length === 0 ? "not-allowed" : "pointer",
+            fontWeight: 600
+          }}
+        >
+          {sceneAudioPending ? "Gerando áudio..." : "Gerar áudio das cenas"}
+        </button>
+
+        <button
+          id="queue-render"
+          type="button"
+          onClick={() => void handleRenderValidation()}
+          disabled={scenes.length === 0}
+          style={{
+            border: 0,
+            borderRadius: 10,
+            padding: "10px 16px",
+            background: "#8b5cf6",
+            color: "#f5f3ff",
+            cursor: scenes.length === 0 ? "not-allowed" : "pointer",
+            fontWeight: 600
+          }}
+        >
+          Validar render
+        </button>
+
+        {sceneAudioMessage ? (
+          <span id="scene-audio-status" style={{ color: "#99f6e4", fontSize: 13 }}>
+            {sceneAudioMessage}
+          </span>
+        ) : null}
+        {renderMessage ? (
+          <span id="render-status" style={{ color: "#ddd6fe", fontSize: 13 }}>
+            {renderMessage}
+          </span>
+        ) : null}
+      </div>
+
       <div style={{ marginTop: 28, display: "grid", gap: 12 }}>
         <h3 style={{ color: "#f8fafc", margin: 0, fontSize: 18 }}>Preview por cena</h3>
         {scenes.length === 0 ? (
@@ -386,6 +500,16 @@ export function VoiceProfileManager({
                     <p style={{ color: "#94a3b8", fontSize: 13, margin: "6px 0 0" }}>
                       {scene.script}
                     </p>
+                    <span
+                      style={{
+                        color: scene.hasValidAudio ? "#86efac" : "#fbbf24",
+                        display: "inline-block",
+                        fontSize: 12,
+                        marginTop: 8
+                      }}
+                    >
+                      {scene.hasValidAudio ? "Audio valido" : "Audio pendente"}
+                    </span>
                   </div>
                   <button
                     id={`preview-scene-${scene.id}`}

@@ -5,3 +5,10 @@ export { parseScenes, composeScenesBackToScript } from "./scene-parser.js";
 export type { ParsedScene } from "./scene-parser.js";
 export { calculateEstimatedDuration } from "./duration-calculator.js";
 export type { EstimatedDuration } from "./duration-calculator.js";
+export {
+  buildSceneAudioHash,
+  canStartRenderWithSceneAudio,
+  sceneAudioHashVersion,
+  sceneHasValidAudio,
+  sceneNeedsAudioGeneration
+} from "./scene-audio.js";

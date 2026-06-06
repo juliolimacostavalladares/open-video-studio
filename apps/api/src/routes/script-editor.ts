@@ -9,6 +9,8 @@ import type { FastifyInstance } from "fastify";
 
 import { prisma, calculateEstimatedDuration } from "@repo/database";
 
+import { syncProjectScenesFromRawScript } from "./scenes.js";
+
 interface UpdateScriptBody {
   rawScript: string;
 }
@@ -104,6 +106,10 @@ export async function scriptEditorRoutes(app: FastifyInstance): Promise<void> {
           updatedAt: true
         }
       });
+
+      if (rawScript.trim()) {
+        await syncProjectScenesFromRawScript(id, rawScript);
+      }
 
       return reply.status(200).send(toScriptResponse(updated));
     }

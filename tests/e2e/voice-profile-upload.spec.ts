@@ -27,7 +27,7 @@ function buildWavBase64(durationSeconds: number) {
 }
 
 test.describe("voice profile upload", () => {
-  test("shows invalid upload error, saves selected voice and previews a scene", async ({ page }) => {
+  test("uploads voice, generates per-scene audio and only regenerates the edited scene", async ({ page }) => {
     const profiles: Array<{
       id: string;
       name: string;
@@ -35,6 +35,26 @@ test.describe("voice profile upload", () => {
       sampleDurationSeconds: number;
       status: string;
     }> = [];
+    let generateCallCount = 0;
+    let rawScript = `[CENA 1 - Cena 1]
+Texto base da primeira cena.
+
+[CENA 2 - Cena 2]
+Texto base da segunda cena.`;
+    const scenes = [
+      {
+        hasValidAudio: false,
+        id: "scene-1",
+        script: "Texto base da primeira cena.",
+        title: "Cena 1"
+      },
+      {
+        hasValidAudio: false,
+        id: "scene-2",
+        script: "Texto base da segunda cena.",
+        title: "Cena 2"
+      }
+    ];
     let selectedVoiceProfileId: string | null = null;
 
     await page.route("**/projects/mock-project-id", async (route) => {
@@ -44,7 +64,7 @@ test.describe("voice profile upload", () => {
         body: JSON.stringify({
           id: "mock-project-id",
           title: "Projeto com Voz",
-          rawScript: "",
+          rawScript,
           status: "draft",
           voiceProfileId: selectedVoiceProfileId
         })
@@ -57,13 +77,32 @@ test.describe("voice profile upload", () => {
         contentType: "application/json",
         body: JSON.stringify({
           projectId: "mock-project-id",
-          scenes: [
-            {
-              id: "scene-1",
-              title: "Cena 1",
-              script: "Texto da cena de preview"
-            }
-          ]
+          scenes
+        })
+      });
+    });
+
+    await page.route("**/projects/mock-project-id/script", async (route) => {
+      const payload = route.request().postDataJSON() as { rawScript: string };
+      rawScript = payload.rawScript;
+      scenes[1] = {
+        ...scenes[1],
+        hasValidAudio: false,
+        script: "Texto base da segunda cena alterada."
+      };
+
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          id: "mock-project-id",
+          title: "Projeto com Voz",
+          rawScript,
+          status: "scripting",
+          updatedAt: new Date().toISOString(),
+          estimatedDuration: 0,
+          estimatedDurationMin: 0,
+          estimatedDurationMax: 0
         })
       });
     });
@@ -119,7 +158,7 @@ test.describe("voice profile upload", () => {
         body: JSON.stringify({
           id: "mock-project-id",
           title: "Projeto com Voz",
-          rawScript: "",
+          rawScript,
           status: "draft",
           voiceProfileId: selectedVoiceProfileId,
           createdAt: new Date().toISOString(),
@@ -127,6 +166,60 @@ test.describe("voice profile upload", () => {
           estimatedDuration: 0,
           estimatedDurationMin: 0,
           estimatedDurationMax: 0
+        })
+      });
+    });
+
+    await page.route("**/projects/mock-project-id/scenes/audio/generate", async (route) => {
+      generateCallCount += 1;
+
+      if (generateCallCount === 1) {
+        scenes[0] = { ...scenes[0], hasValidAudio: true };
+        scenes[1] = { ...scenes[1], hasValidAudio: true };
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            generatedCount: 2,
+            projectId: "mock-project-id",
+            scenes,
+            skippedCount: 0
+          })
+        });
+        return;
+      }
+
+      scenes[1] = { ...scenes[1], hasValidAudio: true };
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          generatedCount: 1,
+          projectId: "mock-project-id",
+          scenes,
+          skippedCount: 1
+        })
+      });
+    });
+
+    await page.route("**/projects/mock-project-id/renders", async (route) => {
+      const hasInvalidAudio = scenes.some((scene) => !scene.hasValidAudio);
+      if (hasInvalidAudio) {
+        await route.fulfill({
+          status: 409,
+          contentType: "application/json",
+          body: JSON.stringify({ message: "Existem cenas sem áudio válido para iniciar o render" })
+        });
+        return;
+      }
+
+      await route.fulfill({
+        status: 201,
+        contentType: "application/json",
+        body: JSON.stringify({
+          id: "render-1",
+          projectId: "mock-project-id",
+          status: "queued"
         })
       });
     });
@@ -139,6 +232,14 @@ test.describe("voice profile upload", () => {
       });
     });
 
+    await page.route("**/projects/mock-project-id/scenes/scene-2/preview", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "audio/wav",
+        body: Buffer.from("preview-wav-2")
+      });
+    });
+
     await page.goto("/projects/mock-project-id/edit");
 
     await page.locator("#voice-profile-name").fill("Narrador E2E");
@@ -148,7 +249,6 @@ test.describe("voice profile upload", () => {
       buffer: Buffer.from("not-audio")
     });
     await page.locator("#voice-profile-submit").click();
-
     await expect(page.locator("#voice-profile-error")).toContainText("Formato de áudio inválido");
 
     await page.locator("#voice-sample-input").setInputFiles({
@@ -159,12 +259,30 @@ test.describe("voice profile upload", () => {
     await page.locator("#voice-profile-submit").click();
 
     await expect(page.locator("#voice-profile-list")).toContainText("Narrador E2E");
-    await expect(page.locator("#voice-profile-list")).toContainText("omnivoice-studio");
     await page.locator('input[name="selected-voice-profile"]').first().check();
     await page.locator("#save-project-voice").click();
     await expect(page.locator("#voice-selection-status")).toContainText("Voz salva");
 
+    await page.locator("#queue-render").click();
+    await expect(page.locator("#render-status")).toContainText("Existem cenas sem áudio válido");
+
+    await page.locator("#generate-scene-audio").click();
+    await expect(page.locator("#scene-audio-status")).toContainText("2 cena(s) gerada(s), 0 reaproveitada(s)");
+
     await page.locator("#preview-scene-scene-1").click();
     await expect(page.locator("#scene-preview-audio")).toBeVisible();
+
+    await page.locator("#script-editor").fill(`[CENA 1 - Cena 1]
+Texto base da primeira cena.
+
+[CENA 2 - Cena 2]
+Texto base da segunda cena alterada.`);
+    await page.locator("#save-button").click();
+
+    await page.locator("#generate-scene-audio").click();
+    await expect(page.locator("#scene-audio-status")).toContainText("1 cena(s) gerada(s), 1 reaproveitada(s)");
+
+    await page.locator("#queue-render").click();
+    await expect(page.locator("#render-status")).toContainText("Render enfileirado com sucesso");
   });
 });
