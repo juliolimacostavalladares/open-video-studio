@@ -10,19 +10,10 @@ jobs:
   cleanup:
     runs-on: self-hosted
     steps:
-      - name: Clean runner workspace artifacts via Docker
+      - name: Clean runner workspace via Docker
         run: |
           docker run --rm -v /home/github-runner/actions-runner/_work/open-video-studio/open-video-studio:/work -w /work alpine sh -c "
-            rm -rf \
-              node_modules \
-              test-results \
-              playwright-report \
-              apps/*/node_modules \
-              apps/*/dist \
-              apps/web/.next \
-              packages/*/node_modules \
-              packages/*/dist \
-              packages/database/src/generated
+            find /work -mindepth 1 -maxdepth 1 -exec rm -rf {} +
           " || true
 
   validate:

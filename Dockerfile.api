@@ -1,0 +1,32 @@
+FROM node:20-bookworm-slim AS builder
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
+RUN corepack enable
+
+WORKDIR /app
+
+COPY . .
+
+RUN pnpm install --frozen-lockfile
+RUN pnpm build
+
+FROM node:20-bookworm-slim AS runner
+
+ENV NODE_ENV=production
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV API_PORT=4000
+
+RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
+RUN corepack enable
+
+WORKDIR /app
+
+COPY --from=builder /app /app
+
+EXPOSE 4000
+
+CMD ["sh", "-lc", "pnpm --dir apps/api start"]
