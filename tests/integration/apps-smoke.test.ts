@@ -12,18 +12,24 @@ describe("workspace boot smoke", () => {
 
     expect(buildResult.status).toBe(0);
 
-    startProcess("pnpm", ["--filter", "api", "start"], {
+    const apiProcess = startProcess("pnpm", ["--filter", "api", "start"], {
       env: {
         ...process.env,
-        API_PORT: String(testPorts.integrationApiPort)
+        API_PORT: String(testPorts.integrationApiPort),
+        DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1:54329/open_video_studio?schema=public"
       }
     });
-    startProcess("pnpm", ["--filter", "web", "start"], {
+    apiProcess.stdout?.pipe(process.stdout);
+    apiProcess.stderr?.pipe(process.stderr);
+
+    const webProcess = startProcess("pnpm", ["--filter", "web", "start"], {
       env: {
         ...process.env,
         PORT: String(testPorts.integrationWebPort)
       }
     });
+    webProcess.stdout?.pipe(process.stdout);
+    webProcess.stderr?.pipe(process.stderr);
 
     const apiResponse = await waitForUrl(`http://127.0.0.1:${testPorts.integrationApiPort}/health`);
     const webResponse = await waitForUrl(
