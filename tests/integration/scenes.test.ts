@@ -154,6 +154,7 @@ Explicação detalhada do assunto.`,
     expect(recomposeBody.projectId).toBe(project.id);
     expect(recomposeBody.scenesCreated).toBe(2);
     expect(recomposeBody.scenesDeleted).toBe(0);
+    expect(recomposeBody.scenesUpdated).toBe(0);
     expect(recomposeBody.scenes).toHaveLength(2);
     expect(recomposeBody.scenes[0]).toMatchObject({
       sceneNumber: 1,
@@ -208,9 +209,10 @@ Mensagem final.`
     expect(secondRecomposeRes.statusCode).toBe(200);
     const secondRecomposeBody = JSON.parse(secondRecomposeRes.body);
 
-    // Deve ter deletado as 2 cenas antigas e criado 2 novas
-    expect(secondRecomposeBody.scenesCreated).toBe(2);
-    expect(secondRecomposeBody.scenesDeleted).toBe(2);
+    // Deve preservar as cenas por ordem e atualizar apenas o conteúdo alterado
+    expect(secondRecomposeBody.scenesCreated).toBe(0);
+    expect(secondRecomposeBody.scenesDeleted).toBe(0);
+    expect(secondRecomposeBody.scenesUpdated).toBe(2);
     expect(secondRecomposeBody.scenes).toHaveLength(2);
     expect(secondRecomposeBody.scenes[0]).toMatchObject({
       sceneNumber: 2,

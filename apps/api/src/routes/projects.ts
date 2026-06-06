@@ -204,7 +204,7 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
 
       const project = await prisma.project.findUnique({
         where: { id },
-        select: { id: true }
+        select: { id: true, voiceProfileId: true }
       });
 
       if (!project) {
@@ -239,6 +239,15 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
           updatedAt: true
         }
       });
+
+      if (project.voiceProfileId !== voiceProfileId) {
+        await prisma.scene.updateMany({
+          where: { projectId: id },
+          data: {
+            status: "draft"
+          }
+        });
+      }
 
       return reply.status(200).send(toResponse(updated));
     }

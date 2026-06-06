@@ -75,6 +75,11 @@ model Scene {
   script         String
   status         SceneStatus   @default(draft)
   assetId        String?
+  audioPath      String?
+  audioMimeType  String?
+  audioDurationSeconds Float?
+  audioContentHash String?
+  audioGeneratedAt DateTime?
   voiceProfileId String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
