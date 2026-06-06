@@ -17,6 +17,7 @@ jobs:
       - name: Clean runner workspace via Docker
         run: |
           docker run --rm -v /home/github-runner/actions-runner/_work/open-video-studio/open-video-studio:/work -w /work alpine sh -c "
+            chown -R \$(stat -c '%u:%g' /work) /work && \
             find /work -mindepth 1 -maxdepth 1 -exec rm -rf {} +
           " || true
 
@@ -77,8 +78,26 @@ jobs:
           COOLIFY_WEBHOOK_WEB: ${{ secrets.COOLIFY_WEBHOOK_WEB }}
         if: ${{ env.COOLIFY_WEBHOOK_WEB != '' }}
         run: |
-          curl --fail --show-error --request GET "$COOLIFY_WEBHOOK_WEB" \
-            --header "Authorization: Bearer $COOLIFY_TOKEN"
+          trigger_deploy() {
+            local url="$1"
+            local token="$2"
+            echo "Tentando disparar deploy via webhook publico (sem autenticacao)..."
+            local code
+            code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request GET "$url")
+            if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
+              echo "Sucesso! Deploy disparado via webhook publico (HTTP $code)."
+              return 0
+            fi
+            echo "Webhook publico retornou HTTP $code. Tentando com token de autorizacao..."
+            if [ -n "$token" ]; then
+              curl --fail --show-error --request GET "$url" \
+                --header "Authorization: Bearer $token"
+            else
+              echo "Erro: COOLIFY_TOKEN nao definido e o webhook publico falhou com HTTP $code."
+              return 1
+            fi
+          }
+          trigger_deploy "$COOLIFY_WEBHOOK_WEB" "$COOLIFY_TOKEN"
 
       - name: Trigger Coolify API Redeploy Webhook
         env:
@@ -86,5 +105,23 @@ jobs:
           COOLIFY_WEBHOOK_BACKEND: ${{ secrets.COOLIFY_WEBHOOK_BACKEND }}
         if: ${{ env.COOLIFY_WEBHOOK_BACKEND != '' }}
         run: |
-          curl --fail --show-error --request GET "$COOLIFY_WEBHOOK_BACKEND" \
-            --header "Authorization: Bearer $COOLIFY_TOKEN"
+          trigger_deploy() {
+            local url="$1"
+            local token="$2"
+            echo "Tentando disparar deploy via webhook publico (sem autenticacao)..."
+            local code
+            code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request GET "$url")
+            if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
+              echo "Sucesso! Deploy disparado via webhook publico (HTTP $code)."
+              return 0
+            fi
+            echo "Webhook publico retornou HTTP $code. Tentando com token de autorizacao..."
+            if [ -n "$token" ]; then
+              curl --fail --show-error --request GET "$url" \
+                --header "Authorization: Bearer $token"
+            else
+              echo "Erro: COOLIFY_TOKEN nao definido e o webhook publico falhou com HTTP $code."
+              return 1
+            fi
+          }
+          trigger_deploy "$COOLIFY_WEBHOOK_BACKEND" "$COOLIFY_TOKEN"
