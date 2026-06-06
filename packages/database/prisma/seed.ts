@@ -61,6 +61,13 @@ async function main() {
       status: "queued"
     }
   });
+
+  await prisma.project.update({
+    where: { id: project.id },
+    data: {
+      voiceProfileId: voiceProfile.id
+    }
+  });
 }
 
 main()

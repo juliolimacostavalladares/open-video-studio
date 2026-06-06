@@ -1,6 +1,7 @@
 import multipart from "@fastify/multipart";
 import Fastify from "fastify";
 
+import { audioPreviewRoutes } from "./routes/audio-preview.js";
 import { scriptEditorRoutes } from "./routes/script-editor.js";
 import { projectsRoutes } from "./routes/projects.js";
 import { scenesRoutes } from "./routes/scenes.js";
@@ -24,6 +25,7 @@ export function buildApiApp() {
   app.register(scenesRoutes);
   app.register(scriptEditorRoutes);
   app.register(voiceProfilesRoutes);
+  app.register(audioPreviewRoutes);
 
   return app;
 }

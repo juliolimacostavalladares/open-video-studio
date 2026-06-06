@@ -29,6 +29,7 @@ interface CreateProjectResponse {
   description: string | null;
   rawScript: string | null;
   status: string;
+  voiceProfileId: string | null;
   createdAt: string;
   updatedAt: string;
   estimatedDuration: number;
@@ -45,6 +46,7 @@ function toResponse(project: {
   description: string | null;
   rawScript: string | null;
   status: string;
+  voiceProfileId: string | null;
   createdAt: Date;
   updatedAt: Date;
 }): CreateProjectResponse {
@@ -58,6 +60,7 @@ function toResponse(project: {
     description: project.description,
     rawScript: project.rawScript,
     status: project.status,
+    voiceProfileId: project.voiceProfileId,
     createdAt: project.createdAt.toISOString(),
     updatedAt: project.updatedAt.toISOString(),
     estimatedDuration: duration.average,
@@ -154,6 +157,7 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
         description: null,
         rawScript: "",
         status: "draft",
+        voiceProfileId: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         estimatedDuration: 0,
@@ -172,4 +176,71 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
 
     return reply.status(200).send(toResponse(project));
   });
+
+  app.patch<{ Params: { id: string }; Body: { voiceProfileId: string | null } }>(
+    "/projects/:id/voice-profile",
+    async (request, reply) => {
+      const { id } = request.params;
+      const { voiceProfileId } = request.body;
+
+      if (id === "mock-project-id") {
+        return reply.status(200).send({
+          id: "mock-project-id",
+          title: "E2E Duration Test Project",
+          theme: "test",
+          tone: "test",
+          targetDuration: 10,
+          description: null,
+          rawScript: "",
+          status: "draft",
+          voiceProfileId,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          estimatedDuration: 0,
+          estimatedDurationMin: 0,
+          estimatedDurationMax: 0
+        });
+      }
+
+      const project = await prisma.project.findUnique({
+        where: { id },
+        select: { id: true }
+      });
+
+      if (!project) {
+        return reply.status(404).send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+      }
+
+      if (voiceProfileId) {
+        const profile = await prisma.voiceProfile.findUnique({
+          where: { id: voiceProfileId },
+          select: { id: true }
+        });
+
+        if (!profile) {
+          return reply.status(404).send({ error: "NOT_FOUND", message: "Perfil de voz não encontrado" });
+        }
+      }
+
+      const updated = await prisma.project.update({
+        where: { id },
+        data: { voiceProfileId },
+        select: {
+          id: true,
+          title: true,
+          theme: true,
+          tone: true,
+          targetDuration: true,
+          description: true,
+          rawScript: true,
+          status: true,
+          voiceProfileId: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      });
+
+      return reply.status(200).send(toResponse(updated));
+    }
+  );
 }

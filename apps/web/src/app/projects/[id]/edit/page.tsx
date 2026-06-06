@@ -10,6 +10,7 @@ interface ProjectData {
   title: string;
   rawScript: string | null;
   status: string;
+  voiceProfileId: string | null;
 }
 
 async function getProject(id: string): Promise<ProjectData | null> {
@@ -154,7 +155,11 @@ export default async function ProjectEditPage({ params }: ProjectEditPageProps) 
           />
         </section>
 
-        <VoiceProfileManager apiBaseUrl={clientApiUrl} />
+        <VoiceProfileManager
+          apiBaseUrl={clientApiUrl}
+          initialVoiceProfileId={project.voiceProfileId}
+          projectId={project.id}
+        />
 
         {/* Dica de uso */}
         <p
