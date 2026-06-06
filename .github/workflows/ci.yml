@@ -21,7 +21,8 @@ jobs:
               apps/*/dist \
               apps/web/.next \
               packages/*/node_modules \
-              packages/*/dist
+              packages/*/dist \
+              packages/database/src/generated
           " || true
 
   validate:
