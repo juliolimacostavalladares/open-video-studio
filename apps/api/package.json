@@ -11,6 +11,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@repo/database": "workspace:*",
     "fastify": "5.6.1"
   },
   "devDependencies": {
