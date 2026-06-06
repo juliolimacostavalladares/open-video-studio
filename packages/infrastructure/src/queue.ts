@@ -1,5 +1,5 @@
 import { loadWorkspaceConfig, type WorkspaceConfig } from "@repo/config";
-import IORedis from "ioredis";
+import { Redis } from "ioredis";
 import { Queue, QueueEvents, Worker, type Job, type Processor, type QueueOptions, type WorkerOptions } from "bullmq";
 
 export const fakeSuccessJobName = "fake-success";
@@ -20,7 +20,7 @@ export type PipelineJobResult = {
 type Logger = Pick<Console, "error" | "info">;
 
 function createRedisConnection(config: WorkspaceConfig) {
-  return new IORedis(config.redisUrl, {
+  return new Redis(config.redisUrl, {
     maxRetriesPerRequest: null
   });
 }

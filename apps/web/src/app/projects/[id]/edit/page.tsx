@@ -1,4 +1,5 @@
 import { ScriptEditor } from "../../../../components/ScriptEditor";
+import { VoiceProfileManager } from "../../../../components/VoiceProfileManager";
 
 interface ProjectEditPageProps {
   params: { id: string };
@@ -152,6 +153,8 @@ export default async function ProjectEditPage({ params }: ProjectEditPageProps) 
             apiBaseUrl={clientApiUrl}
           />
         </section>
+
+        <VoiceProfileManager apiBaseUrl={clientApiUrl} />
 
         {/* Dica de uso */}
         <p

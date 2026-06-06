@@ -1,0 +1,3 @@
+ALTER TABLE "VoiceProfile"
+ADD COLUMN "sampleDurationSeconds" DOUBLE PRECISION NOT NULL DEFAULT 0,
+ADD COLUMN "sampleMimeType" TEXT NOT NULL DEFAULT 'audio/wav';

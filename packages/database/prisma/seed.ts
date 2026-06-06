@@ -14,8 +14,10 @@ async function main() {
   const voiceProfile = await prisma.voiceProfile.create({
     data: {
       name: "Narrador Base",
-      provider: "local",
+      provider: "omnivoice-studio",
       samplePath: "storage/voices/base-sample.wav",
+      sampleMimeType: "audio/wav",
+      sampleDurationSeconds: 3.2,
       status: "active"
     }
   });
