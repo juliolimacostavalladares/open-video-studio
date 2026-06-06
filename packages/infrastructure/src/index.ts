@@ -13,3 +13,12 @@ export {
   type StorageObjectDescriptor,
   type StorageService
 } from "./storage.js";
+export {
+  OmniVoiceStudioTTSBackend,
+  TTSBackendError,
+  type TTSAudioArtifact,
+  type TTSBackend,
+  type TTSBackendErrorCode,
+  type TTSBackendRequest,
+  type TTSVoiceProfile
+} from "./tts.js";

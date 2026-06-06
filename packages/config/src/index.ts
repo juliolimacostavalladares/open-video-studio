@@ -3,6 +3,8 @@ import { z } from "zod";
 const workspaceConfigSchema = z.object({
   apiPort: z.number().int().positive(),
   appName: z.string().min(1),
+  omnivoiceBaseUrl: z.string().url(),
+  omnivoiceTimeoutMs: z.number().int().positive(),
   queueName: z.string().min(1),
   redisUrl: z.string().url(),
   storageAccessKey: z.string().min(1),
@@ -19,6 +21,12 @@ const workspaceConfigSchema = z.object({
 export type WorkspaceConfig = z.infer<typeof workspaceConfigSchema>;
 
 function parsePort(value: string | undefined, fallback: number) {
+  const parsed = Number(value ?? fallback);
+
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function parsePositiveInt(value: string | undefined, fallback: number) {
   const parsed = Number(value ?? fallback);
 
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
@@ -44,6 +52,8 @@ export function loadWorkspaceConfig(env: NodeJS.ProcessEnv = process.env): Works
   return workspaceConfigSchema.parse({
     apiPort: parsePort(env.API_PORT, 4000),
     appName: env.APP_NAME ?? "Open Video Studio",
+    omnivoiceBaseUrl: env.OMNIVOICE_BASE_URL ?? "http://127.0.0.1:8000",
+    omnivoiceTimeoutMs: parsePositiveInt(env.OMNIVOICE_TIMEOUT_MS, 30000),
     queueName: env.QUEUE_NAME ?? "video-pipeline",
     redisUrl: env.REDIS_URL ?? "redis://127.0.0.1:6379",
     storageAccessKey: env.STORAGE_ACCESS_KEY ?? "minioadmin",
