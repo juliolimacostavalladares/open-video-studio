@@ -73,6 +73,7 @@ model Scene {
   orderIndex     Int
   title          String
   script         String
+  keywords       String[]
   status         SceneStatus   @default(draft)
   assetId        String?
   audioPath      String?

@@ -175,6 +175,8 @@ Explicação detalhada do assunto.`,
       orderBy: { orderIndex: "asc" }
     });
     expect(scenesInDb).toHaveLength(2);
+    expect(scenesInDb[0]?.keywords.length).toBeGreaterThan(0);
+    expect(scenesInDb[0]?.keywords).toContain("abertura");
 
     // 4. Chama a rota de listagem (GET /projects/:id/scenes)
     const listRes = await app.inject({
@@ -187,6 +189,7 @@ Explicação detalhada do assunto.`,
     expect(listBody.projectId).toBe(project.id);
     expect(listBody.scenes).toHaveLength(2);
     expect(listBody.scenes[0].title).toBe("Abertura");
+    expect(listBody.scenes[0].keywords).toContain("abertura");
 
     // 5. Atualiza o rawScript do projeto para simular uma edição
     await prisma.project.update({
@@ -226,6 +229,18 @@ Mensagem final.`
       orderIndex: 1,
       script: "Mensagem final."
     });
+
+    const updatedScenesInDb = await prisma.scene.findMany({
+      where: { projectId: project.id },
+      orderBy: { orderIndex: "asc" },
+      select: {
+        keywords: true,
+        title: true
+      }
+    });
+    expect(updatedScenesInDb[0]?.title).toBe("Desenvolvimento Editado");
+    expect(updatedScenesInDb[0]?.keywords).toContain("desenvolvimento");
+    expect(updatedScenesInDb[1]?.keywords).toContain("encerramento");
   });
 
   it("returns 404 for non-existent projects", async () => {
