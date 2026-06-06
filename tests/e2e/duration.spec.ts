@@ -1,31 +1,44 @@
 import { expect, test } from "@playwright/test";
 
-import { prisma } from "../../packages/database/src/client.js";
-
 test.describe("estimated duration E2E", () => {
-  let projectId: string;
-
-  test.beforeAll(async () => {
-    // Cria um projeto de teste no banco
-    const project = await prisma.project.create({
-      data: {
-        title: "E2E Duration Test Project",
-        status: "draft",
-        rawScript: ""
-      }
-    });
-    projectId = project.id;
-  });
-
-  test.afterAll(async () => {
-    if (projectId) {
-      await prisma.project.delete({ where: { id: projectId } }).catch(() => {});
-    }
-    await prisma.$disconnect();
-  });
-
   test("calculates and updates estimated duration in real time as the user edits the script", async ({ page }) => {
-    await page.goto(`/projects/${projectId}/edit`);
+    // Intercepta a chamada GET do projeto para retornar dados fictícios sem precisar de banco
+    await page.route("**/projects/mock-project-id", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          id: "mock-project-id",
+          title: "E2E Duration Test Project",
+          rawScript: "",
+          status: "draft",
+          updatedAt: new Date().toISOString(),
+          estimatedDuration: 0,
+          estimatedDurationMin: 0,
+          estimatedDurationMax: 0
+        })
+      });
+    });
+
+    // Intercepta a chamada PATCH de autosave do editor
+    await page.route("**/projects/mock-project-id/script", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          id: "mock-project-id",
+          title: "E2E Duration Test Project",
+          rawScript: "salvo",
+          status: "scripting",
+          updatedAt: new Date().toISOString(),
+          estimatedDuration: 0,
+          estimatedDurationMin: 0,
+          estimatedDurationMax: 0
+        })
+      });
+    });
+
+    await page.goto("/projects/mock-project-id/edit");
 
     // Duração inicial deve ser 0s
     const durationBadge = page.locator("#estimated-duration");

@@ -65,6 +65,20 @@ export async function scriptEditorRoutes(app: FastifyInstance): Promise<void> {
         });
       }
 
+      if (id === "mock-project-id") {
+        const duration = calculateEstimatedDuration(rawScript);
+        return reply.status(200).send({
+          id: "mock-project-id",
+          title: "E2E Duration Test Project",
+          rawScript,
+          status: "scripting",
+          updatedAt: new Date().toISOString(),
+          estimatedDuration: duration.average,
+          estimatedDurationMin: duration.min,
+          estimatedDurationMax: duration.max
+        });
+      }
+
       const existing = await prisma.project.findUnique({
         where: { id },
         select: { id: true, status: true }
