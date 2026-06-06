@@ -29,6 +29,8 @@ Aplicacoes locais por padrao:
 - `pnpm test`: executa suites unit e integration
 - `pnpm test:unit`: valida o carregamento da configuracao compartilhada
 - `pnpm test:integration`: smoke de boot de `web` e `api` e CRUD minimo do banco
+- `pnpm infra:start`: sobe Redis e MinIO locais para fila e storage
+- `pnpm infra:stop`: derruba Redis e MinIO locais e remove volumes
 - `pnpm db:start`: sobe o PostgreSQL local via Docker Compose
 - `pnpm db:stop`: derruba o PostgreSQL local e remove o volume
 - `pnpm db:generate`: gera o client do banco
@@ -51,6 +53,22 @@ Fluxo local:
 Reset completo:
 
 1. `pnpm db:reset`
+
+## Fila e storage locais
+
+Para a infra do pipeline:
+
+1. `pnpm infra:start`
+2. Redis: `redis://127.0.0.1:6379`
+3. MinIO S3 compatível: `http://127.0.0.1:9000`
+4. Credenciais padrão do MinIO: `minioadmin` / `minioadmin`
+
+Defaults do workspace:
+
+- `QUEUE_NAME=video-pipeline`
+- `STORAGE_DRIVER=local`
+- `STORAGE_BASE_PATH=storage`
+- `STORAGE_BUCKET=open-video-studio`
 
 ## Checklist de bootstrap local
 
