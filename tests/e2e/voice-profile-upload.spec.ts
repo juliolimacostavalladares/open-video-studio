@@ -27,7 +27,7 @@ function buildWavBase64(durationSeconds: number) {
 }
 
 test.describe("voice profile upload", () => {
-  test("shows invalid upload error and creates a valid voice profile", async ({ page }) => {
+  test("shows invalid upload error, saves selected voice and previews a scene", async ({ page }) => {
     const profiles: Array<{
       id: string;
       name: string;
@@ -35,6 +35,7 @@ test.describe("voice profile upload", () => {
       sampleDurationSeconds: number;
       status: string;
     }> = [];
+    let selectedVoiceProfileId: string | null = null;
 
     await page.route("**/projects/mock-project-id", async (route) => {
       await route.fulfill({
@@ -44,7 +45,25 @@ test.describe("voice profile upload", () => {
           id: "mock-project-id",
           title: "Projeto com Voz",
           rawScript: "",
-          status: "draft"
+          status: "draft",
+          voiceProfileId: selectedVoiceProfileId
+        })
+      });
+    });
+
+    await page.route("**/projects/mock-project-id/scenes", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          projectId: "mock-project-id",
+          scenes: [
+            {
+              id: "scene-1",
+              title: "Cena 1",
+              script: "Texto da cena de preview"
+            }
+          ]
         })
       });
     });
@@ -90,6 +109,36 @@ test.describe("voice profile upload", () => {
       });
     });
 
+    await page.route("**/projects/mock-project-id/voice-profile", async (route) => {
+      const payload = route.request().postDataJSON() as { voiceProfileId: string | null };
+      selectedVoiceProfileId = payload.voiceProfileId;
+
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          id: "mock-project-id",
+          title: "Projeto com Voz",
+          rawScript: "",
+          status: "draft",
+          voiceProfileId: selectedVoiceProfileId,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          estimatedDuration: 0,
+          estimatedDurationMin: 0,
+          estimatedDurationMax: 0
+        })
+      });
+    });
+
+    await page.route("**/projects/mock-project-id/scenes/scene-1/preview", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "audio/wav",
+        body: Buffer.from("preview-wav")
+      });
+    });
+
     await page.goto("/projects/mock-project-id/edit");
 
     await page.locator("#voice-profile-name").fill("Narrador E2E");
@@ -111,5 +160,11 @@ test.describe("voice profile upload", () => {
 
     await expect(page.locator("#voice-profile-list")).toContainText("Narrador E2E");
     await expect(page.locator("#voice-profile-list")).toContainText("omnivoice-studio");
+    await page.locator('input[name="selected-voice-profile"]').first().check();
+    await page.locator("#save-project-voice").click();
+    await expect(page.locator("#voice-selection-status")).toContainText("Voz salva");
+
+    await page.locator("#preview-scene-scene-1").click();
+    await expect(page.locator("#scene-preview-audio")).toBeVisible();
   });
 });

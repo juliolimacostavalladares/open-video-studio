@@ -58,8 +58,10 @@ model Project {
   targetDuration Int?
   rawScript      String?
   status         ProjectStatus @default(draft)
+  voiceProfileId String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+  voiceProfile   VoiceProfile? @relation("ProjectVoiceProfile", fields: [voiceProfileId], references: [id], onDelete: SetNull)
   scenes         Scene[]
   renderJobs     RenderJob[]
   assets         Asset[]
@@ -93,6 +95,7 @@ model VoiceProfile {
   status                VoiceProfileStatus @default(active)
   createdAt             DateTime           @default(now())
   updatedAt             DateTime           @updatedAt
+  projects              Project[]          @relation("ProjectVoiceProfile")
   scenes                Scene[]
 }
 
