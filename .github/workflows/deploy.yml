@@ -1,0 +1,31 @@
+name: Deploy to Coolify
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Trigger Coolify Web App Redeploy Webhook
+        env:
+          COOLIFY_WEBHOOK_WEB: ${{ secrets.COOLIFY_WEBHOOK_WEB }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+        if: env.COOLIFY_WEBHOOK_WEB != ''
+        run: |
+          curl -X POST "$COOLIFY_WEBHOOK_WEB" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{}'
+
+      - name: Trigger Coolify API Redeploy Webhook
+        env:
+          COOLIFY_WEBHOOK_BACKEND: ${{ secrets.COOLIFY_WEBHOOK_BACKEND }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+        if: env.COOLIFY_WEBHOOK_BACKEND != ''
+        run: |
+          curl -X POST "$COOLIFY_WEBHOOK_BACKEND" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{}'
