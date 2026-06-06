@@ -1,6 +1,8 @@
 import Fastify from "fastify";
 
 import { scriptEditorRoutes } from "./routes/script-editor.js";
+import { projectsRoutes } from "./routes/projects.js";
+import { scenesRoutes } from "./routes/scenes.js";
 
 export function buildApiApp() {
   const app = Fastify({
@@ -14,6 +16,8 @@ export function buildApiApp() {
     };
   });
 
+  app.register(projectsRoutes);
+  app.register(scenesRoutes);
   app.register(scriptEditorRoutes);
 
   return app;

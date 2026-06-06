@@ -5,7 +5,6 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/client"
 }
 
 enum ProjectStatus {
@@ -51,16 +50,19 @@ enum RenderJobStatus {
 }
 
 model Project {
-  id          String        @id @default(cuid())
-  title       String
-  description String?
-  rawScript   String?
-  status      ProjectStatus @default(draft)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  scenes      Scene[]
-  renderJobs  RenderJob[]
-  assets      Asset[]
+  id             String        @id @default(cuid())
+  title          String
+  description    String?
+  theme          String?
+  tone           String?
+  targetDuration Int?
+  rawScript      String?
+  status         ProjectStatus @default(draft)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  scenes         Scene[]
+  renderJobs     RenderJob[]
+  assets         Asset[]
 }
 
 model Scene {

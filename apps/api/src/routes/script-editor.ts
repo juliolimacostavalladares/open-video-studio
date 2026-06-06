@@ -38,31 +38,6 @@ function toScriptResponse(project: {
 }
 
 export async function scriptEditorRoutes(app: FastifyInstance): Promise<void> {
-  /**
-   * GET /projects/:id
-   *
-   * Retorna projeto com rawScript para o editor.
-   */
-  app.get<{ Params: { id: string } }>("/projects/:id", async (request, reply) => {
-    const { id } = request.params;
-
-    const project = await prisma.project.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        title: true,
-        rawScript: true,
-        status: true,
-        updatedAt: true
-      }
-    });
-
-    if (!project) {
-      return reply.status(404).send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
-    }
-
-    return reply.status(200).send(toScriptResponse(project));
-  });
 
   /**
    * PATCH /projects/:id/script
