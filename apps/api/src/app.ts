@@ -1,5 +1,6 @@
 import Fastify from "fastify";
 
+import { projectsRoutes } from "./routes/projects.js";
 import { scenesRoutes } from "./routes/scenes.js";
 
 export function buildApiApp() {
@@ -14,6 +15,7 @@ export function buildApiApp() {
     };
   });
 
+  app.register(projectsRoutes);
   app.register(scenesRoutes);
 
   return app;
