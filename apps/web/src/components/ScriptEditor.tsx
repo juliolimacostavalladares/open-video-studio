@@ -1,11 +1,13 @@
 "use client";
 
 import { useScriptEditor, type SaveStatus } from "../hooks/useScriptEditor";
+import { calculateEstimatedDuration } from "../utils/duration";
 
 interface ScriptEditorProps {
   projectId: string;
   initialScript: string;
   projectTitle: string;
+  apiBaseUrl?: string;
 }
 
 function SaveIndicator({ status, lastSavedAt, errorMessage }: {
@@ -91,11 +93,23 @@ function SaveIndicator({ status, lastSavedAt, errorMessage }: {
   );
 }
 
-export function ScriptEditor({ projectId, initialScript, projectTitle }: ScriptEditorProps) {
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  if (mins === 0) {
+    return `${secs}s`;
+  }
+  return `${mins}m ${secs}s`;
+}
+
+export function ScriptEditor({ projectId, initialScript, projectTitle, apiBaseUrl }: ScriptEditorProps) {
   const { script, saveStatus, lastSavedAt, errorMessage, onChange, save } = useScriptEditor({
     projectId,
-    initialScript
+    initialScript,
+    apiBaseUrl
   });
+
+  const duration = calculateEstimatedDuration(script);
 
   return (
     <div
@@ -118,16 +132,41 @@ export function ScriptEditor({ projectId, initialScript, projectTitle }: ScriptE
           border: "1px solid rgba(255,255,255,0.08)"
         }}
       >
-        <h2
-          style={{
-            fontSize: 16,
-            fontWeight: 600,
-            margin: 0,
-            color: "#f1f5f9"
-          }}
-        >
-          {projectTitle}
-        </h2>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <h2
+            style={{
+              fontSize: 16,
+              fontWeight: 600,
+              margin: 0,
+              color: "#f1f5f9"
+            }}
+          >
+            {projectTitle}
+          </h2>
+
+          <div
+            id="estimated-duration"
+            style={{
+              fontSize: 12,
+              fontWeight: 500,
+              color: "#a5b4fc",
+              background: "rgba(99,102,241,0.15)",
+              border: "1px solid rgba(99,102,241,0.25)",
+              padding: "4px 8px",
+              borderRadius: 6,
+              display: "flex",
+              alignItems: "center",
+              gap: 4
+            }}
+            aria-label={`Duração estimada: ${formatDuration(duration.average)}`}
+          >
+            <span>⏱</span>
+            <span>{formatDuration(duration.average)}</span>
+            <span style={{ opacity: 0.6, fontSize: 10 }}>
+              ({formatDuration(duration.min)} - {formatDuration(duration.max)})
+            </span>
+          </div>
+        </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <SaveIndicator

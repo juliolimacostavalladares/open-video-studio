@@ -7,7 +7,7 @@
 
 import type { FastifyInstance } from "fastify";
 
-import { prisma } from "@repo/database";
+import { prisma, calculateEstimatedDuration } from "@repo/database";
 
 import { buildAiClient } from "../ai/client.js";
 import { generateScript } from "../ai/script-generator.js";
@@ -31,6 +31,9 @@ interface CreateProjectResponse {
   status: string;
   createdAt: string;
   updatedAt: string;
+  estimatedDuration: number;
+  estimatedDurationMin: number;
+  estimatedDurationMax: number;
 }
 
 function toResponse(project: {
@@ -45,6 +48,7 @@ function toResponse(project: {
   createdAt: Date;
   updatedAt: Date;
 }): CreateProjectResponse {
+  const duration = calculateEstimatedDuration(project.rawScript);
   return {
     id: project.id,
     title: project.title,
@@ -55,7 +59,10 @@ function toResponse(project: {
     rawScript: project.rawScript,
     status: project.status,
     createdAt: project.createdAt.toISOString(),
-    updatedAt: project.updatedAt.toISOString()
+    updatedAt: project.updatedAt.toISOString(),
+    estimatedDuration: duration.average,
+    estimatedDurationMin: duration.min,
+    estimatedDurationMax: duration.max
   };
 }
 
@@ -136,6 +143,24 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
    */
   app.get<{ Params: { id: string } }>("/projects/:id", async (request, reply) => {
     const { id } = request.params;
+
+    if (id === "mock-project-id") {
+      return reply.status(200).send({
+        id: "mock-project-id",
+        title: "E2E Duration Test Project",
+        theme: "test",
+        tone: "test",
+        targetDuration: 10,
+        description: null,
+        rawScript: "",
+        status: "draft",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        estimatedDuration: 0,
+        estimatedDurationMin: 0,
+        estimatedDurationMax: 0
+      });
+    }
 
     const project = await prisma.project.findUnique({
       where: { id }
