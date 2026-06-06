@@ -13,6 +13,7 @@ jobs:
       - name: Clean runner workspace via Docker
         run: |
           docker run --rm -v /home/github-runner/actions-runner/_work/open-video-studio/open-video-studio:/work -w /work alpine sh -c "
+            chown -R \$(stat -c '%u:%g' /work) /work && \
             find /work -mindepth 1 -maxdepth 1 -exec rm -rf {} +
           " || true
 
