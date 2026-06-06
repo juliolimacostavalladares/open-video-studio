@@ -7,6 +7,7 @@ Base monorepo da Sprint 0 para o MVP do Open Video Studio.
 - `apps/web`: interface web base em Next.js
 - `apps/api`: API base em Fastify
 - `packages/config`: configuracao compartilhada e validada para o workspace
+- `packages/database`: schema, migrations, seed e acesso aos modelos centrais
 
 ## Setup local
 
@@ -27,7 +28,29 @@ Aplicacoes locais por padrao:
 - `pnpm typecheck`: typecheck de todos os workspaces
 - `pnpm test`: executa suites unit e integration
 - `pnpm test:unit`: valida o carregamento da configuracao compartilhada
-- `pnpm test:integration`: smoke de boot de `web` e `api`
+- `pnpm test:integration`: smoke de boot de `web` e `api` e CRUD minimo do banco
+- `pnpm db:start`: sobe o PostgreSQL local via Docker Compose
+- `pnpm db:stop`: derruba o PostgreSQL local e remove o volume
+- `pnpm db:generate`: gera o client do banco
+- `pnpm db:migrate`: aplica migrations locais
+- `pnpm db:seed`: popula dados minimos de desenvolvimento
+- `pnpm db:reset`: recria o banco local com migration e seed
+
+## Banco local
+
+O pacote `@repo/database` usa PostgreSQL local via Docker Compose.
+
+Fluxo local:
+
+1. `cp packages/database/.env.example packages/database/.env`
+2. `pnpm db:start`
+3. `pnpm db:generate`
+4. `pnpm db:migrate`
+5. `pnpm db:seed`
+
+Reset completo:
+
+1. `pnpm db:reset`
 
 ## Checklist de bootstrap local
 
