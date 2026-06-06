@@ -67,6 +67,22 @@ function runPsql(sql: string) {
   ]);
 }
 
+async function runPsqlWithRetry(sql: string, attempts = 10) {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      runPsql(sql);
+      return;
+    } catch (error) {
+      lastError = error;
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
+
+  throw lastError;
+}
+
 beforeAll(async () => {
   if (!isPostgresRunning()) {
     runDockerCommand([...composeArgs, "up", "-d", "postgres"]);
@@ -75,8 +91,8 @@ beforeAll(async () => {
 
   await waitForPostgres();
 
-  runPsql(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`);
-  runPsql(`CREATE DATABASE "${databaseName}";`);
+  await runPsqlWithRetry(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`);
+  await runPsqlWithRetry(`CREATE DATABASE "${databaseName}";`);
 
   process.env.DATABASE_URL = databaseUrl;
 
@@ -94,7 +110,7 @@ afterAll(async () => {
   const { prisma } = await import("../../packages/database/src/client.js");
   await prisma.$disconnect();
 
-  runPsql(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`);
+  await runPsqlWithRetry(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`);
 
   if (startedPostgresForSuite) {
     runDockerCommand([...composeArgs, "down"]);
