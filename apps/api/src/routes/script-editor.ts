@@ -7,7 +7,7 @@
 
 import type { FastifyInstance } from "fastify";
 
-import { prisma } from "@repo/database";
+import { prisma, calculateEstimatedDuration } from "@repo/database";
 
 interface UpdateScriptBody {
   rawScript: string;
@@ -19,6 +19,9 @@ interface ProjectScriptResponse {
   rawScript: string | null;
   status: string;
   updatedAt: string;
+  estimatedDuration: number;
+  estimatedDurationMin: number;
+  estimatedDurationMax: number;
 }
 
 function toScriptResponse(project: {
@@ -28,12 +31,16 @@ function toScriptResponse(project: {
   status: string;
   updatedAt: Date;
 }): ProjectScriptResponse {
+  const duration = calculateEstimatedDuration(project.rawScript);
   return {
     id: project.id,
     title: project.title,
     rawScript: project.rawScript,
     status: project.status,
-    updatedAt: project.updatedAt.toISOString()
+    updatedAt: project.updatedAt.toISOString(),
+    estimatedDuration: duration.average,
+    estimatedDurationMin: duration.min,
+    estimatedDurationMax: duration.max
   };
 }
 

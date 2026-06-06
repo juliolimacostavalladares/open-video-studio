@@ -7,7 +7,7 @@
 
 import type { FastifyInstance } from "fastify";
 
-import { prisma } from "@repo/database";
+import { prisma, calculateEstimatedDuration } from "@repo/database";
 
 import { buildAiClient } from "../ai/client.js";
 import { generateScript } from "../ai/script-generator.js";
@@ -31,6 +31,9 @@ interface CreateProjectResponse {
   status: string;
   createdAt: string;
   updatedAt: string;
+  estimatedDuration: number;
+  estimatedDurationMin: number;
+  estimatedDurationMax: number;
 }
 
 function toResponse(project: {
@@ -45,6 +48,7 @@ function toResponse(project: {
   createdAt: Date;
   updatedAt: Date;
 }): CreateProjectResponse {
+  const duration = calculateEstimatedDuration(project.rawScript);
   return {
     id: project.id,
     title: project.title,
@@ -55,7 +59,10 @@ function toResponse(project: {
     rawScript: project.rawScript,
     status: project.status,
     createdAt: project.createdAt.toISOString(),
-    updatedAt: project.updatedAt.toISOString()
+    updatedAt: project.updatedAt.toISOString(),
+    estimatedDuration: duration.average,
+    estimatedDurationMin: duration.min,
+    estimatedDurationMax: duration.max
   };
 }
 

@@ -137,11 +137,17 @@ describe("PATCH /projects/:id/script", () => {
       id: string;
       rawScript: string | null;
       status: string;
+      estimatedDuration: number;
+      estimatedDurationMin: number;
+      estimatedDurationMax: number;
     };
 
     expect(body.id).toBe(project.id);
     expect(body.rawScript).toBe(newScript);
     expect(body.status).toBe("scripting");
+    expect(body.estimatedDuration).toBe(3);
+    expect(body.estimatedDurationMin).toBe(3);
+    expect(body.estimatedDurationMax).toBe(4);
 
     await app.close();
   });
@@ -172,9 +178,17 @@ describe("PATCH /projects/:id/script", () => {
 
     expect(getResponse.statusCode).toBe(200);
 
-    const fetched = JSON.parse(getResponse.body) as { rawScript: string | null };
+    const fetched = JSON.parse(getResponse.body) as {
+      rawScript: string | null;
+      estimatedDuration: number;
+      estimatedDurationMin: number;
+      estimatedDurationMax: number;
+    };
 
     expect(fetched.rawScript).toBe(editedScript);
+    expect(fetched.estimatedDuration).toBe(2);
+    expect(fetched.estimatedDurationMin).toBe(2);
+    expect(fetched.estimatedDurationMax).toBe(2);
 
     await app.close();
   });

@@ -31,6 +31,7 @@ async function getProject(id: string): Promise<ProjectData | null> {
 
 export default async function ProjectEditPage({ params }: ProjectEditPageProps) {
   const project = await getProject(params.id);
+  const clientApiUrl = process.env.NEXT_PUBLIC_API_URL ?? process.env.API_INTERNAL_URL ?? "http://localhost:4000";
 
   if (!project) {
     return (
@@ -148,6 +149,7 @@ export default async function ProjectEditPage({ params }: ProjectEditPageProps) 
             projectId={project.id}
             initialScript={project.rawScript ?? ""}
             projectTitle={project.title}
+            apiBaseUrl={clientApiUrl}
           />
         </section>
 

@@ -19,7 +19,7 @@ export default defineConfig({
       timeout: 120_000
     },
     {
-      command: `PORT=${testPorts.e2eWebPort} pnpm --filter web start`,
+      command: `PORT=${testPorts.e2eWebPort} NEXT_PUBLIC_API_URL="http://127.0.0.1:${testPorts.e2eApiPort}" API_INTERNAL_URL="http://127.0.0.1:${testPorts.e2eApiPort}" pnpm --filter web start`,
       port: testPorts.e2eWebPort,
       reuseExistingServer: !isCI,
       timeout: 120_000
