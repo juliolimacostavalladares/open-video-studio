@@ -1,5 +1,7 @@
 import Fastify from "fastify";
 
+import { scriptEditorRoutes } from "./routes/script-editor.js";
+
 export function buildApiApp() {
   const app = Fastify({
     logger: false
@@ -11,6 +13,8 @@ export function buildApiApp() {
       status: "ok"
     };
   });
+
+  app.register(scriptEditorRoutes);
 
   return app;
 }

@@ -2,7 +2,9 @@
   "extends": "@repo/tsconfig/node.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src"
+    "paths": {
+      "@repo/database": ["../../packages/database/src/index.ts"]
+    }
   },
   "include": ["src/**/*.ts"]
 }
