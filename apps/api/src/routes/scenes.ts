@@ -3,6 +3,7 @@ import type { FastifyInstance } from "fastify";
 import {
   buildSceneAudioHash,
   canStartRenderWithSceneAudio,
+  generateSceneKeywords,
   parseScenes,
   prisma,
   sceneHasValidAudio,
@@ -17,6 +18,7 @@ interface SceneListItem {
   title: string;
   orderIndex: number;
   script: string;
+  keywords: string[];
   status: string;
   createdAt: Date;
   updatedAt: Date;
@@ -78,6 +80,7 @@ function toSceneResponse(scene: SceneListItem, selectedVoiceProfileId: string | 
       voiceProfileId: selectedVoiceProfileId
     }),
     id: scene.id,
+    keywords: scene.keywords,
     orderIndex: scene.orderIndex,
     script: scene.script,
     status: scene.status,
@@ -99,6 +102,7 @@ async function listProjectScenes(projectId: string) {
       audioPath: true,
       createdAt: true,
       id: true,
+      keywords: true,
       orderIndex: true,
       script: true,
       status: true,
@@ -126,6 +130,10 @@ export async function syncProjectScenesFromRawScript(projectId: string, rawScrip
         scenesCreated += 1;
         await tx.scene.create({
           data: {
+            keywords: generateSceneKeywords({
+              script: parsedScene.script,
+              title: parsedScene.title
+            }),
             orderIndex: parsedScene.orderIndex,
             projectId,
             script: parsedScene.script,
@@ -147,6 +155,10 @@ export async function syncProjectScenesFromRawScript(projectId: string, rawScrip
         where: { id: existing.id },
         data: {
           ...invalidateSceneAudio(),
+          keywords: generateSceneKeywords({
+            script: parsedScene.script,
+            title: parsedScene.title
+          }),
           script: parsedScene.script,
           title: parsedScene.title
         }

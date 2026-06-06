@@ -1,0 +1,2 @@
+ALTER TABLE "Scene"
+ADD COLUMN "keywords" TEXT[] DEFAULT ARRAY[]::TEXT[];
