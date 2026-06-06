@@ -15,7 +15,8 @@ describe("workspace boot smoke", () => {
     startProcess("pnpm", ["--filter", "api", "start"], {
       env: {
         ...process.env,
-        API_PORT: String(testPorts.integrationApiPort)
+        API_PORT: String(testPorts.integrationApiPort),
+        DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1:54329/open_video_studio?schema=public"
       }
     });
     startProcess("pnpm", ["--filter", "web", "start"], {
