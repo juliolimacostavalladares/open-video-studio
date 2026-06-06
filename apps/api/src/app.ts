@@ -1,5 +1,7 @@
 import Fastify from "fastify";
 
+import { projectsRoutes } from "./routes/projects.js";
+
 export function buildApiApp() {
   const app = Fastify({
     logger: false
@@ -11,6 +13,8 @@ export function buildApiApp() {
       status: "ok"
     };
   });
+
+  app.register(projectsRoutes);
 
   return app;
 }

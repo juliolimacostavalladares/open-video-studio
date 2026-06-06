@@ -38,6 +38,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@repo/database':
+        specifier: workspace:*
+        version: link:../../packages/database
       fastify:
         specifier: 5.6.1
         version: 5.6.1
