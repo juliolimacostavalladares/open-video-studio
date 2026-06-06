@@ -76,3 +76,42 @@ Defaults do workspace:
 - `pnpm dev` sobe `web` e `api`
 - `pnpm build` passa
 - `pnpm typecheck` passa
+
+## Deploy com Coolify
+
+O fluxo de deploy segue o modelo recomendado pela documentacao do Coolify para GitHub Actions:
+
+1. o workflow `CI Pipeline` valida `lint`, `typecheck`, `build`, `unit`, `integration` e `e2e`
+2. quando esse workflow passa em `master`, o workflow `Deploy to Coolify`:
+   - builda `Dockerfile.web` e `Dockerfile.api`
+   - publica as imagens no `GHCR`
+   - chama os webhooks de redeploy do Coolify
+
+Imagens publicadas:
+
+- `ghcr.io/<owner>/open-video-studio-web:latest`
+- `ghcr.io/<owner>/open-video-studio-api:latest`
+
+Secrets esperados no GitHub Actions:
+
+- `COOLIFY_TOKEN`
+- `COOLIFY_WEBHOOK_WEB`
+- `COOLIFY_WEBHOOK_BACKEND`
+
+Configuracao esperada no Coolify:
+
+1. habilitar `API Access`
+2. criar um `API Token` com permissao de deploy
+3. configurar os apps `web` e `api` para usar imagens prebuildadas do GHCR
+4. autenticar o servidor do Coolify no `ghcr.io`
+5. cadastrar os webhooks de deploy nas secrets do repositorio/ambiente
+
+Ao usar Docker Compose no Coolify, a aplicacao deve apontar para imagens prebuildadas, por exemplo:
+
+```yaml
+services:
+  web:
+    image: ghcr.io/<owner>/open-video-studio-web:latest
+  api:
+    image: ghcr.io/<owner>/open-video-studio-api:latest
+```
