@@ -4,10 +4,12 @@ import {
   buildSceneAudioHash,
   canStartRenderWithSceneAudio,
   generateSceneKeywords,
+  getSceneFallbackAsset,
   parseScenes,
   prisma,
   sceneHasValidAudio,
   sceneNeedsAudioGeneration,
+  DEFAULT_FALLBACK_PATH,
 } from "@repo/database";
 import {
   OmniVoiceStudioTTSBackend,
@@ -305,7 +307,37 @@ export async function scenesRoutes(app: FastifyInstance): Promise<void> {
           .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
       }
 
-      const scenes = await listProjectScenes(id);
+      let scenes = await listProjectScenes(id);
+
+      // --- Fallback logic ---
+      const scenesWithoutAsset = scenes.filter((scene) => !scene.assetId);
+      if (scenesWithoutAsset.length > 0) {
+        let fallbackAsset = await prisma.asset.findFirst({
+          where: {
+            projectId: id,
+            path: DEFAULT_FALLBACK_PATH,
+          },
+        });
+
+        if (!fallbackAsset) {
+          fallbackAsset = await prisma.asset.create({
+            data: getSceneFallbackAsset(id),
+          });
+        }
+
+        await prisma.$transaction(
+          scenesWithoutAsset.map((scene) =>
+            prisma.scene.update({
+              where: { id: scene.id },
+              data: { assetId: fallbackAsset!.id },
+            }),
+          ),
+        );
+
+        scenes = await listProjectScenes(id);
+      }
+      // ----------------------
+
       const assetProvider = new MockAssetProvider();
 
       const scenesWithSuggestions = await Promise.all(
