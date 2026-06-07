@@ -21,7 +21,7 @@ const databaseUrl = `postgresql://postgres:postgres@127.0.0.1:54329/${databaseNa
 let backendUrl = "";
 let capturedBody = "";
 let server: ReturnType<typeof createServer>;
-let startedPostgresForSuite = false;
+// let startedPostgresForSuite = false;
 let storagePath = "";
 
 function buildWavBuffer(durationSeconds: number) {
@@ -160,7 +160,7 @@ beforeAll(async () => {
 
   if (!isPostgresRunning()) {
     runDockerCommand([...composeArgs, "up", "-d", "postgres"]);
-    startedPostgresForSuite = true;
+    // startedPostgresForSuite = true;
   }
 
   await waitForPostgres();

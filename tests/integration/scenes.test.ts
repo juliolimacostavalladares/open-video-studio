@@ -17,7 +17,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 let app: FastifyInstance;
 
-let startedPostgresForSuite = false;
+// let startedPostgresForSuite = false;
 
 function runDockerCommand(args: string[]) {
   return execFileSync("docker", args, {
@@ -103,7 +103,7 @@ async function runPsqlWithRetry(sql: string, attempts = 10) {
 beforeAll(async () => {
   if (!isPostgresRunning()) {
     runDockerCommand([...composeArgs, "up", "-d", "postgres"]);
-    startedPostgresForSuite = true;
+    // startedPostgresForSuite = true;
   }
 
   await waitForPostgres();

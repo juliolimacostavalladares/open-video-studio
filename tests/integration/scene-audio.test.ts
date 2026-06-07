@@ -25,7 +25,7 @@ let app: FastifyInstance;
 let backendUrl = "";
 let generationCalls = 0;
 let server: ReturnType<typeof createServer>;
-let startedPostgresForSuite = false;
+// let startedPostgresForSuite = false;
 let storagePath = "";
 
 function buildWavBuffer(durationSeconds: number) {
@@ -167,7 +167,7 @@ beforeAll(async () => {
 
   if (!isPostgresRunning()) {
     runDockerCommand([...composeArgs, "up", "-d", "postgres"]);
-    startedPostgresForSuite = true;
+    // startedPostgresForSuite = true;
   }
 
   await waitForPostgres();

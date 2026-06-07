@@ -18,7 +18,7 @@ const composeArgs = [
 const databaseName = `open_video_studio_projects_test_${process.pid}`;
 const databaseUrl = `postgresql://postgres:postgres@127.0.0.1:54329/${databaseName}?schema=public`;
 
-let startedPostgresForSuite = false;
+// let startedPostgresForSuite = false;
 
 function runDockerCommand(args: string[]) {
   return execFileSync("docker", args, {
@@ -94,7 +94,7 @@ function runPsqlWithRetry(sql: string, attempts = 10) {
 beforeAll(async () => {
   if (!isPostgresRunning()) {
     runDockerCommand([...composeArgs, "up", "-d", "postgres"]);
-    startedPostgresForSuite = true;
+    // startedPostgresForSuite = true;
   }
 
   await waitForPostgres();
