@@ -241,7 +241,9 @@ export function SceneAssetManager({
                   >
                     Asset Atual
                   </span>
-                  {scene.asset ? (
+                  {scene.asset &&
+                  scene.asset.path !==
+                    "assets/fallbacks/default-placeholder.png" ? (
                     <span
                       id={`scene-asset-status-${scene.id}`}
                       style={{

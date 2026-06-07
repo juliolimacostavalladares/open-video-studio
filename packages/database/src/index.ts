@@ -11,5 +11,10 @@ export {
   canStartRenderWithSceneAudio,
   sceneAudioHashVersion,
   sceneHasValidAudio,
-  sceneNeedsAudioGeneration
+  sceneNeedsAudioGeneration,
 } from "./scene-audio.js";
+export {
+  getSceneFallbackAsset,
+  isFallbackAsset,
+  DEFAULT_FALLBACK_PATH,
+} from "./scene-fallback.js";
