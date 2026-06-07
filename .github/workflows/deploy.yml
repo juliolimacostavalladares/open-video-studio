@@ -81,19 +81,44 @@ jobs:
           trigger_deploy() {
             local url="$1"
             local token="$2"
-            echo "Tentando disparar deploy via webhook publico (sem autenticacao)..."
+            
+            echo "Tentando disparar deploy via GET sem autenticacao..."
             local code
             code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request GET "$url")
             if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
-              echo "Sucesso! Deploy disparado via webhook publico (HTTP $code)."
+              echo "Sucesso! Deploy disparado via GET publico (HTTP $code)."
               return 0
             fi
-            echo "Webhook publico retornou HTTP $code. Tentando com token de autorizacao..."
+            
+            echo "Tentando disparar deploy via POST sem autenticacao..."
+            code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request POST "$url" -H "Content-Type: application/json" -d '{}')
+            if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
+              echo "Sucesso! Deploy disparado via POST publico (HTTP $code)."
+              return 0
+            fi
+            
+            echo "Webhook publico falhou (HTTP $code). Tentando com token de autorizacao..."
             if [ -n "$token" ]; then
-              curl --fail --show-error --request GET "$url" \
-                --header "Authorization: Bearer $token"
+              echo "Tentando GET com token..."
+              code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request GET "$url" --header "Authorization: Bearer $token")
+              if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
+                echo "Sucesso! Deploy disparado via GET autenticado (HTTP $code)."
+                return 0
+              fi
+              
+              echo "Tentando POST com token..."
+              code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request POST "$url" --header "Authorization: Bearer $token" -H "Content-Type: application/json" -d '{}')
+              if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
+                echo "Sucesso! Deploy disparado via POST autenticado (HTTP $code)."
+                return 0
+              fi
+              
+              echo "Erro: Todas as tentativas falharam. Ultimo HTTP code: $code."
+              # Executa com fail no curl final para registrar o log com detalhe
+              curl --fail --show-error --request POST "$url" --header "Authorization: Bearer $token" -H "Content-Type: application/json" -d '{}'
+              return 1
             else
-              echo "Erro: COOLIFY_TOKEN nao definido e o webhook publico falhou com HTTP $code."
+              echo "Erro: COOLIFY_TOKEN nao definido e o webhook publico falhou."
               return 1
             fi
           }
@@ -108,19 +133,44 @@ jobs:
           trigger_deploy() {
             local url="$1"
             local token="$2"
-            echo "Tentando disparar deploy via webhook publico (sem autenticacao)..."
+            
+            echo "Tentando disparar deploy via GET sem autenticacao..."
             local code
             code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request GET "$url")
             if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
-              echo "Sucesso! Deploy disparado via webhook publico (HTTP $code)."
+              echo "Sucesso! Deploy disparado via GET publico (HTTP $code)."
               return 0
             fi
-            echo "Webhook publico retornou HTTP $code. Tentando com token de autorizacao..."
+            
+            echo "Tentando disparar deploy via POST sem autenticacao..."
+            code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request POST "$url" -H "Content-Type: application/json" -d '{}')
+            if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
+              echo "Sucesso! Deploy disparado via POST publico (HTTP $code)."
+              return 0
+            fi
+            
+            echo "Webhook publico falhou (HTTP $code). Tentando com token de autorizacao..."
             if [ -n "$token" ]; then
-              curl --fail --show-error --request GET "$url" \
-                --header "Authorization: Bearer $token"
+              echo "Tentando GET com token..."
+              code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request GET "$url" --header "Authorization: Bearer $token")
+              if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
+                echo "Sucesso! Deploy disparado via GET autenticado (HTTP $code)."
+                return 0
+              fi
+              
+              echo "Tentando POST com token..."
+              code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request POST "$url" --header "Authorization: Bearer $token" -H "Content-Type: application/json" -d '{}')
+              if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
+                echo "Sucesso! Deploy disparado via POST autenticado (HTTP $code)."
+                return 0
+              fi
+              
+              echo "Erro: Todas as tentativas falharam. Ultimo HTTP code: $code."
+              # Executa com fail no curl final para registrar o log com detalhe
+              curl --fail --show-error --request POST "$url" --header "Authorization: Bearer $token" -H "Content-Type: application/json" -d '{}'
+              return 1
             else
-              echo "Erro: COOLIFY_TOKEN nao definido e o webhook publico falhou com HTTP $code."
+              echo "Erro: COOLIFY_TOKEN nao definido e o webhook publico falhou."
               return 1
             fi
           }
