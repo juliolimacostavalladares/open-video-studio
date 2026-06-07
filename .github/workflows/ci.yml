@@ -3,11 +3,9 @@ name: CI
 on:
   pull_request:
     branches: [master]
-  push:
-    branches: [master]
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ci-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
@@ -46,7 +44,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run CI validation suite
+      - name: Run validation checks
         run: pnpm validate:ci
 
   e2e:
@@ -78,7 +76,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build project
+      - name: Build project for E2E
         run: pnpm build
 
       - name: Run E2E tests
