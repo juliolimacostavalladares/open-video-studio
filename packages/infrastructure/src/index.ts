@@ -3,7 +3,7 @@ export {
   createPipelineQueueEvents,
   createPipelineWorker,
   fakeFailureJobName,
-  fakeSuccessJobName
+  fakeSuccessJobName,
 } from "./queue.js";
 export {
   buildStorageObjectKey,
@@ -11,7 +11,7 @@ export {
   type StorageDriver,
   type StorageNamespace,
   type StorageObjectDescriptor,
-  type StorageService
+  type StorageService,
 } from "./storage.js";
 export {
   OmniVoiceStudioTTSBackend,
@@ -20,5 +20,13 @@ export {
   type TTSBackend,
   type TTSBackendErrorCode,
   type TTSBackendRequest,
-  type TTSVoiceProfile
+  type TTSVoiceProfile,
 } from "./tts.js";
+export {
+  MockAssetProvider,
+  AssetProviderError,
+  type AssetProvider,
+  type AssetProviderErrorCode,
+  type SuggestedAsset,
+  type SuggestedAssetKind,
+} from "./assets.js";

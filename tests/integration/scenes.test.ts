@@ -210,6 +210,13 @@ Explicação detalhada do assunto.`,
     expect(listBody.scenes).toHaveLength(2);
     expect(listBody.scenes[0].title).toBe("Abertura");
     expect(listBody.scenes[0].keywords).toContain("abertura");
+    expect(listBody.scenes[0].suggestedAssets).toBeDefined();
+    expect(listBody.scenes[0].suggestedAssets.length).toBeGreaterThanOrEqual(1);
+    expect(listBody.scenes[0].suggestedAssets[0]).toMatchObject({
+      provider: "mock-provider",
+      externalId: "mock-image-1",
+      kind: "image",
+    });
 
     // 5. Atualiza o rawScript do projeto para simular uma edição
     await prisma.project.update({
