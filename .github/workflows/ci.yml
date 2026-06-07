@@ -49,24 +49,14 @@ jobs:
       - name: Run ESLint
         run: pnpm lint
 
-      - name: Run typecheck
-        run: pnpm typecheck
-
       - name: Run build
         run: pnpm build
 
+      - name: Run typecheck
+        run: pnpm typecheck
+
       - name: Run unit tests
         run: pnpm test:unit
-
-      - name: Upload workspace metadata
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: ci-workspace-metadata
-          path: |
-            pnpm-lock.yaml
-            package.json
-          if-no-files-found: ignore
 
   integration-tests:
     name: Integration Tests
