@@ -19,18 +19,24 @@ jobs:
     steps:
       - name: Approve PR after successful CI
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY: ${{ github.repository }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          PR_NUMBER_FROM_PAYLOAD: ${{ github.event.workflow_run.pull_requests[0].number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Try to resolve PR number from event payload first
-          PR_NUMBER="${{ github.event.workflow_run.pull_requests[0].number }}"
+          set -euo pipefail
 
-          # If payload is empty or null, fetch using gh CLI
+          # Try to resolve PR number from event payload first
+          PR_NUMBER="$PR_NUMBER_FROM_PAYLOAD"
+
           if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
             echo "Payload PR_NUMBER is empty. Querying GitHub API for branch: $HEAD_BRANCH..."
-            PR_NUMBER=$(gh pr list --head "$HEAD_BRANCH" --repo "$REPOSITORY" --state open --json number --jq '.[0].number')
+            PR_NUMBER=$(curl --silent --show-error \
+              --header "Authorization: Bearer $GITHUB_TOKEN" \
+              --header "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/$REPOSITORY/pulls?state=open&head=${REPOSITORY%/*}:$HEAD_BRANCH" \
+              | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data[0]["number"] if data else "")')
           fi
 
           if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
@@ -39,7 +45,18 @@ jobs:
           fi
 
           echo "Approving PR #$PR_NUMBER..."
-          gh pr review "$PR_NUMBER" \
-            --repo "$REPOSITORY" \
-            --approve \
-            --body "Cometa do Merge confirma a orbita: CI verde no commit $HEAD_SHA. PR liberada para aterrissagem."
+          curl --silent --show-error --fail \
+            --request POST \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$REPOSITORY/pulls/$PR_NUMBER/reviews" \
+            --data "$(python3 - <<'PY'
+            import json
+            import os
+
+            print(json.dumps({
+              "event": "APPROVE",
+              "body": f"Cometa do Merge confirma a orbita: CI verde no commit {os.environ['HEAD_SHA']}. PR liberada para aterrissagem."
+            }))
+            PY
+            )"
