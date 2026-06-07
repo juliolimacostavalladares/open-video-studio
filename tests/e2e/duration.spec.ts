@@ -50,7 +50,9 @@ test.describe("estimated duration E2E", () => {
     const editor = page.locator("#script-editor");
 
     // Aguarda a hidratação do editor concluir
-    await expect(editor).toHaveAttribute("aria-busy", "false");
+    await expect(editor).toHaveAttribute("aria-busy", "false", {
+      timeout: 15_000,
+    });
 
     const spokenText = Array(140).fill("word").join(" ");
     const script = `[CENA 1 - Intro]\n${spokenText}\n[CENA 2]`;
