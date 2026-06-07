@@ -12,7 +12,7 @@ const composeArgs = [
   "-p",
   "open-video-studio-database",
   "-f",
-  "docker-compose.database.yml"
+  "docker-compose.database.yml",
 ];
 const databaseName = `open_video_studio_editor_test_${process.pid}`;
 const databaseUrl = `postgresql://postgres:postgres@127.0.0.1:54329/${databaseName}?schema=public`;
@@ -24,12 +24,18 @@ function runDockerCommand(args: string[]) {
     cwd: process.cwd(),
     env: process.env,
     stdio: "pipe",
-    encoding: "utf-8"
+    encoding: "utf-8",
   });
 }
 
 function isPostgresRunning() {
-  const output = runDockerCommand([...composeArgs, "ps", "--status", "running", "--services"]);
+  const output = runDockerCommand([
+    ...composeArgs,
+    "ps",
+    "--status",
+    "running",
+    "--services",
+  ]);
   return output
     .split("\n")
     .map((line) => line.trim())
@@ -49,7 +55,7 @@ async function waitForPostgres() {
         "-U",
         "postgres",
         "-d",
-        "postgres"
+        "postgres",
       ]);
       return;
     } catch {
@@ -74,7 +80,7 @@ function runPsqlWithRetry(sql: string, attempts = 10) {
         "-d",
         "postgres",
         "-c",
-        sql
+        sql,
       ]);
       return;
     } catch (error) {
@@ -95,20 +101,24 @@ beforeAll(async () => {
   runPsqlWithRetry(`CREATE DATABASE "${databaseName}";`);
   process.env.DATABASE_URL = databaseUrl;
 
-  execFileSync("pnpm", ["--filter", "@repo/database", "exec", "prisma", "migrate", "deploy"], {
-    cwd: process.cwd(),
-    env: { ...process.env, DATABASE_URL: databaseUrl },
-    stdio: "pipe"
-  });
+  execFileSync(
+    "pnpm",
+    ["--filter", "@repo/database", "exec", "prisma", "migrate", "deploy"],
+    {
+      cwd: process.cwd(),
+      env: { ...process.env, DATABASE_URL: databaseUrl },
+      stdio: "pipe",
+    },
+  );
 });
 
 afterAll(async () => {
   const { prisma } = await import("../../packages/database/src/client.js");
   await prisma.$disconnect();
   runPsqlWithRetry(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`);
-  if (startedPostgresForSuite) {
-    runDockerCommand([...composeArgs, "down"]);
-  }
+  // if (startedPostgresForSuite) {
+  //   runDockerCommand([...composeArgs, "down"]);
+  // }
 });
 
 describe("PATCH /projects/:id/script", () => {
@@ -120,15 +130,16 @@ describe("PATCH /projects/:id/script", () => {
 
     // Cria projeto diretamente no banco
     const project = await prisma.project.create({
-      data: { title: "Projeto Editor Test", status: "draft" }
+      data: { title: "Projeto Editor Test", status: "draft" },
     });
 
-    const newScript = "[CENA 1]\n\nTexto editado pelo usuário\n\n[CENA 2]\n\nConteúdo da cena 2";
+    const newScript =
+      "[CENA 1]\n\nTexto editado pelo usuário\n\n[CENA 2]\n\nConteúdo da cena 2";
 
     const response = await app.inject({
       method: "PATCH",
       url: `/projects/${project.id}/script`,
-      payload: { rawScript: newScript }
+      payload: { rawScript: newScript },
     });
 
     expect(response.statusCode).toBe(200);
@@ -159,7 +170,11 @@ describe("PATCH /projects/:id/script", () => {
     await app.ready();
 
     const project = await prisma.project.create({
-      data: { title: "Projeto Reload Test", status: "scripting", rawScript: "script inicial" }
+      data: {
+        title: "Projeto Reload Test",
+        status: "scripting",
+        rawScript: "script inicial",
+      },
     });
 
     const editedScript = "[CENA 1]\n\nScript editado e persistido";
@@ -167,13 +182,13 @@ describe("PATCH /projects/:id/script", () => {
     await app.inject({
       method: "PATCH",
       url: `/projects/${project.id}/script`,
-      payload: { rawScript: editedScript }
+      payload: { rawScript: editedScript },
     });
 
     // Simula "reload" — busca novamente
     const getResponse = await app.inject({
       method: "GET",
-      url: `/projects/${project.id}`
+      url: `/projects/${project.id}`,
     });
 
     expect(getResponse.statusCode).toBe(200);
@@ -200,13 +215,13 @@ describe("PATCH /projects/:id/script", () => {
     await app.ready();
 
     const project = await prisma.project.create({
-      data: { title: "Projeto Validação", status: "draft" }
+      data: { title: "Projeto Validação", status: "draft" },
     });
 
     const response = await app.inject({
       method: "PATCH",
       url: `/projects/${project.id}/script`,
-      payload: {}
+      payload: {},
     });
 
     expect(response.statusCode).toBe(400);
@@ -222,7 +237,7 @@ describe("PATCH /projects/:id/script", () => {
     const response = await app.inject({
       method: "PATCH",
       url: "/projects/projeto-que-nao-existe/script",
-      payload: { rawScript: "texto" }
+      payload: { rawScript: "texto" },
     });
 
     expect(response.statusCode).toBe(404);

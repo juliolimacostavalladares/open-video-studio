@@ -2,7 +2,13 @@ const databaseName = `open_video_studio_scene_audio_${process.pid}`;
 const databaseUrl = `postgresql://postgres:postgres@127.0.0.1:54329/${databaseName}?schema=public`;
 process.env.DATABASE_URL = databaseUrl;
 
-const composeArgs = ["compose", "-p", "open-video-studio-database", "-f", "docker-compose.database.yml"];
+const composeArgs = [
+  "compose",
+  "-p",
+  "open-video-studio-database",
+  "-f",
+  "docker-compose.database.yml",
+];
 
 import { execFileSync } from "node:child_process";
 import { createServer } from "node:http";
@@ -53,12 +59,18 @@ function runDockerCommand(args: string[]) {
     cwd: process.cwd(),
     encoding: "utf-8",
     env: process.env,
-    stdio: "pipe"
+    stdio: "pipe",
   });
 }
 
 function isPostgresRunning() {
-  const output = runDockerCommand([...composeArgs, "ps", "--status", "running", "--services"]);
+  const output = runDockerCommand([
+    ...composeArgs,
+    "ps",
+    "--status",
+    "running",
+    "--services",
+  ]);
 
   return output
     .split("\n")
@@ -71,7 +83,17 @@ async function waitForPostgres() {
 
   while (Date.now() < timeoutAt) {
     try {
-      runDockerCommand([...composeArgs, "exec", "-T", "postgres", "pg_isready", "-U", "postgres", "-d", "postgres"]);
+      runDockerCommand([
+        ...composeArgs,
+        "exec",
+        "-T",
+        "postgres",
+        "pg_isready",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres",
+      ]);
       return;
     } catch {
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -82,7 +104,19 @@ async function waitForPostgres() {
 }
 
 function runPsql(sql: string) {
-  runDockerCommand([...composeArgs, "exec", "-T", "postgres", "psql", "-U", "postgres", "-d", "postgres", "-c", sql]);
+  runDockerCommand([
+    ...composeArgs,
+    "exec",
+    "-T",
+    "postgres",
+    "psql",
+    "-U",
+    "postgres",
+    "-d",
+    "postgres",
+    "-c",
+    sql,
+  ]);
 }
 
 async function runPsqlWithRetry(sql: string, attempts = 10) {
@@ -109,7 +143,7 @@ beforeAll(async () => {
       generationCalls += 1;
       response.writeHead(200, {
         "Content-Type": "audio/wav",
-        "X-Audio-Duration": "2.0"
+        "X-Audio-Duration": "2.0",
       });
       response.end(Buffer.from(`scene-audio-${generationCalls}`));
       return;
@@ -137,7 +171,9 @@ beforeAll(async () => {
   }
 
   await waitForPostgres();
-  await runPsqlWithRetry(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`);
+  await runPsqlWithRetry(
+    `DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`,
+  );
   await runPsqlWithRetry(`CREATE DATABASE "${databaseName}";`);
 
   process.env.DATABASE_URL = databaseUrl;
@@ -145,14 +181,18 @@ beforeAll(async () => {
   process.env.STORAGE_DRIVER = "local";
   process.env.STORAGE_BASE_PATH = storagePath;
 
-  execFileSync("pnpm", ["--filter", "@repo/database", "exec", "prisma", "migrate", "deploy"], {
-    cwd: process.cwd(),
-    env: {
-      ...process.env,
-      DATABASE_URL: databaseUrl
+  execFileSync(
+    "pnpm",
+    ["--filter", "@repo/database", "exec", "prisma", "migrate", "deploy"],
+    {
+      cwd: process.cwd(),
+      env: {
+        ...process.env,
+        DATABASE_URL: databaseUrl,
+      },
+      stdio: "pipe",
     },
-    stdio: "pipe"
-  });
+  );
 
   const { buildApiApp } = await import("../../apps/api/src/app.js");
   app = buildApiApp();
@@ -162,7 +202,9 @@ afterAll(async () => {
   const { prisma } = await import("../../packages/database/src/client.js");
   await app.close();
   await prisma.$disconnect();
-  await runPsqlWithRetry(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`);
+  await runPsqlWithRetry(
+    `DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`,
+  );
   await rm(storagePath, { force: true, recursive: true });
 
   await new Promise<void>((resolve, reject) => {
@@ -176,9 +218,9 @@ afterAll(async () => {
     });
   });
 
-  if (startedPostgresForSuite) {
-    runDockerCommand([...composeArgs, "down"]);
-  }
+  // if (startedPostgresForSuite) {
+  //   runDockerCommand([...composeArgs, "down"]);
+  // }
 });
 
 describe("scene audio generation routes (integration)", () => {
@@ -189,8 +231,8 @@ describe("scene audio generation routes (integration)", () => {
         ...process.env,
         OMNIVOICE_BASE_URL: backendUrl,
         STORAGE_BASE_PATH: storagePath,
-        STORAGE_DRIVER: "local"
-      })
+        STORAGE_DRIVER: "local",
+      }),
     );
 
     const project = await prisma.project.create({
@@ -201,8 +243,8 @@ Texto da abertura.
 [CENA 2 - Encerramento]
 Texto do encerramento.`,
         status: "draft",
-        title: "Projeto com audio por cena"
-      }
+        title: "Projeto com audio por cena",
+      },
     });
 
     const voiceProfile = await prisma.voiceProfile.create({
@@ -212,43 +254,48 @@ Texto do encerramento.`,
         sampleDurationSeconds: 3.4,
         sampleMimeType: "audio/wav",
         samplePath: "audio/voice-profiles/scene.wav",
-        status: "active"
-      }
+        status: "active",
+      },
     });
 
-    await storage.putObject("audio", "voice-profiles/scene.wav", buildWavBuffer(3.4), "audio/wav");
+    await storage.putObject(
+      "audio",
+      "voice-profiles/scene.wav",
+      buildWavBuffer(3.4),
+      "audio/wav",
+    );
 
     await prisma.project.update({
       where: { id: project.id },
-      data: { voiceProfileId: voiceProfile.id }
+      data: { voiceProfileId: voiceProfile.id },
     });
 
     const recomposeResponse = await app.inject({
       method: "POST",
-      url: `/projects/${project.id}/scenes/recompose`
+      url: `/projects/${project.id}/scenes/recompose`,
     });
 
     expect(recomposeResponse.statusCode).toBe(200);
 
     const blockedRender = await app.inject({
       method: "POST",
-      url: `/projects/${project.id}/renders`
+      url: `/projects/${project.id}/renders`,
     });
 
     expect(blockedRender.statusCode).toBe(409);
     expect(blockedRender.json()).toMatchObject({
-      error: "AUDIO_REQUIRED"
+      error: "AUDIO_REQUIRED",
     });
 
     const firstGeneration = await app.inject({
       method: "POST",
-      url: `/projects/${project.id}/scenes/audio/generate`
+      url: `/projects/${project.id}/scenes/audio/generate`,
     });
 
     expect(firstGeneration.statusCode).toBe(200);
     expect(firstGeneration.json()).toMatchObject({
       generatedCount: 2,
-      skippedCount: 0
+      skippedCount: 0,
     });
     expect(generationCalls).toBe(2);
 
@@ -260,44 +307,50 @@ Texto do encerramento.`,
         audioPath: true,
         id: true,
         orderIndex: true,
-        status: true
-      }
+        status: true,
+      },
     });
 
     expect(scenesAfterFirstGeneration).toHaveLength(2);
-    expect(scenesAfterFirstGeneration.every((scene) => scene.status === "ready")).toBe(true);
-    expect(scenesAfterFirstGeneration.every((scene) => scene.audioPath?.startsWith("audio/scenes/"))).toBe(true);
+    expect(
+      scenesAfterFirstGeneration.every((scene) => scene.status === "ready"),
+    ).toBe(true);
+    expect(
+      scenesAfterFirstGeneration.every((scene) =>
+        scene.audioPath?.startsWith("audio/scenes/"),
+      ),
+    ).toBe(true);
 
     const sceneToEdit = scenesAfterFirstGeneration[1];
 
     await prisma.scene.update({
       where: { id: sceneToEdit?.id },
       data: {
-        script: "Texto do encerramento revisado."
-      }
+        script: "Texto do encerramento revisado.",
+      },
     });
 
     const secondGeneration = await app.inject({
       method: "POST",
-      url: `/projects/${project.id}/scenes/audio/generate`
+      url: `/projects/${project.id}/scenes/audio/generate`,
     });
 
     expect(secondGeneration.statusCode).toBe(200);
     expect(secondGeneration.json()).toMatchObject({
       generatedCount: 1,
-      skippedCount: 1
+      skippedCount: 1,
     });
     expect(generationCalls).toBe(3);
 
     const renderResponse = await app.inject({
       method: "POST",
-      url: `/projects/${project.id}/renders`
+      url: `/projects/${project.id}/renders`,
     });
 
     expect(renderResponse.statusCode).toBe(201);
     expect(renderResponse.json()).toMatchObject({
       projectId: project.id,
-      status: "queued"
+      status: "queued",
     });
   });
 });

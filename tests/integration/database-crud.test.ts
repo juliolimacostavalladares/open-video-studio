@@ -2,7 +2,13 @@ import { execFileSync } from "node:child_process";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-const composeArgs = ["compose", "-p", "open-video-studio-database", "-f", "docker-compose.database.yml"];
+const composeArgs = [
+  "compose",
+  "-p",
+  "open-video-studio-database",
+  "-f",
+  "docker-compose.database.yml",
+];
 const databaseName = `open_video_studio_test_${process.pid}`;
 const databaseUrl = `postgresql://postgres:postgres@127.0.0.1:54329/${databaseName}?schema=public`;
 
@@ -13,12 +19,18 @@ function runDockerCommand(args: string[]) {
     cwd: process.cwd(),
     env: process.env,
     stdio: "pipe",
-    encoding: "utf-8"
+    encoding: "utf-8",
   });
 }
 
 function isPostgresRunning() {
-  const output = runDockerCommand([...composeArgs, "ps", "--status", "running", "--services"]);
+  const output = runDockerCommand([
+    ...composeArgs,
+    "ps",
+    "--status",
+    "running",
+    "--services",
+  ]);
 
   return output
     .split("\n")
@@ -40,7 +52,7 @@ async function waitForPostgres() {
         "-U",
         "postgres",
         "-d",
-        "postgres"
+        "postgres",
       ]);
       return;
     } catch {
@@ -63,7 +75,7 @@ function runPsql(sql: string) {
     "-d",
     "postgres",
     "-c",
-    sql
+    sql,
   ]);
 }
 
@@ -91,30 +103,38 @@ beforeAll(async () => {
 
   await waitForPostgres();
 
-  await runPsqlWithRetry(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`);
+  await runPsqlWithRetry(
+    `DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`,
+  );
   await runPsqlWithRetry(`CREATE DATABASE "${databaseName}";`);
 
   process.env.DATABASE_URL = databaseUrl;
 
-  execFileSync("pnpm", ["--filter", "@repo/database", "exec", "prisma", "migrate", "deploy"], {
-    cwd: process.cwd(),
-    env: {
-      ...process.env,
-      DATABASE_URL: databaseUrl
+  execFileSync(
+    "pnpm",
+    ["--filter", "@repo/database", "exec", "prisma", "migrate", "deploy"],
+    {
+      cwd: process.cwd(),
+      env: {
+        ...process.env,
+        DATABASE_URL: databaseUrl,
+      },
+      stdio: "pipe",
     },
-    stdio: "pipe"
-  });
+  );
 });
 
 afterAll(async () => {
   const { prisma } = await import("../../packages/database/src/client.js");
   await prisma.$disconnect();
 
-  await runPsqlWithRetry(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`);
+  await runPsqlWithRetry(
+    `DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`,
+  );
 
-  if (startedPostgresForSuite) {
-    runDockerCommand([...composeArgs, "down"]);
-  }
+  // if (startedPostgresForSuite) {
+  //   runDockerCommand([...composeArgs, "down"]);
+  // }
 });
 
 describe("database package", () => {
@@ -124,8 +144,8 @@ describe("database package", () => {
     const project = await prisma.project.create({
       data: {
         title: "Integration Project",
-        status: "draft"
-      }
+        status: "draft",
+      },
     });
 
     const scene = await prisma.scene.create({
@@ -134,13 +154,13 @@ describe("database package", () => {
         projectId: project.id,
         script: "Cena de teste",
         status: "draft",
-        title: "Cena 1"
-      }
+        title: "Cena 1",
+      },
     });
 
     const storedProject = await prisma.project.findUnique({
       where: { id: project.id },
-      include: { scenes: true }
+      include: { scenes: true },
     });
 
     expect(storedProject?.scenes).toHaveLength(1);

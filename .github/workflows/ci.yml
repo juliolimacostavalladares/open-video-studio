@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  quality-gate:
-    name: Quality Gate
+  validate:
+    name: Validate
     runs-on: self-hosted
     steps:
       - name: Prepare runner workspace
@@ -46,85 +46,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run ESLint
-        run: pnpm lint
-
-      - name: Run build
-        run: pnpm build
-
-      - name: Run typecheck
-        run: pnpm typecheck
-
-      - name: Run unit tests
-        run: pnpm test:unit
-
-  integration-tests:
-    name: Integration Tests
-    runs-on: self-hosted
-    needs: quality-gate
-    steps:
-      - name: Prepare runner workspace
-        run: |
-          docker run --rm \
-            -v "${GITHUB_WORKSPACE}:/work" \
-            -w /work \
-            alpine sh -c '
-              if [ -d /work ]; then
-                chown -R $(stat -c "%u:%g" /work) /work || true
-                find /work -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-              fi
-            ' || true
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          clean: true
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10.32.1
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run integration tests
-        run: pnpm test:integration
-
-  e2e-tests:
-    name: E2E Tests
-    runs-on: self-hosted
-    needs: integration-tests
-    container:
-      image: mcr.microsoft.com/playwright:v1.56.1-noble
-    steps:
-      - name: Prepare git safe directory
-        run: git config --global --add safe.directory /__w/open-video-studio/open-video-studio
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          clean: true
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10.32.1
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run E2E tests
-        run: pnpm test:e2e
+      - name: Run CI validation suite
+        run: pnpm validate:ci

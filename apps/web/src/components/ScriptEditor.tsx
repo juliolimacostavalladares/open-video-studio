@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { useScriptEditor, type SaveStatus } from "../hooks/useScriptEditor";
 import { calculateEstimatedDuration } from "../utils/duration";
 
@@ -10,7 +12,11 @@ interface ScriptEditorProps {
   apiBaseUrl?: string;
 }
 
-function SaveIndicator({ status, lastSavedAt, errorMessage }: {
+function SaveIndicator({
+  status,
+  lastSavedAt,
+  errorMessage,
+}: {
   status: SaveStatus;
   lastSavedAt: Date | null;
   errorMessage: string | null;
@@ -19,7 +25,13 @@ function SaveIndicator({ status, lastSavedAt, errorMessage }: {
     return (
       <span
         id="save-status"
-        style={{ color: "#888", fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}
+        style={{
+          color: "#888",
+          fontSize: 13,
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+        }}
         aria-live="polite"
         aria-label="Salvando roteiro..."
       >
@@ -30,7 +42,7 @@ function SaveIndicator({ status, lastSavedAt, errorMessage }: {
             borderRadius: "50%",
             background: "#f59e0b",
             display: "inline-block",
-            animation: "pulse 1s infinite"
+            animation: "pulse 1s infinite",
           }}
         />
         Salvando...
@@ -42,7 +54,13 @@ function SaveIndicator({ status, lastSavedAt, errorMessage }: {
     return (
       <span
         id="save-status"
-        style={{ color: "#22c55e", fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}
+        style={{
+          color: "#22c55e",
+          fontSize: 13,
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+        }}
         aria-live="polite"
         aria-label="Roteiro salvo"
       >
@@ -52,10 +70,14 @@ function SaveIndicator({ status, lastSavedAt, errorMessage }: {
             height: 8,
             borderRadius: "50%",
             background: "#22c55e",
-            display: "inline-block"
+            display: "inline-block",
           }}
         />
-        Salvo às {lastSavedAt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+        Salvo às{" "}
+        {lastSavedAt.toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
       </span>
     );
   }
@@ -64,7 +86,13 @@ function SaveIndicator({ status, lastSavedAt, errorMessage }: {
     return (
       <span
         id="save-status"
-        style={{ color: "#ef4444", fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}
+        style={{
+          color: "#ef4444",
+          fontSize: 13,
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+        }}
         aria-live="assertive"
         aria-label={`Erro ao salvar: ${errorMessage ?? "erro desconhecido"}`}
       >
@@ -74,7 +102,7 @@ function SaveIndicator({ status, lastSavedAt, errorMessage }: {
             height: 8,
             borderRadius: "50%",
             background: "#ef4444",
-            display: "inline-block"
+            display: "inline-block",
           }}
         />
         Erro ao salvar
@@ -102,12 +130,23 @@ function formatDuration(seconds: number): string {
   return `${mins}m ${secs}s`;
 }
 
-export function ScriptEditor({ projectId, initialScript, projectTitle, apiBaseUrl }: ScriptEditorProps) {
-  const { script, saveStatus, lastSavedAt, errorMessage, onChange, save } = useScriptEditor({
-    projectId,
-    initialScript,
-    apiBaseUrl
-  });
+export function ScriptEditor({
+  projectId,
+  initialScript,
+  projectTitle,
+  apiBaseUrl,
+}: ScriptEditorProps) {
+  const [isHydrated, setIsHydrated] = useState(false);
+  const { script, saveStatus, lastSavedAt, errorMessage, onChange, save } =
+    useScriptEditor({
+      projectId,
+      initialScript,
+      apiBaseUrl,
+    });
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const duration = calculateEstimatedDuration(script);
 
@@ -117,7 +156,7 @@ export function ScriptEditor({ projectId, initialScript, projectTitle, apiBaseUr
         display: "flex",
         flexDirection: "column",
         gap: 16,
-        height: "100%"
+        height: "100%",
       }}
     >
       {/* Toolbar */}
@@ -129,7 +168,7 @@ export function ScriptEditor({ projectId, initialScript, projectTitle, apiBaseUr
           padding: "12px 20px",
           background: "rgba(255,255,255,0.06)",
           borderRadius: 12,
-          border: "1px solid rgba(255,255,255,0.08)"
+          border: "1px solid rgba(255,255,255,0.08)",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -138,7 +177,7 @@ export function ScriptEditor({ projectId, initialScript, projectTitle, apiBaseUr
               fontSize: 16,
               fontWeight: 600,
               margin: 0,
-              color: "#f1f5f9"
+              color: "#f1f5f9",
             }}
           >
             {projectTitle}
@@ -156,7 +195,7 @@ export function ScriptEditor({ projectId, initialScript, projectTitle, apiBaseUr
               borderRadius: 6,
               display: "flex",
               alignItems: "center",
-              gap: 4
+              gap: 4,
             }}
             aria-label={`Duração estimada: ${formatDuration(duration.average)}`}
           >
@@ -178,18 +217,22 @@ export function ScriptEditor({ projectId, initialScript, projectTitle, apiBaseUr
           <button
             id="save-button"
             onClick={() => void save()}
-            disabled={saveStatus === "saving"}
+            disabled={!isHydrated || saveStatus === "saving"}
             aria-label="Salvar roteiro agora"
             style={{
               padding: "8px 18px",
               borderRadius: 8,
               border: "none",
-              background: saveStatus === "saving" ? "#334155" : "#6366f1",
+              background:
+                !isHydrated || saveStatus === "saving" ? "#334155" : "#6366f1",
               color: "#fff",
               fontSize: 13,
               fontWeight: 600,
-              cursor: saveStatus === "saving" ? "not-allowed" : "pointer",
-              transition: "background 0.2s"
+              cursor:
+                !isHydrated || saveStatus === "saving"
+                  ? "not-allowed"
+                  : "pointer",
+              transition: "background 0.2s",
             }}
           >
             {saveStatus === "saving" ? "Salvando..." : "Salvar"}
@@ -202,9 +245,11 @@ export function ScriptEditor({ projectId, initialScript, projectTitle, apiBaseUr
         id="script-editor"
         value={script}
         onChange={(e) => onChange(e.target.value)}
+        readOnly={!isHydrated}
         placeholder={`[CENA 1]\n\nDescreva o conteúdo da primeira cena aqui...\n\n[CENA 2]\n\nConteúdo da segunda cena...`}
         aria-label="Editor de roteiro"
         aria-describedby="save-status"
+        aria-busy={!isHydrated}
         style={{
           flex: 1,
           width: "100%",
@@ -219,7 +264,7 @@ export function ScriptEditor({ projectId, initialScript, projectTitle, apiBaseUr
           fontFamily: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
           resize: "vertical",
           outline: "none",
-          boxSizing: "border-box"
+          boxSizing: "border-box",
         }}
         onFocus={(e) => {
           e.target.style.borderColor = "rgba(99,102,241,0.5)";
@@ -234,7 +279,12 @@ export function ScriptEditor({ projectId, initialScript, projectTitle, apiBaseUr
       {errorMessage && (
         <p
           role="alert"
-          style={{ color: "#f87171", fontSize: 13, margin: 0, padding: "0 4px" }}
+          style={{
+            color: "#f87171",
+            fontSize: 13,
+            margin: 0,
+            padding: "0 4px",
+          }}
         >
           ⚠ {errorMessage}
         </p>
