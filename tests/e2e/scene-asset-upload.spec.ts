@@ -106,7 +106,7 @@ Texto base da primeira cena.`;
       buffer: Buffer.from("fake-png-binary-data"),
     });
 
-    // Verify upload API called and UI updated
+    // Verify upload API call was made and the UI reflects the manual asset
     await expect(
       page.getByText("Asset enviado e associado com sucesso!"),
     ).toBeVisible();
