@@ -12,6 +12,8 @@ import {
 import {
   OmniVoiceStudioTTSBackend,
   createStorageService,
+  MockAssetProvider,
+  type SuggestedAsset,
 } from "@repo/infrastructure";
 
 import { createVoiceSampleFile } from "./audio-support.js";
@@ -304,12 +306,30 @@ export async function scenesRoutes(app: FastifyInstance): Promise<void> {
       }
 
       const scenes = await listProjectScenes(id);
+      const assetProvider = new MockAssetProvider();
+
+      const scenesWithSuggestions = await Promise.all(
+        scenes.map(async (scene) => {
+          let suggestedAssets: SuggestedAsset[] = [];
+          try {
+            suggestedAssets = await assetProvider.search(scene.keywords);
+          } catch (error) {
+            app.log.error(
+              error,
+              `Erro ao buscar assets para a cena ${scene.id}`,
+            );
+          }
+
+          return {
+            ...toSceneResponse(scene, project.voiceProfileId),
+            suggestedAssets,
+          };
+        }),
+      );
 
       return reply.status(200).send({
         projectId: id,
-        scenes: scenes.map((scene) =>
-          toSceneResponse(scene, project.voiceProfileId),
-        ),
+        scenes: scenesWithSuggestions,
       });
     },
   );
@@ -503,7 +523,6 @@ export async function scenesRoutes(app: FastifyInstance): Promise<void> {
           message: "Projeto não possui cenas para gerar áudio",
         });
       }
-
       const { cleanup, tempSamplePath } = await createVoiceSampleFile(
         project.voiceProfile.samplePath,
         `${project.voiceProfile.id}.wav`,
