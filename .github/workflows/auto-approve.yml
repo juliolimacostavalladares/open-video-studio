@@ -45,18 +45,10 @@ jobs:
           fi
 
           echo "Approving PR #$PR_NUMBER..."
+          REVIEW_BODY=$(python3 -c 'import json, os; print(json.dumps({"event": "APPROVE", "body": f"Cometa do Merge confirma a orbita: CI verde no commit {os.environ[\"HEAD_SHA\"]}. PR liberada para aterrissagem."}))')
           curl --silent --show-error --fail \
             --request POST \
             --header "Authorization: Bearer $GITHUB_TOKEN" \
             --header "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/$REPOSITORY/pulls/$PR_NUMBER/reviews" \
-            --data "$(python3 - <<'PY'
-            import json
-            import os
-
-            print(json.dumps({
-              "event": "APPROVE",
-              "body": f"Cometa do Merge confirma a orbita: CI verde no commit {os.environ['HEAD_SHA']}. PR liberada para aterrissagem."
-            }))
-            PY
-            )"
+            --data "$REVIEW_BODY"
