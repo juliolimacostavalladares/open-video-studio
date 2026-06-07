@@ -4,7 +4,6 @@ on:
   workflow_run:
     workflows: ["CI"]
     types: [completed]
-    branches: [master]
 
 concurrency:
   group: auto-approve-${{ github.event.workflow_run.id }}
@@ -21,15 +20,25 @@ jobs:
       - name: Approve PR after successful CI
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
           REPOSITORY: ${{ github.repository }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
         run: |
-          if [ -z "$PR_NUMBER" ]; then
-            echo "Skipping auto-approve: no PR associated with this workflow run."
+          # Try to resolve PR number from event payload first
+          PR_NUMBER="${{ github.event.workflow_run.pull_requests[0].number }}"
+
+          # If payload is empty or null, fetch using gh CLI
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
+            echo "Payload PR_NUMBER is empty. Querying GitHub API for branch: $HEAD_BRANCH..."
+            PR_NUMBER=$(gh pr list --head "$HEAD_BRANCH" --repo "$REPOSITORY" --state open --json number --jq '.[0].number')
+          fi
+
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
+            echo "Skipping auto-approve: no open PR found for branch $HEAD_BRANCH."
             exit 0
           fi
 
+          echo "Approving PR #$PR_NUMBER..."
           gh pr review "$PR_NUMBER" \
             --repo "$REPOSITORY" \
             --approve \
