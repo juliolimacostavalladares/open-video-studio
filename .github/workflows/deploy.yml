@@ -1,9 +1,7 @@
 name: Deploy to Coolify
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
+  push:
     branches: [master]
 
 env:
@@ -15,7 +13,6 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}
     runs-on: self-hosted
     environment: production
     permissions:
@@ -37,14 +34,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
           clean: true
 
       - name: Derive image names
         id: image-meta
         run: |
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
-          echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+          echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -116,150 +112,6 @@ jobs:
         run: |
           if [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_WEBHOOK_BACKEND" ]; then
             echo "Skipping API redeploy: COOLIFY_TOKEN or COOLIFY_WEBHOOK_BACKEND is not configured."
-            exit 0
-          fi
-
-          RESPONSE=$(curl --write-out "\n%{http_code}" --silent --show-error \
-            --request GET "$COOLIFY_WEBHOOK_BACKEND" \
-            --header "Authorization: Bearer $COOLIFY_TOKEN")
-
-          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
-          BODY=$(echo "$RESPONSE" | sed '$d')
-
-          echo "Response Body:"
-          echo "$BODY"
-          echo "HTTP Status: $HTTP_STATUS"
-
-          if [ "$HTTP_STATUS" -ne 200 ] && [ "$HTTP_STATUS" -ne 201 ] && [ "$HTTP_STATUS" -ne 202 ]; then
-            echo "Error: Coolify API returned HTTP status $HTTP_STATUS"
-            exit 1
-          fi
-
-          if echo "$BODY" | grep -q -i -E "<html|/login|redirect"; then
-            echo "Error: Coolify returned login page or redirect. Please check your credentials and webhook URL."
-            exit 1
-          fi
-
-  rollback:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && needs.deploy.result == 'failure' }}
-    needs: deploy
-    runs-on: self-hosted
-    permissions:
-      contents: write
-      packages: write
-    steps:
-      - name: Prepare runner workspace
-        run: |
-          docker run --rm \
-            -v "${GITHUB_WORKSPACE}:/work" \
-            -w /work \
-            alpine sh -c '
-              if [ -d /work ]; then
-                chown -R $(stat -c "%u:%g" /work) /work || true
-                find /work -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-              fi
-            ' || true
-
-      - name: Checkout master
-        uses: actions/checkout@v4
-        with:
-          ref: master
-          fetch-depth: 0
-          clean: true
-
-      - name: Revert failed deploy commit
-        env:
-          FAILED_SHA: ${{ github.event.workflow_run.head_sha }}
-        run: |
-          git config user.name "Rollback Ranger"
-          git config user.email "rollback-ranger[bot]@users.noreply.github.com"
-
-          if git rev-list --parents -n 1 "$FAILED_SHA" | grep -qE '^[^ ]+ [^ ]+ [^ ]+'; then
-            git revert --mainline 1 --no-edit "$FAILED_SHA"
-          else
-            git revert --no-edit "$FAILED_SHA"
-          fi
-
-      - name: Push rollback commit
-        run: |
-          git push origin HEAD:master
-
-      - name: Derive rollback image names
-        id: rollback-image-meta
-        run: |
-          echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
-          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push rollback web image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile.web
-          platforms: linux/amd64
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ steps.rollback-image-meta.outputs.owner }}/open-video-studio-web:latest
-            ${{ env.REGISTRY }}/${{ steps.rollback-image-meta.outputs.owner }}/open-video-studio-web:${{ steps.rollback-image-meta.outputs.sha }}
-
-      - name: Build and push rollback api image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile.api
-          platforms: linux/amd64
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ steps.rollback-image-meta.outputs.owner }}/open-video-studio-api:latest
-            ${{ env.REGISTRY }}/${{ steps.rollback-image-meta.outputs.owner }}/open-video-studio-api:${{ steps.rollback-image-meta.outputs.sha }}
-
-      - name: Trigger Coolify Web rollback redeploy
-        env:
-          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
-          COOLIFY_WEBHOOK_WEB: ${{ secrets.COOLIFY_WEBHOOK_WEB }}
-        run: |
-          if [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_WEBHOOK_WEB" ]; then
-            echo "Skipping web rollback redeploy: COOLIFY_TOKEN or COOLIFY_WEBHOOK_WEB is not configured."
-            exit 0
-          fi
-
-          RESPONSE=$(curl --write-out "\n%{http_code}" --silent --show-error \
-            --request GET "$COOLIFY_WEBHOOK_WEB" \
-            --header "Authorization: Bearer $COOLIFY_TOKEN")
-
-          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
-          BODY=$(echo "$RESPONSE" | sed '$d')
-
-          echo "Response Body:"
-          echo "$BODY"
-          echo "HTTP Status: $HTTP_STATUS"
-
-          if [ "$HTTP_STATUS" -ne 200 ] && [ "$HTTP_STATUS" -ne 201 ] && [ "$HTTP_STATUS" -ne 202 ]; then
-            echo "Error: Coolify API returned HTTP status $HTTP_STATUS"
-            exit 1
-          fi
-
-          if echo "$BODY" | grep -q -i -E "<html|/login|redirect"; then
-            echo "Error: Coolify returned login page or redirect. Please check your credentials and webhook URL."
-            exit 1
-          fi
-
-      - name: Trigger Coolify API rollback redeploy
-        env:
-          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
-          COOLIFY_WEBHOOK_BACKEND: ${{ secrets.COOLIFY_WEBHOOK_BACKEND }}
-        run: |
-          if [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_WEBHOOK_BACKEND" ]; then
-            echo "Skipping API rollback redeploy: COOLIFY_TOKEN or COOLIFY_WEBHOOK_BACKEND is not configured."
             exit 0
           fi
 

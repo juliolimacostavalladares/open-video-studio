@@ -224,7 +224,6 @@ if (relevantFiles.length === 0) {
   process.exit(0);
 }
 
-run("pnpm", ["build"]);
 run("pnpm", ["typecheck"]);
 
 if (shouldRunFullUnitSuite(changedFiles)) {
@@ -259,6 +258,8 @@ if (shouldRunFullUnitSuite(changedFiles)) {
 if (shouldRunIntegrationSuite(changedFiles)) {
   run("pnpm", ["test:integration"]);
 }
+
+run("pnpm", ["build"]);
 
 const changedE2ETests = selectChangedE2ETestFiles(changedFiles);
 if (changedE2ETests.length > 0 && !shouldRunFullE2ESuite(changedFiles)) {
