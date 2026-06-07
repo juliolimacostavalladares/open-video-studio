@@ -7,11 +7,15 @@ import {
   parseScenes,
   prisma,
   sceneHasValidAudio,
-  sceneNeedsAudioGeneration
+  sceneNeedsAudioGeneration,
 } from "@repo/database";
-import { OmniVoiceStudioTTSBackend, createStorageService } from "@repo/infrastructure";
+import {
+  OmniVoiceStudioTTSBackend,
+  createStorageService,
+} from "@repo/infrastructure";
 
 import { createVoiceSampleFile } from "./audio-support.js";
+import { validateAsset } from "../assets/validation.js";
 
 interface SceneListItem {
   id: string;
@@ -28,6 +32,14 @@ interface SceneListItem {
   audioMimeType: string | null;
   audioPath: string | null;
   voiceProfileId: string | null;
+  assetId: string | null;
+  asset: {
+    id: string;
+    kind: string;
+    path: string;
+    source: string;
+    status: string;
+  } | null;
 }
 
 interface RecomposeResponse {
@@ -61,11 +73,14 @@ function invalidateSceneAudio() {
     audioMimeType: null,
     audioPath: null,
     status: "draft" as const,
-    voiceProfileId: null
+    voiceProfileId: null,
   };
 }
 
-function toSceneResponse(scene: SceneListItem, selectedVoiceProfileId: string | null) {
+function toSceneResponse(
+  scene: SceneListItem,
+  selectedVoiceProfileId: string | null,
+) {
   return {
     audioContentHash: scene.audioContentHash,
     audioDurationSeconds: scene.audioDurationSeconds,
@@ -77,7 +92,7 @@ function toSceneResponse(scene: SceneListItem, selectedVoiceProfileId: string | 
       audioContentHash: scene.audioContentHash,
       audioPath: scene.audioPath,
       script: scene.script,
-      voiceProfileId: selectedVoiceProfileId
+      voiceProfileId: selectedVoiceProfileId,
     }),
     id: scene.id,
     keywords: scene.keywords,
@@ -86,7 +101,17 @@ function toSceneResponse(scene: SceneListItem, selectedVoiceProfileId: string | 
     status: scene.status,
     title: scene.title,
     updatedAt: scene.updatedAt,
-    voiceProfileId: scene.voiceProfileId
+    voiceProfileId: scene.voiceProfileId,
+    assetId: scene.assetId,
+    asset: scene.asset
+      ? {
+          id: scene.asset.id,
+          kind: scene.asset.kind,
+          path: scene.asset.path,
+          source: scene.asset.source,
+          status: scene.asset.status,
+        }
+      : null,
   };
 }
 
@@ -108,16 +133,33 @@ async function listProjectScenes(projectId: string) {
       status: true,
       title: true,
       updatedAt: true,
-      voiceProfileId: true
-    }
-  });
+      voiceProfileId: true,
+      assetId: true,
+      asset: {
+        select: {
+          id: true,
+          kind: true,
+          path: true,
+          source: true,
+          status: true,
+        },
+      },
+    },
+  }) as Promise<SceneListItem[]>;
 }
 
-export async function syncProjectScenesFromRawScript(projectId: string, rawScript: string): Promise<SceneSyncResult> {
+export async function syncProjectScenesFromRawScript(
+  projectId: string,
+  rawScript: string,
+): Promise<SceneSyncResult> {
   const parsedScenes = parseScenes(rawScript);
   const existingScenes = await listProjectScenes(projectId);
-  const existingByOrder = new Map(existingScenes.map((scene) => [scene.orderIndex, scene]));
-  const nextOrderIndexes = new Set(parsedScenes.map((scene) => scene.orderIndex));
+  const existingByOrder = new Map(
+    existingScenes.map((scene) => [scene.orderIndex, scene]),
+  );
+  const nextOrderIndexes = new Set(
+    parsedScenes.map((scene) => scene.orderIndex),
+  );
 
   let scenesCreated = 0;
   let scenesUpdated = 0;
@@ -132,19 +174,21 @@ export async function syncProjectScenesFromRawScript(projectId: string, rawScrip
           data: {
             keywords: generateSceneKeywords({
               script: parsedScene.script,
-              title: parsedScene.title
+              title: parsedScene.title,
             }),
             orderIndex: parsedScene.orderIndex,
             projectId,
             script: parsedScene.script,
             status: "draft",
-            title: parsedScene.title
-          }
+            title: parsedScene.title,
+          },
         });
         continue;
       }
 
-      const contentChanged = existing.title !== parsedScene.title || existing.script !== parsedScene.script;
+      const contentChanged =
+        existing.title !== parsedScene.title ||
+        existing.script !== parsedScene.script;
 
       if (!contentChanged) {
         continue;
@@ -157,11 +201,11 @@ export async function syncProjectScenesFromRawScript(projectId: string, rawScrip
           ...invalidateSceneAudio(),
           keywords: generateSceneKeywords({
             script: parsedScene.script,
-            title: parsedScene.title
+            title: parsedScene.title,
           }),
           script: parsedScene.script,
-          title: parsedScene.title
-        }
+          title: parsedScene.title,
+        },
       });
     }
 
@@ -173,15 +217,17 @@ export async function syncProjectScenesFromRawScript(projectId: string, rawScrip
       await tx.scene.deleteMany({
         where: {
           id: {
-            in: idsToDelete
-          }
-        }
+            in: idsToDelete,
+          },
+        },
       });
     }
   });
 
   const scenes = await listProjectScenes(projectId);
-  const scenesDeleted = existingScenes.filter((scene) => !nextOrderIndexes.has(scene.orderIndex)).length;
+  const scenesDeleted = existingScenes.filter(
+    (scene) => !nextOrderIndexes.has(scene.orderIndex),
+  ).length;
 
   return {
     parsedScenes,
@@ -189,7 +235,7 @@ export async function syncProjectScenesFromRawScript(projectId: string, rawScrip
     scenes,
     scenesCreated,
     scenesDeleted,
-    scenesUpdated
+    scenesUpdated,
   };
 }
 
@@ -204,21 +250,26 @@ export async function scenesRoutes(app: FastifyInstance): Promise<void> {
 
       const project = await prisma.project.findUnique({
         where: { id },
-        select: { id: true, rawScript: true }
+        select: { id: true, rawScript: true },
       });
 
       if (!project) {
-        return reply.status(404).send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
       }
 
       if (!project.rawScript || !project.rawScript.trim()) {
         return reply.status(422).send({
           error: "UNPROCESSABLE",
-          message: "Projeto não possui rawScript para parsear"
+          message: "Projeto não possui rawScript para parsear",
         });
       }
 
-      const result = await syncProjectScenesFromRawScript(id, project.rawScript);
+      const result = await syncProjectScenesFromRawScript(
+        id,
+        project.rawScript,
+      );
 
       return reply.status(200).send({
         projectId: id,
@@ -230,216 +281,379 @@ export async function scenesRoutes(app: FastifyInstance): Promise<void> {
           orderIndex: scene.orderIndex,
           sceneNumber: result.parsedScenes[idx]?.sceneNumber ?? idx + 1,
           script: scene.script,
-          title: scene.title
-        }))
+          title: scene.title,
+        })),
       } satisfies RecomposeResponse);
-    }
+    },
   );
 
-  app.get<{ Params: { id: string } }>("/projects/:id/scenes", async (request, reply) => {
-    const { id } = request.params;
+  app.get<{ Params: { id: string } }>(
+    "/projects/:id/scenes",
+    async (request, reply) => {
+      const { id } = request.params;
 
-    const project = await prisma.project.findUnique({
-      where: { id },
-      select: { id: true, voiceProfileId: true }
-    });
-
-    if (!project) {
-      return reply.status(404).send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
-    }
-
-    const scenes = await listProjectScenes(id);
-
-    return reply.status(200).send({
-      projectId: id,
-      scenes: scenes.map((scene) => toSceneResponse(scene, project.voiceProfileId))
-    });
-  });
-
-  app.post<{ Params: { id: string } }>("/projects/:id/scenes/audio/generate", async (request, reply) => {
-    const { id } = request.params;
-
-    const project = await prisma.project.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        scenes: {
-          orderBy: { orderIndex: "asc" },
-          select: {
-            audioContentHash: true,
-            audioPath: true,
-            id: true,
-            orderIndex: true,
-            script: true,
-            title: true,
-            voiceProfileId: true
-          }
-        },
-        voiceProfile: {
-          select: {
-            id: true,
-            provider: true,
-            samplePath: true
-          }
-        },
-        voiceProfileId: true
-      }
-    });
-
-    if (!project) {
-      return reply.status(404).send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
-    }
-
-    if (!project.voiceProfileId || !project.voiceProfile) {
-      return reply.status(422).send({
-        error: "UNPROCESSABLE",
-        message: "Selecione uma voz antes de gerar áudio por cena"
+      const project = await prisma.project.findUnique({
+        where: { id },
+        select: { id: true, voiceProfileId: true },
       });
-    }
 
-    if (project.scenes.length === 0) {
-      return reply.status(422).send({
-        error: "UNPROCESSABLE",
-        message: "Projeto não possui cenas para gerar áudio"
-      });
-    }
-
-    const { cleanup, tempSamplePath } = await createVoiceSampleFile(
-      project.voiceProfile.samplePath,
-      `${project.voiceProfile.id}.wav`
-    );
-
-    try {
-      const pendingScenes = project.scenes.filter((scene) =>
-        sceneNeedsAudioGeneration({
-          audioContentHash: scene.audioContentHash,
-          audioPath: scene.audioPath,
-          currentVoiceProfileId: project.voiceProfileId,
-          generatedVoiceProfileId: scene.voiceProfileId,
-          script: scene.script,
-          voiceProfileId: scene.voiceProfileId
-        })
-      );
-
-      const jobs = [];
-
-      for (const scene of pendingScenes) {
-        const audioContentHash = buildSceneAudioHash({
-          script: scene.script,
-          voiceProfileId: project.voiceProfileId
-        });
-        const artifact = await ttsBackend.synthesize({
-          text: scene.script,
-          voiceProfile: {
-            id: project.voiceProfile.id,
-            provider: project.voiceProfile.provider,
-            samplePath: tempSamplePath
-          }
-        });
-        const storageKey = `scenes/${project.id}/${scene.id}-${audioContentHash}.wav`;
-
-        await storage.putObject("audio", storageKey, artifact.audio, artifact.contentType);
-        await prisma.scene.update({
-          where: { id: scene.id },
-          data: {
-            audioContentHash,
-            audioDurationSeconds: artifact.audioDurationSeconds ?? null,
-            audioGeneratedAt: artifact.generatedAt,
-            audioMimeType: artifact.contentType,
-            audioPath: `audio/${storageKey}`,
-            status: "ready",
-            voiceProfileId: project.voiceProfileId
-          }
-        });
-
-        jobs.push({
-          audioPath: `audio/${storageKey}`,
-          jobKey: `${project.id}:${scene.id}:${audioContentHash}`,
-          orderIndex: scene.orderIndex,
-          sceneId: scene.id,
-          title: scene.title
-        });
+      if (!project) {
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
       }
 
-      const updatedScenes = await listProjectScenes(project.id);
+      const scenes = await listProjectScenes(id);
 
       return reply.status(200).send({
-        generatedCount: jobs.length,
-        jobs,
-        projectId: project.id,
-        scenes: updatedScenes.map((scene) => toSceneResponse(scene, project.voiceProfileId)),
-        skippedCount: project.scenes.length - jobs.length
+        projectId: id,
+        scenes: scenes.map((scene) =>
+          toSceneResponse(scene, project.voiceProfileId),
+        ),
       });
-    } finally {
-      await cleanup();
-    }
-  });
+    },
+  );
 
-  app.post<{ Params: { id: string } }>("/projects/:id/renders", async (request, reply) => {
-    const { id } = request.params;
+  app.post<{ Params: { id: string; sceneId: string } }>(
+    "/projects/:id/scenes/:sceneId/asset",
+    async (request, reply) => {
+      const { id: projectId, sceneId } = request.params;
 
-    const project = await prisma.project.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        scenes: {
-          orderBy: { orderIndex: "asc" },
+      const scene = await prisma.scene.findUnique({
+        where: { id: sceneId, projectId },
+        select: { id: true },
+      });
+
+      if (!scene) {
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Cena não encontrada" });
+      }
+
+      let fileName = "";
+      let mimeType = "";
+      let assetBuffer: Buffer | null = null;
+
+      for await (const part of request.parts()) {
+        if (part.type === "file" && part.fieldname === "asset") {
+          fileName = part.filename;
+          mimeType = part.mimetype;
+          assetBuffer = await part.toBuffer();
+        }
+      }
+
+      if (!assetBuffer) {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message: "O arquivo do asset é obrigatório",
+        });
+      }
+
+      try {
+        const metadata = validateAsset({
+          buffer: assetBuffer,
+          fileName,
+          mimeType,
+        });
+
+        await prisma.$transaction(async (tx) => {
+          const createdAsset = await tx.asset.create({
+            data: {
+              projectId,
+              kind: metadata.kind,
+              source: "upload",
+              path: "",
+              status: "ready",
+            },
+          });
+
+          const extension = fileName
+            .toLowerCase()
+            .slice(fileName.lastIndexOf("."));
+          const storageKey = `manual/${createdAsset.id}${extension}`;
+
+          await storage.putObject(
+            "assets",
+            storageKey,
+            assetBuffer!,
+            metadata.mimeType,
+          );
+
+          await tx.asset.update({
+            where: { id: createdAsset.id },
+            data: {
+              path: `assets/${storageKey}`,
+            },
+          });
+
+          return tx.scene.update({
+            where: { id: sceneId },
+            data: {
+              assetId: createdAsset.id,
+            },
+          });
+        });
+
+        const project = await prisma.project.findUnique({
+          where: { id: projectId },
+          select: { voiceProfileId: true },
+        });
+
+        const fullSceneListItem = await prisma.scene.findUnique({
+          where: { id: sceneId },
           select: {
             audioContentHash: true,
+            audioDurationSeconds: true,
+            audioGeneratedAt: true,
+            audioMimeType: true,
             audioPath: true,
+            createdAt: true,
             id: true,
-            script: true
-          }
-        },
-        voiceProfileId: true
+            keywords: true,
+            orderIndex: true,
+            script: true,
+            status: true,
+            title: true,
+            updatedAt: true,
+            voiceProfileId: true,
+            assetId: true,
+            asset: {
+              select: {
+                id: true,
+                kind: true,
+                path: true,
+                source: true,
+                status: true,
+              },
+            },
+          },
+        });
+
+        if (!fullSceneListItem) {
+          throw new Error(
+            "Erro inesperado ao buscar dados atualizados da cena",
+          );
+        }
+
+        return reply
+          .status(200)
+          .send(
+            toSceneResponse(fullSceneListItem, project?.voiceProfileId ?? null),
+          );
+      } catch (error) {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message:
+            error instanceof Error
+              ? error.message
+              : "O arquivo enviado é inválido",
+        });
       }
-    });
+    },
+  );
 
-    if (!project) {
-      return reply.status(404).send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
-    }
+  app.post<{ Params: { id: string } }>(
+    "/projects/:id/scenes/audio/generate",
+    async (request, reply) => {
+      const { id } = request.params;
 
-    const isReady = canStartRenderWithSceneAudio(
-      project.scenes.map((scene) => ({
-        ...scene,
-        voiceProfileId: project.voiceProfileId
-      })),
-      project.voiceProfileId
-    );
+      const project = await prisma.project.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          scenes: {
+            orderBy: { orderIndex: "asc" },
+            select: {
+              audioContentHash: true,
+              audioPath: true,
+              id: true,
+              orderIndex: true,
+              script: true,
+              title: true,
+              voiceProfileId: true,
+            },
+          },
+          voiceProfile: {
+            select: {
+              id: true,
+              provider: true,
+              samplePath: true,
+            },
+          },
+          voiceProfileId: true,
+        },
+      });
 
-    if (!isReady) {
-      const invalidSceneIds = project.scenes
-        .filter((scene) =>
-          !sceneHasValidAudio({
+      if (!project) {
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+      }
+
+      if (!project.voiceProfileId || !project.voiceProfile) {
+        return reply.status(422).send({
+          error: "UNPROCESSABLE",
+          message: "Selecione uma voz antes de gerar áudio por cena",
+        });
+      }
+
+      if (project.scenes.length === 0) {
+        return reply.status(422).send({
+          error: "UNPROCESSABLE",
+          message: "Projeto não possui cenas para gerar áudio",
+        });
+      }
+
+      const { cleanup, tempSamplePath } = await createVoiceSampleFile(
+        project.voiceProfile.samplePath,
+        `${project.voiceProfile.id}.wav`,
+      );
+
+      try {
+        const pendingScenes = project.scenes.filter((scene) =>
+          sceneNeedsAudioGeneration({
             audioContentHash: scene.audioContentHash,
             audioPath: scene.audioPath,
+            currentVoiceProfileId: project.voiceProfileId,
+            generatedVoiceProfileId: scene.voiceProfileId,
             script: scene.script,
-            voiceProfileId: project.voiceProfileId
-          })
-        )
-        .map((scene) => scene.id);
+            voiceProfileId: scene.voiceProfileId,
+          }),
+        );
 
-      return reply.status(409).send({
-        error: "AUDIO_REQUIRED",
-        invalidSceneIds,
-        message: "Existem cenas sem áudio válido para iniciar o render"
+        const jobs = [];
+
+        for (const scene of pendingScenes) {
+          const audioContentHash = buildSceneAudioHash({
+            script: scene.script,
+            voiceProfileId: project.voiceProfileId,
+          });
+          const artifact = await ttsBackend.synthesize({
+            text: scene.script,
+            voiceProfile: {
+              id: project.voiceProfile.id,
+              provider: project.voiceProfile.provider,
+              samplePath: tempSamplePath,
+            },
+          });
+          const storageKey = `scenes/${project.id}/${scene.id}-${audioContentHash}.wav`;
+
+          await storage.putObject(
+            "audio",
+            storageKey,
+            artifact.audio,
+            artifact.contentType,
+          );
+          await prisma.scene.update({
+            where: { id: scene.id },
+            data: {
+              audioContentHash,
+              audioDurationSeconds: artifact.audioDurationSeconds ?? null,
+              audioGeneratedAt: artifact.generatedAt,
+              audioMimeType: artifact.contentType,
+              audioPath: `audio/${storageKey}`,
+              status: "ready",
+              voiceProfileId: project.voiceProfileId,
+            },
+          });
+
+          jobs.push({
+            audioPath: `audio/${storageKey}`,
+            jobKey: `${project.id}:${scene.id}:${audioContentHash}`,
+            orderIndex: scene.orderIndex,
+            sceneId: scene.id,
+            title: scene.title,
+          });
+        }
+
+        const updatedScenes = await listProjectScenes(project.id);
+
+        return reply.status(200).send({
+          generatedCount: jobs.length,
+          jobs,
+          projectId: project.id,
+          scenes: updatedScenes.map((scene) =>
+            toSceneResponse(scene, project.voiceProfileId),
+          ),
+          skippedCount: project.scenes.length - jobs.length,
+        });
+      } finally {
+        await cleanup();
+      }
+    },
+  );
+
+  app.post<{ Params: { id: string } }>(
+    "/projects/:id/renders",
+    async (request, reply) => {
+      const { id } = request.params;
+
+      const project = await prisma.project.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          scenes: {
+            orderBy: { orderIndex: "asc" },
+            select: {
+              audioContentHash: true,
+              audioPath: true,
+              id: true,
+              script: true,
+            },
+          },
+          voiceProfileId: true,
+        },
       });
-    }
 
-    const renderJob = await prisma.renderJob.create({
-      data: {
-        projectId: project.id,
-        status: "queued"
+      if (!project) {
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
       }
-    });
 
-    await prisma.project.update({
-      where: { id: project.id },
-      data: {
-        status: "rendering"
+      const isReady = canStartRenderWithSceneAudio(
+        project.scenes.map((scene) => ({
+          ...scene,
+          voiceProfileId: project.voiceProfileId,
+        })),
+        project.voiceProfileId,
+      );
+
+      if (!isReady) {
+        const invalidSceneIds = project.scenes
+          .filter(
+            (scene) =>
+              !sceneHasValidAudio({
+                audioContentHash: scene.audioContentHash,
+                audioPath: scene.audioPath,
+                script: scene.script,
+                voiceProfileId: project.voiceProfileId,
+              }),
+          )
+          .map((scene) => scene.id);
+
+        return reply.status(409).send({
+          error: "AUDIO_REQUIRED",
+          invalidSceneIds,
+          message: "Existem cenas sem áudio válido para iniciar o render",
+        });
       }
-    });
 
-    return reply.status(201).send(renderJob);
-  });
+      const renderJob = await prisma.renderJob.create({
+        data: {
+          projectId: project.id,
+          status: "queued",
+        },
+      });
+
+      await prisma.project.update({
+        where: { id: project.id },
+        data: {
+          status: "rendering",
+        },
+      });
+
+      return reply.status(201).send(renderJob);
+    },
+  );
 }
