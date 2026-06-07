@@ -21,7 +21,7 @@
     "test:e2e": "playwright test",
     "test:unit": "vitest run --config vitest.unit.config.ts",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "validate:ci": "pnpm build && pnpm typecheck && pnpm test:unit && pnpm test:integration && pnpm test:e2e",
+    "validate:ci": "pnpm build && pnpm typecheck && pnpm test:unit && pnpm test:integration",
     "validate:push": "node scripts/validate-push.mjs",
     "prepare": "husky"
   },

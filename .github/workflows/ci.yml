@@ -46,8 +46,37 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright Chromium and dependencies
-        run: npx playwright install --with-deps chromium
-
       - name: Run CI validation suite
         run: pnpm validate:ci
+
+  e2e:
+    name: E2E Tests
+    runs-on: self-hosted
+    needs: validate
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    steps:
+      - name: Prepare git safe directory
+        run: git config --global --add safe.directory /__w/open-video-studio/open-video-studio
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          clean: true
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10.32.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run E2E tests
+        run: pnpm test:e2e
