@@ -88,9 +88,26 @@ jobs:
             exit 0
           fi
 
-          curl --fail --show-error --silent \
+          RESPONSE=$(curl --write-out "\n%{http_code}" --silent --show-error \
             --request GET "$COOLIFY_WEBHOOK_WEB" \
-            --header "Authorization: Bearer $COOLIFY_TOKEN"
+            --header "Authorization: Bearer $COOLIFY_TOKEN")
+
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "Response Body:"
+          echo "$BODY"
+          echo "HTTP Status: $HTTP_STATUS"
+
+          if [ "$HTTP_STATUS" -ne 200 ] && [ "$HTTP_STATUS" -ne 201 ] && [ "$HTTP_STATUS" -ne 202 ]; then
+            echo "Error: Coolify API returned HTTP status $HTTP_STATUS"
+            exit 1
+          fi
+
+          if echo "$BODY" | grep -q -i -E "<html|/login|redirect"; then
+            echo "Error: Coolify returned login page or redirect. Please check your credentials and webhook URL."
+            exit 1
+          fi
 
       - name: Trigger Coolify API redeploy
         env:
@@ -102,9 +119,26 @@ jobs:
             exit 0
           fi
 
-          curl --fail --show-error --silent \
+          RESPONSE=$(curl --write-out "\n%{http_code}" --silent --show-error \
             --request GET "$COOLIFY_WEBHOOK_BACKEND" \
-            --header "Authorization: Bearer $COOLIFY_TOKEN"
+            --header "Authorization: Bearer $COOLIFY_TOKEN")
+
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "Response Body:"
+          echo "$BODY"
+          echo "HTTP Status: $HTTP_STATUS"
+
+          if [ "$HTTP_STATUS" -ne 200 ] && [ "$HTTP_STATUS" -ne 201 ] && [ "$HTTP_STATUS" -ne 202 ]; then
+            echo "Error: Coolify API returned HTTP status $HTTP_STATUS"
+            exit 1
+          fi
+
+          if echo "$BODY" | grep -q -i -E "<html|/login|redirect"; then
+            echo "Error: Coolify returned login page or redirect. Please check your credentials and webhook URL."
+            exit 1
+          fi
 
   rollback:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && needs.deploy.result == 'failure' }}
@@ -198,9 +232,26 @@ jobs:
             exit 0
           fi
 
-          curl --fail --show-error --silent \
+          RESPONSE=$(curl --write-out "\n%{http_code}" --silent --show-error \
             --request GET "$COOLIFY_WEBHOOK_WEB" \
-            --header "Authorization: Bearer $COOLIFY_TOKEN"
+            --header "Authorization: Bearer $COOLIFY_TOKEN")
+
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "Response Body:"
+          echo "$BODY"
+          echo "HTTP Status: $HTTP_STATUS"
+
+          if [ "$HTTP_STATUS" -ne 200 ] && [ "$HTTP_STATUS" -ne 201 ] && [ "$HTTP_STATUS" -ne 202 ]; then
+            echo "Error: Coolify API returned HTTP status $HTTP_STATUS"
+            exit 1
+          fi
+
+          if echo "$BODY" | grep -q -i -E "<html|/login|redirect"; then
+            echo "Error: Coolify returned login page or redirect. Please check your credentials and webhook URL."
+            exit 1
+          fi
 
       - name: Trigger Coolify API rollback redeploy
         env:
@@ -212,6 +263,23 @@ jobs:
             exit 0
           fi
 
-          curl --fail --show-error --silent \
+          RESPONSE=$(curl --write-out "\n%{http_code}" --silent --show-error \
             --request GET "$COOLIFY_WEBHOOK_BACKEND" \
-            --header "Authorization: Bearer $COOLIFY_TOKEN"
+            --header "Authorization: Bearer $COOLIFY_TOKEN")
+
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "Response Body:"
+          echo "$BODY"
+          echo "HTTP Status: $HTTP_STATUS"
+
+          if [ "$HTTP_STATUS" -ne 200 ] && [ "$HTTP_STATUS" -ne 201 ] && [ "$HTTP_STATUS" -ne 202 ]; then
+            echo "Error: Coolify API returned HTTP status $HTTP_STATUS"
+            exit 1
+          fi
+
+          if echo "$BODY" | grep -q -i -E "<html|/login|redirect"; then
+            echo "Error: Coolify returned login page or redirect. Please check your credentials and webhook URL."
+            exit 1
+          fi
