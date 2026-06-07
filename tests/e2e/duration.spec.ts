@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("estimated duration E2E", () => {
-  test("calculates and updates estimated duration in real time as the user edits the script", async ({ page }) => {
+  test("calculates and updates estimated duration in real time as the user edits the script", async ({
+    page,
+  }) => {
     // Intercepta a chamada GET do projeto para retornar dados fictícios sem precisar de banco
     await page.route("**/projects/mock-project-id", async (route) => {
       await route.fulfill({
@@ -15,8 +17,8 @@ test.describe("estimated duration E2E", () => {
           updatedAt: new Date().toISOString(),
           estimatedDuration: 0,
           estimatedDurationMin: 0,
-          estimatedDurationMax: 0
-        })
+          estimatedDurationMax: 0,
+        }),
       });
     });
 
@@ -33,8 +35,8 @@ test.describe("estimated duration E2E", () => {
           updatedAt: new Date().toISOString(),
           estimatedDuration: 0,
           estimatedDurationMin: 0,
-          estimatedDurationMax: 0
-        })
+          estimatedDurationMax: 0,
+        }),
       });
     });
 
@@ -46,6 +48,12 @@ test.describe("estimated duration E2E", () => {
 
     // Edita o roteiro para conter 140 palavras faladas (+ marcadores)
     const editor = page.locator("#script-editor");
+
+    // Aguarda a hidratação do editor concluir
+    await expect(editor).toHaveAttribute("aria-busy", "false", {
+      timeout: 15_000,
+    });
+
     const spokenText = Array(140).fill("word").join(" ");
     const script = `[CENA 1 - Intro]\n${spokenText}\n[CENA 2]`;
 

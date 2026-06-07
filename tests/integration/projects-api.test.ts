@@ -8,23 +8,35 @@ import { execFileSync } from "node:child_process";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-const composeArgs = ["compose", "-p", "open-video-studio-database", "-f", "docker-compose.database.yml"];
+const composeArgs = [
+  "compose",
+  "-p",
+  "open-video-studio-database",
+  "-f",
+  "docker-compose.database.yml",
+];
 const databaseName = `open_video_studio_projects_test_${process.pid}`;
 const databaseUrl = `postgresql://postgres:postgres@127.0.0.1:54329/${databaseName}?schema=public`;
 
-let startedPostgresForSuite = false;
+// let startedPostgresForSuite = false;
 
 function runDockerCommand(args: string[]) {
   return execFileSync("docker", args, {
     cwd: process.cwd(),
     env: process.env,
     stdio: "pipe",
-    encoding: "utf-8"
+    encoding: "utf-8",
   });
 }
 
 function isPostgresRunning() {
-  const output = runDockerCommand([...composeArgs, "ps", "--status", "running", "--services"]);
+  const output = runDockerCommand([
+    ...composeArgs,
+    "ps",
+    "--status",
+    "running",
+    "--services",
+  ]);
   return output
     .split("\n")
     .map((line) => line.trim())
@@ -35,7 +47,17 @@ async function waitForPostgres() {
   const timeoutAt = Date.now() + 60000;
   while (Date.now() < timeoutAt) {
     try {
-      runDockerCommand([...composeArgs, "exec", "-T", "postgres", "pg_isready", "-U", "postgres", "-d", "postgres"]);
+      runDockerCommand([
+        ...composeArgs,
+        "exec",
+        "-T",
+        "postgres",
+        "pg_isready",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres",
+      ]);
       return;
     } catch {
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -48,7 +70,19 @@ function runPsqlWithRetry(sql: string, attempts = 10) {
   let lastError: unknown;
   for (let i = 0; i < attempts; i++) {
     try {
-      runDockerCommand([...composeArgs, "exec", "-T", "postgres", "psql", "-U", "postgres", "-d", "postgres", "-c", sql]);
+      runDockerCommand([
+        ...composeArgs,
+        "exec",
+        "-T",
+        "postgres",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "postgres",
+        "-c",
+        sql,
+      ]);
       return;
     } catch (error) {
       lastError = error;
@@ -60,7 +94,7 @@ function runPsqlWithRetry(sql: string, attempts = 10) {
 beforeAll(async () => {
   if (!isPostgresRunning()) {
     runDockerCommand([...composeArgs, "up", "-d", "postgres"]);
-    startedPostgresForSuite = true;
+    // startedPostgresForSuite = true;
   }
 
   await waitForPostgres();
@@ -69,20 +103,24 @@ beforeAll(async () => {
   process.env.DATABASE_URL = databaseUrl;
   process.env.AI_PROVIDER = "mock";
 
-  execFileSync("pnpm", ["--filter", "@repo/database", "exec", "prisma", "migrate", "deploy"], {
-    cwd: process.cwd(),
-    env: { ...process.env, DATABASE_URL: databaseUrl },
-    stdio: "pipe"
-  });
+  execFileSync(
+    "pnpm",
+    ["--filter", "@repo/database", "exec", "prisma", "migrate", "deploy"],
+    {
+      cwd: process.cwd(),
+      env: { ...process.env, DATABASE_URL: databaseUrl },
+      stdio: "pipe",
+    },
+  );
 });
 
 afterAll(async () => {
   const { prisma } = await import("../../packages/database/src/client.js");
   await prisma.$disconnect();
   runPsqlWithRetry(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`);
-  if (startedPostgresForSuite) {
-    runDockerCommand([...composeArgs, "down"]);
-  }
+  // if (startedPostgresForSuite) {
+  //   runDockerCommand([...composeArgs, "down"]);
+  // }
 });
 
 describe("POST /projects", () => {
@@ -98,8 +136,8 @@ describe("POST /projects", () => {
         title: "Meu Primeiro Vídeo",
         theme: "inteligência artificial",
         tone: "educativo",
-        targetDuration: 10
-      }
+        targetDuration: 10,
+      },
     });
 
     expect(response.statusCode).toBeOneOf([201, 207]);
@@ -138,8 +176,8 @@ describe("POST /projects", () => {
         title: "Vídeo de Recuperação",
         theme: "saúde mental",
         tone: "empático",
-        targetDuration: 15
-      }
+        targetDuration: 15,
+      },
     });
 
     const created = JSON.parse(createResponse.body) as { id: string };
@@ -147,7 +185,7 @@ describe("POST /projects", () => {
 
     const getResponse = await app.inject({
       method: "GET",
-      url: `/projects/${id}`
+      url: `/projects/${id}`,
     });
 
     expect(getResponse.statusCode).toBe(200);
@@ -173,7 +211,7 @@ describe("POST /projects", () => {
     const response = await app.inject({
       method: "POST",
       url: "/projects",
-      payload: { title: "Incompleto" }
+      payload: { title: "Incompleto" },
     });
 
     expect(response.statusCode).toBe(400);
@@ -188,7 +226,7 @@ describe("POST /projects", () => {
 
     const response = await app.inject({
       method: "GET",
-      url: "/projects/nao-existe-id"
+      url: "/projects/nao-existe-id",
     });
 
     expect(response.statusCode).toBe(404);

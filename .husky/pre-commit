@@ -1,1 +1,20 @@
-pnpm lint && pnpm typecheck && pnpm test:unit
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR)
+
+if [ -z "$STAGED_FILES" ]; then
+  exit 0
+fi
+
+PRETTIER_FILES=$(echo "$STAGED_FILES" | grep -E '\.(cjs|css|html|js|json|jsx|md|mjs|ts|tsx|yml|yaml)$' || true)
+ESLINT_FILES=$(echo "$STAGED_FILES" | grep -E '\.(js|jsx|ts|tsx)$' || true)
+
+if [ -n "$PRETTIER_FILES" ]; then
+  echo "$PRETTIER_FILES" | xargs pnpm prettier --write
+fi
+
+if [ -n "$ESLINT_FILES" ]; then
+  echo "$ESLINT_FILES" | xargs pnpm eslint --fix
+fi
+
+if [ -n "$PRETTIER_FILES" ] || [ -n "$ESLINT_FILES" ]; then
+  echo "$STAGED_FILES" | xargs git add
+fi

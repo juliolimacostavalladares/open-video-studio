@@ -8,7 +8,13 @@ process.env.DATABASE_URL = databaseUrl;
 process.env.STORAGE_DRIVER = "local";
 process.env.STORAGE_BASE_PATH = ".tmp/storage-tests";
 
-const composeArgs = ["compose", "-p", "open-video-studio-database", "-f", "docker-compose.database.yml"];
+const composeArgs = [
+  "compose",
+  "-p",
+  "open-video-studio-database",
+  "-f",
+  "docker-compose.database.yml",
+];
 
 function buildWavBuffer(durationSeconds: number) {
   const sampleRate = 24000;
@@ -36,13 +42,18 @@ function buildWavBuffer(durationSeconds: number) {
   return buffer;
 }
 
-function createMultipartBody(fields: Record<string, string>, file?: { buffer: Buffer; fileName: string; mimeType: string }) {
+function createMultipartBody(
+  fields: Record<string, string>,
+  file?: { buffer: Buffer; fileName: string; mimeType: string },
+) {
   const boundary = "----open-video-studio-boundary";
   const chunks: Buffer[] = [];
 
   for (const [key, value] of Object.entries(fields)) {
     chunks.push(Buffer.from(`--${boundary}\r\n`));
-    chunks.push(Buffer.from(`Content-Disposition: form-data; name="${key}"\r\n\r\n`));
+    chunks.push(
+      Buffer.from(`Content-Disposition: form-data; name="${key}"\r\n\r\n`),
+    );
     chunks.push(Buffer.from(`${value}\r\n`));
   }
 
@@ -50,8 +61,8 @@ function createMultipartBody(fields: Record<string, string>, file?: { buffer: Bu
     chunks.push(Buffer.from(`--${boundary}\r\n`));
     chunks.push(
       Buffer.from(
-        `Content-Disposition: form-data; name="sample"; filename="${file.fileName}"\r\nContent-Type: ${file.mimeType}\r\n\r\n`
-      )
+        `Content-Disposition: form-data; name="sample"; filename="${file.fileName}"\r\nContent-Type: ${file.mimeType}\r\n\r\n`,
+      ),
     );
     chunks.push(file.buffer);
     chunks.push(Buffer.from("\r\n"));
@@ -61,23 +72,29 @@ function createMultipartBody(fields: Record<string, string>, file?: { buffer: Bu
 
   return {
     body: Buffer.concat(chunks),
-    contentType: `multipart/form-data; boundary=${boundary}`
+    contentType: `multipart/form-data; boundary=${boundary}`,
   };
 }
 
-let startedPostgresForSuite = false;
+// let startedPostgresForSuite = false;
 
 function runDockerCommand(args: string[]) {
   return execFileSync("docker", args, {
     cwd: process.cwd(),
     env: process.env,
     stdio: "pipe",
-    encoding: "utf-8"
+    encoding: "utf-8",
   });
 }
 
 function isPostgresRunning() {
-  const output = runDockerCommand([...composeArgs, "ps", "--status", "running", "--services"]);
+  const output = runDockerCommand([
+    ...composeArgs,
+    "ps",
+    "--status",
+    "running",
+    "--services",
+  ]);
 
   return output
     .split("\n")
@@ -99,7 +116,7 @@ async function waitForPostgres() {
         "-U",
         "postgres",
         "-d",
-        "postgres"
+        "postgres",
       ]);
       return;
     } catch {
@@ -122,7 +139,7 @@ function runPsql(sql: string) {
     "-d",
     "postgres",
     "-c",
-    sql
+    sql,
   ]);
 }
 
@@ -145,32 +162,40 @@ async function runPsqlWithRetry(sql: string, attempts = 10) {
 beforeAll(async () => {
   if (!isPostgresRunning()) {
     runDockerCommand([...composeArgs, "up", "-d", "postgres"]);
-    startedPostgresForSuite = true;
+    // startedPostgresForSuite = true;
   }
 
   await waitForPostgres();
-  await runPsqlWithRetry(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`);
+  await runPsqlWithRetry(
+    `DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`,
+  );
   await runPsqlWithRetry(`CREATE DATABASE "${databaseName}";`);
 
-  execFileSync("pnpm", ["--filter", "@repo/database", "exec", "prisma", "migrate", "deploy"], {
-    cwd: process.cwd(),
-    env: {
-      ...process.env,
-      DATABASE_URL: databaseUrl
+  execFileSync(
+    "pnpm",
+    ["--filter", "@repo/database", "exec", "prisma", "migrate", "deploy"],
+    {
+      cwd: process.cwd(),
+      env: {
+        ...process.env,
+        DATABASE_URL: databaseUrl,
+      },
+      stdio: "pipe",
     },
-    stdio: "pipe"
-  });
+  );
 });
 
 afterAll(async () => {
   const { prisma } = await import("../../packages/database/src/client.js");
   await prisma.$disconnect();
 
-  await runPsqlWithRetry(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`);
+  await runPsqlWithRetry(
+    `DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`,
+  );
 
-  if (startedPostgresForSuite) {
-    runDockerCommand([...composeArgs, "down"]);
-  }
+  // if (startedPostgresForSuite) {
+  //   runDockerCommand([...composeArgs, "down"]);
+  // }
 });
 
 describe("voice profiles api routes (integration)", () => {
@@ -184,17 +209,17 @@ describe("voice profiles api routes (integration)", () => {
       {
         buffer: buildWavBuffer(3.4),
         fileName: "voice.wav",
-        mimeType: "audio/wav"
-      }
+        mimeType: "audio/wav",
+      },
     );
 
     const createResponse = await app.inject({
       method: "POST",
       url: "/voice-profiles",
       headers: {
-        "content-type": multipart.contentType
+        "content-type": multipart.contentType,
       },
-      payload: multipart.body
+      payload: multipart.body,
     });
 
     expect(createResponse.statusCode).toBe(201);
@@ -211,19 +236,24 @@ describe("voice profiles api routes (integration)", () => {
     expect(created.provider).toBe("omnivoice-studio");
     expect(created.sampleDurationSeconds).toBe(3.4);
     expect(created.sampleMimeType).toBe("audio/wav");
-    expect(created.samplePath).toContain(`audio/voice-profiles/${created.id}.wav`);
+    expect(created.samplePath).toContain(
+      `audio/voice-profiles/${created.id}.wav`,
+    );
 
     const listResponse = await app.inject({
       method: "GET",
-      url: "/voice-profiles"
+      url: "/voice-profiles",
     });
 
     expect(listResponse.statusCode).toBe(200);
-    const list = JSON.parse(listResponse.body) as Array<{ id: string; name: string }>;
+    const list = JSON.parse(listResponse.body) as Array<{
+      id: string;
+      name: string;
+    }>;
     expect(list).toHaveLength(1);
     expect(list[0]).toMatchObject({
       id: created.id,
-      name: "Narrador Teste"
+      name: "Narrador Teste",
     });
 
     await app.close();
@@ -239,17 +269,17 @@ describe("voice profiles api routes (integration)", () => {
       {
         buffer: Buffer.from("invalid"),
         fileName: "voice.mp3",
-        mimeType: "audio/mpeg"
-      }
+        mimeType: "audio/mpeg",
+      },
     );
 
     const response = await app.inject({
       method: "POST",
       url: "/voice-profiles",
       headers: {
-        "content-type": multipart.contentType
+        "content-type": multipart.contentType,
       },
-      payload: multipart.body
+      payload: multipart.body,
     });
 
     expect(response.statusCode).toBe(400);

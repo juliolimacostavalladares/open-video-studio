@@ -2,43 +2,49 @@ name: Deploy to Coolify
 
 on:
   workflow_run:
-    workflows: ["CI Pipeline"]
+    workflows: ["CI"]
     types: [completed]
     branches: [master]
 
 env:
   REGISTRY: ghcr.io
 
-jobs:
-  cleanup:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    runs-on: self-hosted
-    steps:
-      - name: Clean runner workspace via Docker
-        run: |
-          docker run --rm -v /home/github-runner/actions-runner/_work/open-video-studio/open-video-studio:/work -w /work alpine sh -c "
-            chown -R \$(stat -c '%u:%g' /work) /work && \
-            find /work -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-          " || true
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
 
+jobs:
   deploy:
-    needs: cleanup
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}
     runs-on: self-hosted
     environment: production
     permissions:
       contents: read
       packages: write
     steps:
+      - name: Prepare runner workspace
+        run: |
+          docker run --rm \
+            -v "${GITHUB_WORKSPACE}:/work" \
+            -w /work \
+            alpine sh -c '
+              if [ -d /work ]; then
+                chown -R $(stat -c "%u:%g" /work) /work || true
+                find /work -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+              fi
+            ' || true
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
+          clean: true
 
       - name: Derive image names
         id: image-meta
         run: |
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
-          echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -59,7 +65,7 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ steps.image-meta.outputs.owner }}/open-video-studio-web:latest
-            ${{ env.REGISTRY }}/${{ steps.image-meta.outputs.owner }}/open-video-studio-web:${{ github.event.workflow_run.head_sha }}
+            ${{ env.REGISTRY }}/${{ steps.image-meta.outputs.owner }}/open-video-studio-web:${{ steps.image-meta.outputs.sha }}
 
       - name: Build and push api image
         uses: docker/build-push-action@v6
@@ -70,108 +76,142 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ steps.image-meta.outputs.owner }}/open-video-studio-api:latest
-            ${{ env.REGISTRY }}/${{ steps.image-meta.outputs.owner }}/open-video-studio-api:${{ github.event.workflow_run.head_sha }}
+            ${{ env.REGISTRY }}/${{ steps.image-meta.outputs.owner }}/open-video-studio-api:${{ steps.image-meta.outputs.sha }}
 
-      - name: Trigger Coolify Web App Redeploy Webhook
+      - name: Trigger Coolify Web redeploy
         env:
           COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
           COOLIFY_WEBHOOK_WEB: ${{ secrets.COOLIFY_WEBHOOK_WEB }}
-        if: ${{ env.COOLIFY_WEBHOOK_WEB != '' }}
         run: |
-          trigger_deploy() {
-            local url="$1"
-            local token="$2"
-            
-            echo "Tentando disparar deploy via GET sem autenticacao..."
-            local code
-            code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request GET "$url")
-            if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
-              echo "Sucesso! Deploy disparado via GET publico (HTTP $code)."
-              return 0
-            fi
-            
-            echo "Tentando disparar deploy via POST sem autenticacao..."
-            code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request POST "$url" -H "Content-Type: application/json" -d '{}')
-            if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
-              echo "Sucesso! Deploy disparado via POST publico (HTTP $code)."
-              return 0
-            fi
-            
-            echo "Webhook publico falhou (HTTP $code). Tentando com token de autorizacao..."
-            if [ -n "$token" ]; then
-              echo "Tentando GET com token..."
-              code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request GET "$url" --header "Authorization: Bearer $token")
-              if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
-                echo "Sucesso! Deploy disparado via GET autenticado (HTTP $code)."
-                return 0
-              fi
-              
-              echo "Tentando POST com token..."
-              code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request POST "$url" --header "Authorization: Bearer $token" -H "Content-Type: application/json" -d '{}')
-              if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
-                echo "Sucesso! Deploy disparado via POST autenticado (HTTP $code)."
-                return 0
-              fi
-              
-              echo "Erro: Todas as tentativas falharam. Ultimo HTTP code: $code."
-              # Executa com fail no curl final para registrar o log com detalhe
-              curl --fail --show-error --request POST "$url" --header "Authorization: Bearer $token" -H "Content-Type: application/json" -d '{}'
-              return 1
-            else
-              echo "Erro: COOLIFY_TOKEN nao definido e o webhook publico falhou."
-              return 1
-            fi
-          }
-          trigger_deploy "$COOLIFY_WEBHOOK_WEB" "$COOLIFY_TOKEN"
+          if [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_WEBHOOK_WEB" ]; then
+            echo "Skipping web redeploy: COOLIFY_TOKEN or COOLIFY_WEBHOOK_WEB is not configured."
+            exit 0
+          fi
 
-      - name: Trigger Coolify API Redeploy Webhook
+          curl --fail --show-error --silent \
+            --request GET "$COOLIFY_WEBHOOK_WEB" \
+            --header "Authorization: Bearer $COOLIFY_TOKEN"
+
+      - name: Trigger Coolify API redeploy
         env:
           COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
           COOLIFY_WEBHOOK_BACKEND: ${{ secrets.COOLIFY_WEBHOOK_BACKEND }}
-        if: ${{ env.COOLIFY_WEBHOOK_BACKEND != '' }}
         run: |
-          trigger_deploy() {
-            local url="$1"
-            local token="$2"
-            
-            echo "Tentando disparar deploy via GET sem autenticacao..."
-            local code
-            code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request GET "$url")
-            if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
-              echo "Sucesso! Deploy disparado via GET publico (HTTP $code)."
-              return 0
-            fi
-            
-            echo "Tentando disparar deploy via POST sem autenticacao..."
-            code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request POST "$url" -H "Content-Type: application/json" -d '{}')
-            if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
-              echo "Sucesso! Deploy disparado via POST publico (HTTP $code)."
-              return 0
-            fi
-            
-            echo "Webhook publico falhou (HTTP $code). Tentando com token de autorizacao..."
-            if [ -n "$token" ]; then
-              echo "Tentando GET com token..."
-              code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request GET "$url" --header "Authorization: Bearer $token")
-              if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
-                echo "Sucesso! Deploy disparado via GET autenticado (HTTP $code)."
-                return 0
+          if [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_WEBHOOK_BACKEND" ]; then
+            echo "Skipping API redeploy: COOLIFY_TOKEN or COOLIFY_WEBHOOK_BACKEND is not configured."
+            exit 0
+          fi
+
+          curl --fail --show-error --silent \
+            --request GET "$COOLIFY_WEBHOOK_BACKEND" \
+            --header "Authorization: Bearer $COOLIFY_TOKEN"
+
+  rollback:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && needs.deploy.result == 'failure' }}
+    needs: deploy
+    runs-on: self-hosted
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Prepare runner workspace
+        run: |
+          docker run --rm \
+            -v "${GITHUB_WORKSPACE}:/work" \
+            -w /work \
+            alpine sh -c '
+              if [ -d /work ]; then
+                chown -R $(stat -c "%u:%g" /work) /work || true
+                find /work -mindepth 1 -maxdepth 1 -exec rm -rf {} +
               fi
-              
-              echo "Tentando POST com token..."
-              code=$(curl --write-out "%{http_code}" --silent --output /dev/null --request POST "$url" --header "Authorization: Bearer $token" -H "Content-Type: application/json" -d '{}')
-              if [ "$code" -eq 200 ] || [ "$code" -eq 201 ] || [ "$code" -eq 202 ] || [ "$code" -eq 204 ]; then
-                echo "Sucesso! Deploy disparado via POST autenticado (HTTP $code)."
-                return 0
-              fi
-              
-              echo "Erro: Todas as tentativas falharam. Ultimo HTTP code: $code."
-              # Executa com fail no curl final para registrar o log com detalhe
-              curl --fail --show-error --request POST "$url" --header "Authorization: Bearer $token" -H "Content-Type: application/json" -d '{}'
-              return 1
-            else
-              echo "Erro: COOLIFY_TOKEN nao definido e o webhook publico falhou."
-              return 1
-            fi
-          }
-          trigger_deploy "$COOLIFY_WEBHOOK_BACKEND" "$COOLIFY_TOKEN"
+            ' || true
+
+      - name: Checkout master
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          clean: true
+
+      - name: Revert failed deploy commit
+        env:
+          FAILED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          git config user.name "Rollback Ranger"
+          git config user.email "rollback-ranger[bot]@users.noreply.github.com"
+
+          if git rev-list --parents -n 1 "$FAILED_SHA" | grep -qE '^[^ ]+ [^ ]+ [^ ]+'; then
+            git revert --mainline 1 --no-edit "$FAILED_SHA"
+          else
+            git revert --no-edit "$FAILED_SHA"
+          fi
+
+      - name: Push rollback commit
+        run: |
+          git push origin HEAD:master
+
+      - name: Derive rollback image names
+        id: rollback-image-meta
+        run: |
+          echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push rollback web image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.web
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ steps.rollback-image-meta.outputs.owner }}/open-video-studio-web:latest
+            ${{ env.REGISTRY }}/${{ steps.rollback-image-meta.outputs.owner }}/open-video-studio-web:${{ steps.rollback-image-meta.outputs.sha }}
+
+      - name: Build and push rollback api image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.api
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ steps.rollback-image-meta.outputs.owner }}/open-video-studio-api:latest
+            ${{ env.REGISTRY }}/${{ steps.rollback-image-meta.outputs.owner }}/open-video-studio-api:${{ steps.rollback-image-meta.outputs.sha }}
+
+      - name: Trigger Coolify Web rollback redeploy
+        env:
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          COOLIFY_WEBHOOK_WEB: ${{ secrets.COOLIFY_WEBHOOK_WEB }}
+        run: |
+          if [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_WEBHOOK_WEB" ]; then
+            echo "Skipping web rollback redeploy: COOLIFY_TOKEN or COOLIFY_WEBHOOK_WEB is not configured."
+            exit 0
+          fi
+
+          curl --fail --show-error --silent \
+            --request GET "$COOLIFY_WEBHOOK_WEB" \
+            --header "Authorization: Bearer $COOLIFY_TOKEN"
+
+      - name: Trigger Coolify API rollback redeploy
+        env:
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          COOLIFY_WEBHOOK_BACKEND: ${{ secrets.COOLIFY_WEBHOOK_BACKEND }}
+        run: |
+          if [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_WEBHOOK_BACKEND" ]; then
+            echo "Skipping API rollback redeploy: COOLIFY_TOKEN or COOLIFY_WEBHOOK_BACKEND is not configured."
+            exit 0
+          fi
+
+          curl --fail --show-error --silent \
+            --request GET "$COOLIFY_WEBHOOK_BACKEND" \
+            --header "Authorization: Bearer $COOLIFY_TOKEN"
