@@ -1,5 +1,6 @@
 import { ScriptEditor } from "../../../../components/ScriptEditor";
 import { VoiceProfileManager } from "../../../../components/VoiceProfileManager";
+import { SceneAssetManager } from "../../../../components/SceneAssetManager";
 
 interface ProjectEditPageProps {
   params: { id: string };
@@ -14,11 +15,14 @@ interface ProjectData {
 }
 
 async function getProject(id: string): Promise<ProjectData | null> {
-  const apiUrl = process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+  const apiUrl =
+    process.env.API_INTERNAL_URL ??
+    process.env.NEXT_PUBLIC_API_URL ??
+    "http://localhost:4000";
 
   try {
     const response = await fetch(`${apiUrl}/projects/${id}`, {
-      cache: "no-store"
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -31,9 +35,14 @@ async function getProject(id: string): Promise<ProjectData | null> {
   }
 }
 
-export default async function ProjectEditPage({ params }: ProjectEditPageProps) {
+export default async function ProjectEditPage({
+  params,
+}: ProjectEditPageProps) {
   const project = await getProject(params.id);
-  const clientApiUrl = process.env.NEXT_PUBLIC_API_URL ?? process.env.API_INTERNAL_URL ?? "http://localhost:4000";
+  const clientApiUrl =
+    process.env.NEXT_PUBLIC_API_URL ??
+    process.env.API_INTERNAL_URL ??
+    "http://localhost:4000";
 
   if (!project) {
     return (
@@ -44,12 +53,16 @@ export default async function ProjectEditPage({ params }: ProjectEditPageProps) 
           alignItems: "center",
           justifyContent: "center",
           background: "#0f172a",
-          color: "#f1f5f9"
+          color: "#f1f5f9",
         }}
       >
         <div style={{ textAlign: "center" }}>
-          <h1 style={{ fontSize: 24, marginBottom: 8 }}>Projeto não encontrado</h1>
-          <p style={{ color: "#94a3b8" }}>O projeto solicitado não existe ou foi removido.</p>
+          <h1 style={{ fontSize: 24, marginBottom: 8 }}>
+            Projeto não encontrado
+          </h1>
+          <p style={{ color: "#94a3b8" }}>
+            O projeto solicitado não existe ou foi removido.
+          </p>
           <a
             href="/"
             style={{
@@ -57,7 +70,7 @@ export default async function ProjectEditPage({ params }: ProjectEditPageProps) 
               marginTop: 16,
               color: "#6366f1",
               textDecoration: "underline",
-              fontSize: 14
+              fontSize: 14,
             }}
           >
             Voltar ao início
@@ -71,9 +84,10 @@ export default async function ProjectEditPage({ params }: ProjectEditPageProps) 
     <main
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)",
+        background:
+          "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)",
         padding: "24px",
-        boxSizing: "border-box"
+        boxSizing: "border-box",
       }}
     >
       <style>{`
@@ -93,7 +107,7 @@ export default async function ProjectEditPage({ params }: ProjectEditPageProps) 
           margin: "0 auto",
           display: "flex",
           flexDirection: "column",
-          gap: 20
+          gap: 20,
         }}
       >
         {/* Header */}
@@ -112,7 +126,7 @@ export default async function ProjectEditPage({ params }: ProjectEditPageProps) 
               borderRadius: 8,
               background: "rgba(255,255,255,0.04)",
               border: "1px solid rgba(255,255,255,0.06)",
-              transition: "background 0.2s"
+              transition: "background 0.2s",
             }}
           >
             ← Projetos
@@ -129,7 +143,7 @@ export default async function ProjectEditPage({ params }: ProjectEditPageProps) 
               background: "rgba(255,255,255,0.04)",
               border: "1px solid rgba(255,255,255,0.06)",
               textTransform: "uppercase",
-              letterSpacing: "0.05em"
+              letterSpacing: "0.05em",
             }}
           >
             {project.status}
@@ -144,7 +158,7 @@ export default async function ProjectEditPage({ params }: ProjectEditPageProps) 
             border: "1px solid rgba(255,255,255,0.07)",
             borderRadius: 16,
             padding: 24,
-            backdropFilter: "blur(12px)"
+            backdropFilter: "blur(12px)",
           }}
         >
           <ScriptEditor
@@ -161,18 +175,20 @@ export default async function ProjectEditPage({ params }: ProjectEditPageProps) 
           projectId={project.id}
         />
 
+        <SceneAssetManager apiBaseUrl={clientApiUrl} projectId={project.id} />
+
         {/* Dica de uso */}
         <p
           style={{
             color: "#475569",
             fontSize: 12,
             textAlign: "center",
-            margin: 0
+            margin: 0,
           }}
         >
           Use <code style={{ color: "#6366f1" }}>[CENA 1]</code>,{" "}
-          <code style={{ color: "#6366f1" }}>[CENA 2]</code>... para demarcar cenas.
-          O roteiro é salvo automaticamente após 1,5s sem edição.
+          <code style={{ color: "#6366f1" }}>[CENA 2]</code>... para demarcar
+          cenas. O roteiro é salvo automaticamente após 1,5s sem edição.
         </p>
       </div>
     </main>

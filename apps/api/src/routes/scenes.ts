@@ -17,6 +17,7 @@ import {
 } from "@repo/infrastructure";
 
 import { createVoiceSampleFile } from "./audio-support.js";
+import { validateAsset } from "../assets/validation.js";
 
 interface SceneListItem {
   id: string;
@@ -33,6 +34,14 @@ interface SceneListItem {
   audioMimeType: string | null;
   audioPath: string | null;
   voiceProfileId: string | null;
+  assetId: string | null;
+  asset: {
+    id: string;
+    kind: string;
+    path: string;
+    source: string;
+    status: string;
+  } | null;
 }
 
 interface RecomposeResponse {
@@ -95,6 +104,16 @@ function toSceneResponse(
     title: scene.title,
     updatedAt: scene.updatedAt,
     voiceProfileId: scene.voiceProfileId,
+    assetId: scene.assetId,
+    asset: scene.asset
+      ? {
+          id: scene.asset.id,
+          kind: scene.asset.kind,
+          path: scene.asset.path,
+          source: scene.asset.source,
+          status: scene.asset.status,
+        }
+      : null,
   };
 }
 
@@ -117,8 +136,18 @@ async function listProjectScenes(projectId: string) {
       title: true,
       updatedAt: true,
       voiceProfileId: true,
+      assetId: true,
+      asset: {
+        select: {
+          id: true,
+          kind: true,
+          path: true,
+          source: true,
+          status: true,
+        },
+      },
     },
-  });
+  }) as Promise<SceneListItem[]>;
 }
 
 export async function syncProjectScenesFromRawScript(
@@ -305,6 +334,144 @@ export async function scenesRoutes(app: FastifyInstance): Promise<void> {
     },
   );
 
+  app.post<{ Params: { id: string; sceneId: string } }>(
+    "/projects/:id/scenes/:sceneId/asset",
+    async (request, reply) => {
+      const { id: projectId, sceneId } = request.params;
+
+      const scene = await prisma.scene.findUnique({
+        where: { id: sceneId, projectId },
+        select: { id: true },
+      });
+
+      if (!scene) {
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Cena não encontrada" });
+      }
+
+      let fileName = "";
+      let mimeType = "";
+      let assetBuffer: Buffer | null = null;
+
+      for await (const part of request.parts()) {
+        if (part.type === "file" && part.fieldname === "asset") {
+          fileName = part.filename;
+          mimeType = part.mimetype;
+          assetBuffer = await part.toBuffer();
+        }
+      }
+
+      if (!assetBuffer) {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message: "O arquivo do asset é obrigatório",
+        });
+      }
+
+      try {
+        const metadata = validateAsset({
+          buffer: assetBuffer,
+          fileName,
+          mimeType,
+        });
+
+        await prisma.$transaction(async (tx) => {
+          const createdAsset = await tx.asset.create({
+            data: {
+              projectId,
+              kind: metadata.kind,
+              source: "upload",
+              path: "",
+              status: "ready",
+            },
+          });
+
+          const extension = fileName
+            .toLowerCase()
+            .slice(fileName.lastIndexOf("."));
+          const storageKey = `manual/${createdAsset.id}${extension}`;
+
+          await storage.putObject(
+            "assets",
+            storageKey,
+            assetBuffer!,
+            metadata.mimeType,
+          );
+
+          await tx.asset.update({
+            where: { id: createdAsset.id },
+            data: {
+              path: `assets/${storageKey}`,
+            },
+          });
+
+          return tx.scene.update({
+            where: { id: sceneId },
+            data: {
+              assetId: createdAsset.id,
+            },
+          });
+        });
+
+        const project = await prisma.project.findUnique({
+          where: { id: projectId },
+          select: { voiceProfileId: true },
+        });
+
+        const fullSceneListItem = await prisma.scene.findUnique({
+          where: { id: sceneId },
+          select: {
+            audioContentHash: true,
+            audioDurationSeconds: true,
+            audioGeneratedAt: true,
+            audioMimeType: true,
+            audioPath: true,
+            createdAt: true,
+            id: true,
+            keywords: true,
+            orderIndex: true,
+            script: true,
+            status: true,
+            title: true,
+            updatedAt: true,
+            voiceProfileId: true,
+            assetId: true,
+            asset: {
+              select: {
+                id: true,
+                kind: true,
+                path: true,
+                source: true,
+                status: true,
+              },
+            },
+          },
+        });
+
+        if (!fullSceneListItem) {
+          throw new Error(
+            "Erro inesperado ao buscar dados atualizados da cena",
+          );
+        }
+
+        return reply
+          .status(200)
+          .send(
+            toSceneResponse(fullSceneListItem, project?.voiceProfileId ?? null),
+          );
+      } catch (error) {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message:
+            error instanceof Error
+              ? error.message
+              : "O arquivo enviado é inválido",
+        });
+      }
+    },
+  );
+
   app.post<{ Params: { id: string } }>(
     "/projects/:id/scenes/audio/generate",
     async (request, reply) => {
@@ -356,7 +523,6 @@ export async function scenesRoutes(app: FastifyInstance): Promise<void> {
           message: "Projeto não possui cenas para gerar áudio",
         });
       }
-
       const { cleanup, tempSamplePath } = await createVoiceSampleFile(
         project.voiceProfile.samplePath,
         `${project.voiceProfile.id}.wav`,
