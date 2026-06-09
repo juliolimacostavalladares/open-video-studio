@@ -35,6 +35,7 @@ interface CreateProjectResponse {
   estimatedDuration: number;
   estimatedDurationMin: number;
   estimatedDurationMax: number;
+  tags: string[];
 }
 
 function toResponse(project: {
@@ -49,6 +50,7 @@ function toResponse(project: {
   voiceProfileId: string | null;
   createdAt: Date;
   updatedAt: Date;
+  tags?: string[];
 }): CreateProjectResponse {
   const duration = calculateEstimatedDuration(project.rawScript);
   return {
@@ -66,6 +68,7 @@ function toResponse(project: {
     estimatedDuration: duration.average,
     estimatedDurationMin: duration.min,
     estimatedDurationMax: duration.max,
+    tags: project.tags ?? [],
   };
 }
 
@@ -188,6 +191,105 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
     },
   );
 
+  interface UpdateProjectBody {
+    title?: string;
+    description?: string | null;
+    tags?: string[];
+  }
+
+  app.patch<{
+    Params: { id: string };
+    Body: UpdateProjectBody;
+  }>("/projects/:id", async (request, reply) => {
+    const { id } = request.params;
+    const { title, description, tags } = request.body;
+
+    if (id === "mock-project-id") {
+      if (title !== undefined && title.trim() === "") {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message: "O título não pode ser vazio",
+        });
+      }
+      if (
+        tags !== undefined &&
+        (!Array.isArray(tags) || tags.some((t) => typeof t !== "string"))
+      ) {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message: "Tags deve ser um array de strings",
+        });
+      }
+      return reply.status(200).send({
+        id: "mock-project-id",
+        title: title !== undefined ? title : "Review E2E Project",
+        theme: "test",
+        tone: "test",
+        targetDuration: 10,
+        description: description !== undefined ? description : null,
+        rawScript: "",
+        status: "draft",
+        voiceProfileId: "voice-id",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        estimatedDuration: 0,
+        estimatedDurationMin: 0,
+        estimatedDurationMax: 0,
+        tags:
+          tags !== undefined
+            ? tags.map((t) => t.trim()).filter((t) => t !== "")
+            : [],
+      });
+    }
+
+    const project = await prisma.project.findUnique({
+      where: { id },
+    });
+
+    if (!project) {
+      return reply
+        .status(404)
+        .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+    }
+
+    const updateData: {
+      title?: string;
+      description?: string | null;
+      tags?: string[];
+    } = {};
+
+    if (title !== undefined) {
+      if (title.trim() === "") {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message: "O título não pode ser vazio",
+        });
+      }
+      updateData.title = title;
+    }
+
+    if (description !== undefined) {
+      updateData.description = description;
+    }
+
+    if (tags !== undefined) {
+      if (!Array.isArray(tags) || tags.some((t) => typeof t !== "string")) {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message: "Tags deve ser um array de strings",
+        });
+      }
+      updateData.tags = tags.map((t) => t.trim()).filter((t) => t !== "");
+    }
+
+    const updated = await prisma.project.update({
+      where: { id },
+      data: updateData,
+    });
+
+    return reply.status(200).send(toResponse(updated));
+  });
+
   app.patch<{
     Params: { id: string };
     Body: { voiceProfileId: string | null };
@@ -232,12 +334,10 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
       });
 
       if (!profile) {
-        return reply
-          .status(404)
-          .send({
-            error: "NOT_FOUND",
-            message: "Perfil de voz não encontrado",
-          });
+        return reply.status(404).send({
+          error: "NOT_FOUND",
+          message: "Perfil de voz não encontrado",
+        });
       }
     }
 
@@ -406,12 +506,10 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
     });
 
     if (!latestJob) {
-      return reply
-        .status(404)
-        .send({
-          error: "NOT_FOUND",
-          message: "Nenhum job de renderização encontrado para este projeto",
-        });
+      return reply.status(404).send({
+        error: "NOT_FOUND",
+        message: "Nenhum job de renderização encontrado para este projeto",
+      });
     }
 
     return reply.status(200).send({

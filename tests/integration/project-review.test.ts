@@ -226,4 +226,67 @@ describe("Project Review API integration", () => {
     });
     expect(renderRes.statusCode).toBe(404);
   });
+
+  it("should update project title, description, and tags via PATCH /projects/:id and verify persistence", async () => {
+    const { prisma } = await import("../../packages/database/src/client.js");
+
+    const project = await prisma.project.create({
+      data: {
+        title: "Original Title",
+        description: "Original Description",
+        status: "draft",
+        tags: ["tag1"],
+      },
+    });
+
+    // 1. Valid PATCH request
+    const patchRes = await app.inject({
+      method: "PATCH",
+      url: `/projects/${project.id}`,
+      payload: {
+        title: "Updated Title",
+        description: "Updated Description",
+        tags: ["tag1", "tag2", "new-tag"],
+      },
+    });
+
+    expect(patchRes.statusCode).toBe(200);
+    const patchBody = JSON.parse(patchRes.body);
+    expect(patchBody.title).toBe("Updated Title");
+    expect(patchBody.description).toBe("Updated Description");
+    expect(patchBody.tags).toEqual(["tag1", "tag2", "new-tag"]);
+
+    // 2. Fetch project details and verify persistence in db
+    const getRes = await app.inject({
+      method: "GET",
+      url: `/projects/${project.id}`,
+    });
+    expect(getRes.statusCode).toBe(200);
+    const getBody = JSON.parse(getRes.body);
+    expect(getBody.title).toBe("Updated Title");
+    expect(getBody.description).toBe("Updated Description");
+    expect(getBody.tags).toEqual(["tag1", "tag2", "new-tag"]);
+
+    // 3. Validation failure: empty title
+    const invalidTitleRes = await app.inject({
+      method: "PATCH",
+      url: `/projects/${project.id}`,
+      payload: {
+        title: "   ",
+      },
+    });
+    expect(invalidTitleRes.statusCode).toBe(400);
+    const invalidTitleBody = JSON.parse(invalidTitleRes.body);
+    expect(invalidTitleBody.error).toBe("BAD_REQUEST");
+
+    // 4. Validation failure: tags is not an array of strings
+    const invalidTagsRes = await app.inject({
+      method: "PATCH",
+      url: `/projects/${project.id}`,
+      payload: {
+        tags: ["valid-tag", 123 as never],
+      },
+    });
+    expect(invalidTagsRes.statusCode).toBe(400);
+  });
 });
