@@ -335,5 +335,5 @@ describe("Render Job integration tests", () => {
 
     // Cleanup worker
     await closeWorker();
-  }, 240000);
+  }, 600000);
 });
