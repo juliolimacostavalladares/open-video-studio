@@ -4,7 +4,6 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
-import { createStorageService } from "../../packages/infrastructure/src/index.js";
 import { loadWorkspaceConfig } from "../../packages/config/src/index.js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -217,6 +216,9 @@ describe("audio preview routes (integration)", () => {
       STORAGE_BASE_PATH: storagePath,
       STORAGE_DRIVER: "local",
     });
+    const { createStorageService } = await import(
+      "../../packages/infrastructure/src/index.js"
+    );
     const storage = createStorageService(config);
 
     const project = await prisma.project.create({

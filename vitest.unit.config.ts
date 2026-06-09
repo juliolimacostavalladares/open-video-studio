@@ -12,6 +12,9 @@ const workspaceAliases = {
   "@repo/infrastructure": fileURLToPath(
     new URL("./packages/infrastructure/src/index.ts", import.meta.url),
   ),
+  "@repo/video": fileURLToPath(
+    new URL("./packages/video/src/index.ts", import.meta.url),
+  ),
 };
 
 export default defineConfig({
