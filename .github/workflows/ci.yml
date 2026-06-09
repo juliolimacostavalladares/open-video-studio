@@ -12,18 +12,17 @@ jobs:
   validate:
     name: Validate
     runs-on: self-hosted
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --network host -v /var/run/docker.sock:/var/run/docker.sock
     steps:
-      - name: Prepare runner workspace
+      - name: Prepare git safe directory
+        run: git config --global --add safe.directory /__w/open-video-studio/open-video-studio
+
+      - name: Install Docker CLI
         run: |
-          docker run --rm \
-            -v "${GITHUB_WORKSPACE}:/work" \
-            -w /work \
-            alpine sh -c '
-              if [ -d /work ]; then
-                chown -R $(stat -c "%u:%g" /work) /work || true
-                find /work -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-              fi
-            ' || true
+          apt-get update
+          apt-get install -y docker.io docker-compose-v2
 
       - name: Checkout repository
         uses: actions/checkout@v4
