@@ -14,15 +14,22 @@ jobs:
     runs-on: self-hosted
     container:
       image: mcr.microsoft.com/playwright:v1.56.1-noble
-      options: --network host -v /var/run/docker.sock:/var/run/docker.sock
+      options: -v /var/run/docker.sock:/var/run/docker.sock
     steps:
       - name: Prepare git safe directory
         run: git config --global --add safe.directory /__w/open-video-studio/open-video-studio
 
-      - name: Install Docker CLI
+      - name: Install Docker CLI and networking tools
         run: |
           apt-get update
-          apt-get install -y docker.io docker-compose-v2
+          apt-get install -y docker.io docker-compose-v2 socat iproute2
+
+      - name: Set up port forwarding to host
+        run: |
+          HOST_IP=$(ip route show | awk '/default/ {print $3}')
+          echo "Host gateway IP is $HOST_IP"
+          socat TCP-LISTEN:54329,fork TCP:$HOST_IP:54329 &
+          socat TCP-LISTEN:6379,fork TCP:$HOST_IP:6379 &
 
       - name: Checkout repository
         uses: actions/checkout@v4
