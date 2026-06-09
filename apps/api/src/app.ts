@@ -6,10 +6,11 @@ import { scriptEditorRoutes } from "./routes/script-editor.js";
 import { projectsRoutes } from "./routes/projects.js";
 import { scenesRoutes } from "./routes/scenes.js";
 import { voiceProfilesRoutes } from "./routes/voice-profiles.js";
+import { assetsRoutes } from "./routes/assets.js";
 
 export function buildApiApp() {
   const app = Fastify({
-    logger: false
+    logger: false,
   });
 
   void app.register(multipart);
@@ -17,7 +18,7 @@ export function buildApiApp() {
   app.get("/health", async () => {
     return {
       service: "api",
-      status: "ok"
+      status: "ok",
     };
   });
 
@@ -26,6 +27,7 @@ export function buildApiApp() {
   app.register(scriptEditorRoutes);
   app.register(voiceProfilesRoutes);
   app.register(audioPreviewRoutes);
+  app.register(assetsRoutes);
 
   return app;
 }
