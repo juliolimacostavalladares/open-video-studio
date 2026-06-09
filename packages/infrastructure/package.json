@@ -19,6 +19,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "3.940.0",
     "@repo/config": "workspace:*",
+    "@repo/database": "workspace:*",
     "@repo/video": "workspace:*",
     "@remotion/bundler": "4.0.191",
     "@remotion/renderer": "4.0.191",

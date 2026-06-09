@@ -31,3 +31,4 @@ export {
   type SuggestedAssetKind,
 } from "./assets.js";
 export { renderVideo } from "./renderer.js";
+export { buildVideoTimeline } from "./timeline.js";
