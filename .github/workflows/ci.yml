@@ -12,18 +12,11 @@ jobs:
   validate:
     name: Validate
     runs-on: self-hosted
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
     steps:
-      - name: Prepare runner workspace
-        run: |
-          docker run --rm \
-            -v "${GITHUB_WORKSPACE}:/work" \
-            -w /work \
-            alpine sh -c '
-              if [ -d /work ]; then
-                chown -R $(stat -c "%u:%g" /work) /work || true
-                find /work -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-              fi
-            ' || true
+      - name: Prepare git safe directory
+        run: git config --global --add safe.directory /__w/open-video-studio/open-video-studio
 
       - name: Checkout repository
         uses: actions/checkout@v4
