@@ -75,6 +75,7 @@ describe("Pipeline Worker - Render Job", () => {
     vi.mocked(prisma.renderJob.findUnique).mockResolvedValue(null);
 
     const job = {
+      name: "render",
       data: {
         target: "render" as const,
         referenceId: "non-existent-job-id",
@@ -114,6 +115,7 @@ describe("Pipeline Worker - Render Job", () => {
     });
 
     const job = {
+      name: "render",
       data: {
         target: "render" as const,
         referenceId: "job-1",
@@ -187,6 +189,7 @@ describe("Pipeline Worker - Render Job", () => {
     vi.mocked(rm).mockResolvedValue();
 
     const job = {
+      name: "render",
       data: {
         target: "render" as const,
         referenceId: "job-1",
