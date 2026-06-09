@@ -1,6 +1,7 @@
 import { ScriptEditor } from "../../../../components/ScriptEditor";
 import { VoiceProfileManager } from "../../../../components/VoiceProfileManager";
 import { SceneAssetManager } from "../../../../components/SceneAssetManager";
+import { VideoPreviewPlayer } from "../../../../components/VideoPreviewPlayer";
 
 interface ProjectEditPageProps {
   params: { id: string };
@@ -176,6 +177,8 @@ export default async function ProjectEditPage({
         />
 
         <SceneAssetManager apiBaseUrl={clientApiUrl} projectId={project.id} />
+
+        <VideoPreviewPlayer apiBaseUrl={clientApiUrl} projectId={project.id} />
 
         {/* Dica de uso */}
         <p
