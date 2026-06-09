@@ -110,6 +110,88 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
     }
   };
 
+  const [isProcessingAction, setIsProcessingAction] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const handleApprove = async () => {
+    setIsProcessingAction(true);
+    setActionError(null);
+    try {
+      const res = await fetch(`${apiBaseUrl}/projects/${projectId}/approve`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Falha ao aprovar o projeto");
+      }
+      const updatedProject = (await res.json()) as ProjectData;
+      setProject(updatedProject);
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : "Erro ao aprovar projeto",
+      );
+    } finally {
+      setIsProcessingAction(false);
+    }
+  };
+
+  const handleReject = async () => {
+    setIsProcessingAction(true);
+    setActionError(null);
+    try {
+      const res = await fetch(`${apiBaseUrl}/projects/${projectId}/reject`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Falha ao rejeitar o projeto");
+      }
+      const updatedProject = (await res.json()) as ProjectData;
+      setProject(updatedProject);
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : "Erro ao rejeitar projeto",
+      );
+    } finally {
+      setIsProcessingAction(false);
+    }
+  };
+
+  const getStatusLabelAndStyle = () => {
+    if (!project) {
+      return {
+        text: "Carregando...",
+        color: "#94a3b8",
+        bg: "rgba(148, 163, 184, 0.15)",
+        border: "1px solid rgba(148, 163, 184, 0.3)",
+      };
+    }
+    switch (project.status) {
+      case "approved":
+        return {
+          text: "Aprovado",
+          color: "#10b981",
+          bg: "rgba(16, 185, 129, 0.15)",
+          border: "1px solid rgba(16, 185, 129, 0.3)",
+        };
+      case "rejected":
+        return {
+          text: "Rejeitado",
+          color: "#f43f5e",
+          bg: "rgba(244, 63, 94, 0.15)",
+          border: "1px solid rgba(244, 63, 94, 0.3)",
+        };
+      case "ready_for_review":
+      default:
+        return {
+          text: "Pronto para Revisão",
+          color: "#a78bfa",
+          bg: "rgba(139, 92, 246, 0.15)",
+          border: "1px solid rgba(139, 92, 246, 0.3)",
+        };
+    }
+  };
+
   useEffect(() => {
     let active = true;
 
@@ -393,9 +475,9 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
               id="review-status-label"
               style={{
                 fontSize: 12,
-                color: "#a78bfa",
-                background: "rgba(139, 92, 246, 0.15)",
-                border: "1px solid rgba(139, 92, 246, 0.3)",
+                color: getStatusLabelAndStyle().color,
+                background: getStatusLabelAndStyle().bg,
+                border: getStatusLabelAndStyle().border,
                 padding: "6px 14px",
                 borderRadius: 20,
                 textTransform: "uppercase",
@@ -403,7 +485,7 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                 letterSpacing: "0.05em",
               }}
             >
-              Pronto para Revisão
+              {getStatusLabelAndStyle().text}
             </span>
           </div>
         </header>
@@ -828,13 +910,118 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                     id="ready-for-review-state"
                     style={{
                       fontSize: 13,
-                      color: "#10b981",
+                      color:
+                        project.status === "approved"
+                          ? "#10b981"
+                          : project.status === "rejected"
+                            ? "#f43f5e"
+                            : "#10b981",
                       fontWeight: 500,
                       textAlign: "center",
                     }}
                   >
-                    Pronto para revisão! Assista ao vídeo e verifique os
-                    metadados.
+                    {project.status === "approved"
+                      ? "Projeto aprovado com sucesso! Pronto para publicação."
+                      : project.status === "rejected"
+                        ? "Projeto rejeitado. Edite o roteiro ou mude as cenas para corrigir."
+                        : "Pronto para revisão! Assista ao vídeo e verifique os metadados."}
+                  </div>
+
+                  {/* Approval/Rejection Actions */}
+                  <div
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 12,
+                      marginTop: 12,
+                      paddingTop: 16,
+                      borderTop: "1px solid rgba(255, 255, 255, 0.06)",
+                    }}
+                  >
+                    {actionError && (
+                      <div
+                        id="action-error-message"
+                        style={{
+                          color: "#f43f5e",
+                          fontSize: 13,
+                          textAlign: "center",
+                          background: "rgba(244, 63, 94, 0.1)",
+                          border: "1px solid rgba(244, 63, 94, 0.2)",
+                          borderRadius: 8,
+                          padding: "8px 12px",
+                        }}
+                      >
+                        {actionError}
+                      </div>
+                    )}
+
+                    <div style={{ display: "flex", gap: 12, width: "100%" }}>
+                      <button
+                        id="reject-project-btn"
+                        type="button"
+                        onClick={handleReject}
+                        disabled={
+                          isProcessingAction || project.status === "rejected"
+                        }
+                        style={{
+                          flex: 1,
+                          background:
+                            project.status === "rejected"
+                              ? "rgba(244, 63, 94, 0.15)"
+                              : "transparent",
+                          color: "#f43f5e",
+                          border: "1px solid #f43f5e",
+                          borderRadius: 8,
+                          padding: "10px 16px",
+                          fontSize: 14,
+                          fontWeight: 600,
+                          cursor:
+                            isProcessingAction || project.status === "rejected"
+                              ? "not-allowed"
+                              : "pointer",
+                          opacity: isProcessingAction ? 0.6 : 1,
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        {project.status === "rejected"
+                          ? "Rejeitado"
+                          : "Rejeitar"}
+                      </button>
+
+                      <button
+                        id="approve-project-btn"
+                        type="button"
+                        onClick={handleApprove}
+                        disabled={
+                          isProcessingAction || project.status === "approved"
+                        }
+                        style={{
+                          flex: 1,
+                          background:
+                            project.status === "approved"
+                              ? "rgba(16, 185, 129, 0.2)"
+                              : "#10b981",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: 8,
+                          padding: "10px 16px",
+                          fontSize: 14,
+                          fontWeight: 600,
+                          cursor:
+                            isProcessingAction || project.status === "approved"
+                              ? "not-allowed"
+                              : "pointer",
+                          opacity: isProcessingAction ? 0.6 : 1,
+                          boxShadow: "0 4px 12px rgba(16, 185, 129, 0.2)",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        {project.status === "approved"
+                          ? "Aprovado ✓"
+                          : "Aprovar"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
