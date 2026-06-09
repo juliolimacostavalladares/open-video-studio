@@ -65,7 +65,7 @@ function toResponse(project: {
     updatedAt: project.updatedAt.toISOString(),
     estimatedDuration: duration.average,
     estimatedDurationMin: duration.min,
-    estimatedDurationMax: duration.max
+    estimatedDurationMax: duration.max,
   };
 }
 
@@ -82,14 +82,14 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
     if (!title || !theme || !tone || !targetDuration) {
       return reply.status(400).send({
         error: "BAD_REQUEST",
-        message: "title, theme, tone e targetDuration são obrigatórios"
+        message: "title, theme, tone e targetDuration são obrigatórios",
       });
     }
 
     if (targetDuration <= 0 || targetDuration > 120) {
       return reply.status(400).send({
         error: "BAD_REQUEST",
-        message: "targetDuration deve estar entre 1 e 120 minutos"
+        message: "targetDuration deve estar entre 1 e 120 minutos",
       });
     }
 
@@ -101,8 +101,8 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
         tone,
         targetDuration,
         description: description ?? null,
-        status: "scripting"
-      }
+        status: "scripting",
+      },
     });
 
     // Gera o roteiro via IA
@@ -111,13 +111,19 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
 
     try {
       const aiClient = buildAiClient();
-      const result = await generateScript({ theme, tone, targetDuration }, aiClient);
+      const result = await generateScript(
+        { theme, tone, targetDuration },
+        aiClient,
+      );
 
       rawScript = result.rawScript;
     } catch (error) {
       // Falha do provedor de IA é tratável — projeto criado sem roteiro
       aiError = error instanceof Error ? error.message : String(error);
-      app.log.error({ projectId: project.id, error: aiError }, "AI generation failed");
+      app.log.error(
+        { projectId: project.id, error: aiError },
+        "AI generation failed",
+      );
     }
 
     // Persiste roteiro e atualiza status
@@ -125,15 +131,15 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
       where: { id: project.id },
       data: {
         rawScript,
-        status: aiError ? "error" : "scripting"
-      }
+        status: aiError ? "error" : "scripting",
+      },
     });
 
     const status = aiError ? 207 : 201;
 
     const responseBody: CreateProjectResponse & { aiError?: string } = {
       ...toResponse(updated),
-      ...(aiError ? { aiError } : {})
+      ...(aiError ? { aiError } : {}),
     };
 
     return reply.status(status).send(responseBody);
@@ -144,44 +150,10 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
    *
    * Retorna os dados de um projeto, incluindo rawScript.
    */
-  app.get<{ Params: { id: string } }>("/projects/:id", async (request, reply) => {
-    const { id } = request.params;
-
-    if (id === "mock-project-id") {
-      return reply.status(200).send({
-        id: "mock-project-id",
-        title: "E2E Duration Test Project",
-        theme: "test",
-        tone: "test",
-        targetDuration: 10,
-        description: null,
-        rawScript: "",
-        status: "draft",
-        voiceProfileId: null,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        estimatedDuration: 0,
-        estimatedDurationMin: 0,
-        estimatedDurationMax: 0
-      });
-    }
-
-    const project = await prisma.project.findUnique({
-      where: { id }
-    });
-
-    if (!project) {
-      return reply.status(404).send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
-    }
-
-    return reply.status(200).send(toResponse(project));
-  });
-
-  app.patch<{ Params: { id: string }; Body: { voiceProfileId: string | null } }>(
-    "/projects/:id/voice-profile",
+  app.get<{ Params: { id: string } }>(
+    "/projects/:id",
     async (request, reply) => {
       const { id } = request.params;
-      const { voiceProfileId } = request.body;
 
       if (id === "mock-project-id") {
         return reply.status(200).send({
@@ -193,63 +165,277 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
           description: null,
           rawScript: "",
           status: "draft",
-          voiceProfileId,
+          voiceProfileId: null,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           estimatedDuration: 0,
           estimatedDurationMin: 0,
-          estimatedDurationMax: 0
+          estimatedDurationMax: 0,
         });
       }
 
       const project = await prisma.project.findUnique({
         where: { id },
-        select: { id: true, voiceProfileId: true }
       });
 
       if (!project) {
-        return reply.status(404).send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
       }
 
-      if (voiceProfileId) {
-        const profile = await prisma.voiceProfile.findUnique({
-          where: { id: voiceProfileId },
-          select: { id: true }
-        });
+      return reply.status(200).send(toResponse(project));
+    },
+  );
 
-        if (!profile) {
-          return reply.status(404).send({ error: "NOT_FOUND", message: "Perfil de voz não encontrado" });
-        }
-      }
+  app.patch<{
+    Params: { id: string };
+    Body: { voiceProfileId: string | null };
+  }>("/projects/:id/voice-profile", async (request, reply) => {
+    const { id } = request.params;
+    const { voiceProfileId } = request.body;
 
-      const updated = await prisma.project.update({
-        where: { id },
-        data: { voiceProfileId },
-        select: {
-          id: true,
-          title: true,
-          theme: true,
-          tone: true,
-          targetDuration: true,
-          description: true,
-          rawScript: true,
-          status: true,
-          voiceProfileId: true,
-          createdAt: true,
-          updatedAt: true
-        }
+    if (id === "mock-project-id") {
+      return reply.status(200).send({
+        id: "mock-project-id",
+        title: "E2E Duration Test Project",
+        theme: "test",
+        tone: "test",
+        targetDuration: 10,
+        description: null,
+        rawScript: "",
+        status: "draft",
+        voiceProfileId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        estimatedDuration: 0,
+        estimatedDurationMin: 0,
+        estimatedDurationMax: 0,
+      });
+    }
+
+    const project = await prisma.project.findUnique({
+      where: { id },
+      select: { id: true, voiceProfileId: true },
+    });
+
+    if (!project) {
+      return reply
+        .status(404)
+        .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+    }
+
+    if (voiceProfileId) {
+      const profile = await prisma.voiceProfile.findUnique({
+        where: { id: voiceProfileId },
+        select: { id: true },
       });
 
-      if (project.voiceProfileId !== voiceProfileId) {
-        await prisma.scene.updateMany({
-          where: { projectId: id },
-          data: {
-            status: "draft"
-          }
-        });
+      if (!profile) {
+        return reply
+          .status(404)
+          .send({
+            error: "NOT_FOUND",
+            message: "Perfil de voz não encontrado",
+          });
       }
-
-      return reply.status(200).send(toResponse(updated));
     }
+
+    const updated = await prisma.project.update({
+      where: { id },
+      data: { voiceProfileId },
+      select: {
+        id: true,
+        title: true,
+        theme: true,
+        tone: true,
+        targetDuration: true,
+        description: true,
+        rawScript: true,
+        status: true,
+        voiceProfileId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (project.voiceProfileId !== voiceProfileId) {
+      await prisma.scene.updateMany({
+        where: { projectId: id },
+        data: {
+          status: "draft",
+        },
+      });
+    }
+
+    return reply.status(200).send(toResponse(updated));
+  });
+
+  const renderPostHandler = async (
+    request: import("fastify").FastifyRequest<{ Params: { id: string } }>,
+    reply: import("fastify").FastifyReply,
+  ) => {
+    const { id } = request.params;
+
+    const project = await prisma.project.findUnique({
+      where: { id },
+      include: {
+        scenes: {
+          orderBy: { orderIndex: "asc" },
+        },
+      },
+    });
+
+    if (!project) {
+      return reply
+        .status(404)
+        .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+    }
+
+    if (project.scenes.length === 0) {
+      return reply
+        .status(400)
+        .send({ error: "BAD_REQUEST", message: "Projeto sem cenas" });
+    }
+
+    const { canStartRenderWithSceneAudio, sceneHasValidAudio } = await import(
+      "@repo/database"
+    );
+
+    const isReady = canStartRenderWithSceneAudio(
+      project.scenes.map((scene) => ({
+        ...scene,
+        voiceProfileId: project.voiceProfileId,
+      })),
+      project.voiceProfileId,
+    );
+
+    if (!isReady) {
+      const invalidSceneIds = project.scenes
+        .filter(
+          (scene) =>
+            !sceneHasValidAudio({
+              audioContentHash: scene.audioContentHash,
+              audioPath: scene.audioPath,
+              script: scene.script,
+              voiceProfileId: project.voiceProfileId,
+            }),
+        )
+        .map((scene) => scene.id);
+
+      return reply.status(409).send({
+        error: "AUDIO_REQUIRED",
+        invalidSceneIds,
+        message: "Existem cenas sem áudio válido para iniciar o render",
+      });
+    }
+
+    const activeJob = await prisma.renderJob.findFirst({
+      where: {
+        projectId: id,
+        status: { in: ["queued", "running"] },
+      },
+    });
+
+    if (activeJob) {
+      return reply.status(200).send({
+        id: activeJob.id,
+        projectId: activeJob.projectId,
+        status: activeJob.status,
+        outputPath: activeJob.outputPath,
+        errorMessage: activeJob.errorMessage,
+        createdAt: activeJob.createdAt.toISOString(),
+        updatedAt: activeJob.updatedAt.toISOString(),
+      });
+    }
+
+    const renderJob = await prisma.renderJob.create({
+      data: {
+        projectId: id,
+        status: "queued",
+      },
+    });
+
+    await prisma.project.update({
+      where: { id },
+      data: { status: "rendering" },
+    });
+
+    const { createPipelineQueue } = await import("@repo/infrastructure");
+    const { queue, close: closeQueue } = createPipelineQueue();
+    try {
+      await queue.add("render", {
+        target: "render",
+        referenceId: renderJob.id,
+      });
+    } finally {
+      await closeQueue();
+    }
+
+    return reply.status(201).send({
+      id: renderJob.id,
+      projectId: renderJob.projectId,
+      status: renderJob.status,
+      outputPath: renderJob.outputPath,
+      errorMessage: renderJob.errorMessage,
+      createdAt: renderJob.createdAt.toISOString(),
+      updatedAt: renderJob.updatedAt.toISOString(),
+    });
+  };
+
+  const renderGetHandler = async (
+    request: import("fastify").FastifyRequest<{ Params: { id: string } }>,
+    reply: import("fastify").FastifyReply,
+  ) => {
+    const { id } = request.params;
+
+    const project = await prisma.project.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    if (!project) {
+      return reply
+        .status(404)
+        .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+    }
+
+    const latestJob = await prisma.renderJob.findFirst({
+      where: { projectId: id },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!latestJob) {
+      return reply
+        .status(404)
+        .send({
+          error: "NOT_FOUND",
+          message: "Nenhum job de renderização encontrado para este projeto",
+        });
+    }
+
+    return reply.status(200).send({
+      id: latestJob.id,
+      projectId: latestJob.projectId,
+      status: latestJob.status,
+      outputPath: latestJob.outputPath,
+      errorMessage: latestJob.errorMessage,
+      createdAt: latestJob.createdAt.toISOString(),
+      updatedAt: latestJob.updatedAt.toISOString(),
+    });
+  };
+
+  app.post<{ Params: { id: string } }>(
+    "/projects/:id/renders",
+    renderPostHandler,
   );
+  app.post<{ Params: { id: string } }>(
+    "/projects/:id/render",
+    renderPostHandler,
+  );
+  app.get<{ Params: { id: string } }>(
+    "/projects/:id/renders",
+    renderGetHandler,
+  );
+  app.get<{ Params: { id: string } }>("/projects/:id/render", renderGetHandler);
 }

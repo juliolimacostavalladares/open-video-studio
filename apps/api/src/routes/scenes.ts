@@ -2,7 +2,6 @@ import type { FastifyInstance } from "fastify";
 
 import {
   buildSceneAudioHash,
-  canStartRenderWithSceneAudio,
   generateSceneKeywords,
   getSceneFallbackAsset,
   parseScenes,
@@ -631,80 +630,6 @@ export async function scenesRoutes(app: FastifyInstance): Promise<void> {
       } finally {
         await cleanup();
       }
-    },
-  );
-
-  app.post<{ Params: { id: string } }>(
-    "/projects/:id/renders",
-    async (request, reply) => {
-      const { id } = request.params;
-
-      const project = await prisma.project.findUnique({
-        where: { id },
-        select: {
-          id: true,
-          scenes: {
-            orderBy: { orderIndex: "asc" },
-            select: {
-              audioContentHash: true,
-              audioPath: true,
-              id: true,
-              script: true,
-            },
-          },
-          voiceProfileId: true,
-        },
-      });
-
-      if (!project) {
-        return reply
-          .status(404)
-          .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
-      }
-
-      const isReady = canStartRenderWithSceneAudio(
-        project.scenes.map((scene) => ({
-          ...scene,
-          voiceProfileId: project.voiceProfileId,
-        })),
-        project.voiceProfileId,
-      );
-
-      if (!isReady) {
-        const invalidSceneIds = project.scenes
-          .filter(
-            (scene) =>
-              !sceneHasValidAudio({
-                audioContentHash: scene.audioContentHash,
-                audioPath: scene.audioPath,
-                script: scene.script,
-                voiceProfileId: project.voiceProfileId,
-              }),
-          )
-          .map((scene) => scene.id);
-
-        return reply.status(409).send({
-          error: "AUDIO_REQUIRED",
-          invalidSceneIds,
-          message: "Existem cenas sem áudio válido para iniciar o render",
-        });
-      }
-
-      const renderJob = await prisma.renderJob.create({
-        data: {
-          projectId: project.id,
-          status: "queued",
-        },
-      });
-
-      await prisma.project.update({
-        where: { id: project.id },
-        data: {
-          status: "rendering",
-        },
-      });
-
-      return reply.status(201).send(renderJob);
     },
   );
 }

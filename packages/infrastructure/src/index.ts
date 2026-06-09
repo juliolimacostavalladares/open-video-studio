@@ -4,6 +4,7 @@ export {
   createPipelineWorker,
   fakeFailureJobName,
   fakeSuccessJobName,
+  renderJobName,
 } from "./queue.js";
 export {
   buildStorageObjectKey,
