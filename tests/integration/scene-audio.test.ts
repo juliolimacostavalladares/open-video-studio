@@ -18,7 +18,6 @@ import { tmpdir } from "node:os";
 
 import type { FastifyInstance } from "fastify";
 import { loadWorkspaceConfig } from "../../packages/config/src/index.js";
-import { createStorageService } from "../../packages/infrastructure/src/index.js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 let app: FastifyInstance;
@@ -226,6 +225,9 @@ afterAll(async () => {
 describe("scene audio generation routes (integration)", () => {
   it("creates one generation job per changed scene and blocks render when audio is invalid", async () => {
     const { prisma } = await import("../../packages/database/src/client.js");
+    const { createStorageService } = await import(
+      "../../packages/infrastructure/src/index.js"
+    );
     const storage = createStorageService(
       loadWorkspaceConfig({
         ...process.env,
