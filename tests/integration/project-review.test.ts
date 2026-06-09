@@ -307,6 +307,15 @@ describe("Project Review API integration", () => {
     });
     expect(approveFailRes.statusCode).toBe(400);
 
+    // Assert that publishing is rejected before the project is approved
+    const publishResFail = await app.inject({
+      method: "POST",
+      url: `/projects/${project.id}/publish`,
+    });
+    expect(publishResFail.statusCode).toBe(400);
+    const publishBodyFail = JSON.parse(publishResFail.body);
+    expect(publishBodyFail.error).toBe("BAD_REQUEST");
+
     // 2. Create a successful render job and approve -> should succeed
     await prisma.renderJob.create({
       data: {
@@ -323,6 +332,23 @@ describe("Project Review API integration", () => {
     expect(approveSuccessRes.statusCode).toBe(200);
     const approvedProject = JSON.parse(approveSuccessRes.body);
     expect(approvedProject.status).toBe("approved");
+
+    // Assert that an ApprovalLog record was successfully persisted in the database
+    const log = await prisma.approvalLog.findFirst({
+      where: { projectId: project.id },
+    });
+    expect(log).not.toBeNull();
+    expect(log?.approvedBy).toBe("operator");
+    expect(log?.videoVersion).toBe("renders/workflow-render.mp4");
+
+    // 2.5 Test publish endpoint guard when approved
+    const publishResApproved = await app.inject({
+      method: "POST",
+      url: `/projects/${project.id}/publish`,
+    });
+    expect(publishResApproved.statusCode).toBe(200);
+    const publishBodyApproved = JSON.parse(publishResApproved.body);
+    expect(publishBodyApproved.success).toBe(true);
 
     // 3. Modifying metadata of an approved project -> should invalidate to ready_for_review
     const patchMetadataRes = await app.inject({
