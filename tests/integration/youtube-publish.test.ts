@@ -380,4 +380,77 @@ describe("YouTube Publish API Endpoint", () => {
 
     await app.close();
   });
+
+  it("handles quota exceeded error and enters download_only mode", async () => {
+    const { buildApiApp } = await import("../../apps/api/src/app.js");
+    const { prisma } = await import("../../packages/database/src/client.js");
+    const app = buildApiApp();
+    await app.ready();
+
+    const channel = await prisma.youtubeChannel.create({
+      data: {
+        channelId: "UC_PUBLISH_QUOTA_CHANNEL",
+        title: "Quota Channel",
+        accessToken: "mock_access_token_quota_error",
+        refreshToken: "mock_refresh_token",
+        expiryDate: new Date(Date.now() + 3600 * 1000),
+      },
+    });
+
+    const project = await prisma.project.create({
+      data: {
+        title: "Approved Project Quota Fallback",
+        status: "approved",
+        youtubeChannelId: channel.id,
+      },
+    });
+
+    const dummyVideoPath = join(
+      process.cwd(),
+      `.tmp/dummy-video-${project.id}.mp4`,
+    );
+    fs.writeFileSync(dummyVideoPath, "dummy-video-content");
+
+    await prisma.renderJob.create({
+      data: {
+        projectId: project.id,
+        status: "succeeded",
+        outputPath: dummyVideoPath,
+      },
+    });
+
+    const res = await app.inject({
+      method: "POST",
+      url: `/projects/${project.id}/publish`,
+    });
+
+    expect(res.statusCode).toBe(403);
+    const body = JSON.parse(res.body);
+    expect(body.error).toBe("QUOTA_EXCEEDED");
+
+    const updated = await prisma.project.findUnique({
+      where: { id: project.id },
+    });
+    expect(updated?.youtubePublishStatus).toBe("download_only");
+    expect(updated?.youtubePublishError).toContain("quota");
+
+    // Test reset endpoint
+    const resetRes = await app.inject({
+      method: "POST",
+      url: `/projects/${project.id}/youtube/reset`,
+    });
+    expect(resetRes.statusCode).toBe(200);
+
+    const resetUpdated = await prisma.project.findUnique({
+      where: { id: project.id },
+    });
+    expect(resetUpdated?.youtubePublishStatus).toBe("idle");
+    expect(resetUpdated?.youtubePublishError).toBeNull();
+
+    if (fs.existsSync(dummyVideoPath)) {
+      fs.unlinkSync(dummyVideoPath);
+    }
+
+    await app.close();
+  });
 });

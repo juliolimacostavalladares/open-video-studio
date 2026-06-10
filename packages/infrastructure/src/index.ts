@@ -40,6 +40,7 @@ export {
 } from "./youtube-oauth.js";
 export {
   YoutubePublisherService,
+  YoutubeQuotaExceededError,
   type YoutubePublishMetadata,
   type YoutubePublishResult,
 } from "./youtube-publisher.js";
