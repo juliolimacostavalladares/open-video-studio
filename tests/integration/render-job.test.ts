@@ -1,6 +1,7 @@
 const databaseName = `open_video_studio_render_job_${process.pid}`;
 const databaseUrl = `postgresql://postgres:postgres@127.0.0.1:54329/${databaseName}?schema=public`;
 process.env.DATABASE_URL = databaseUrl;
+process.env.QUEUE_NAME = `video-pipeline-render-job-${process.pid}`;
 
 const composeArgs = [
   "compose",
@@ -302,6 +303,10 @@ describe("Render Job integration tests", () => {
       const dbJobB = await prisma.renderJob.findUnique({
         where: { id: jobB.id },
       });
+
+      console.log(
+        `[POLL DEBUG] Job A (${jobA.id}): ${dbJobA?.status}, Job B (${jobB.id}): ${dbJobB?.status}`,
+      );
 
       if (dbJobA?.status === "succeeded" && dbJobB?.status === "succeeded") {
         completed = true;
