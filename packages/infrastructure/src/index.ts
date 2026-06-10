@@ -24,9 +24,11 @@ export {
   type TTSVoiceProfile,
 } from "./tts.js";
 export {
-  MockAssetProvider,
+  WikimediaCommonsAssetProvider,
   AssetProviderError,
+  createAssetProvider,
   type AssetProvider,
+  type AssetProviderFactoryOptions,
   type AssetProviderErrorCode,
   type SuggestedAsset,
   type SuggestedAssetKind,
