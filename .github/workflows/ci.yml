@@ -36,6 +36,9 @@ jobs:
         with:
           clean: true
 
+      - name: Start infrastructure (Redis, MinIO)
+        run: docker compose -p open-video-studio-infrastructure -f docker-compose.infrastructure.yml up -d redis minio
+
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
