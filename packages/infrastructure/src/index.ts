@@ -38,3 +38,9 @@ export {
   type YoutubeTokens,
   type YoutubeChannelDetails,
 } from "./youtube-oauth.js";
+export {
+  YoutubePublisherService,
+  type YoutubePublishMetadata,
+  type YoutubePublishResult,
+} from "./youtube-publisher.js";
+export { convertLocalToUTC } from "./timezone.js";

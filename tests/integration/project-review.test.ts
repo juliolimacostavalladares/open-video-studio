@@ -293,11 +293,22 @@ describe("Project Review API integration", () => {
   it("should handle the approval and rejection flow, and invalidate approval on modifications", async () => {
     const { prisma } = await import("../../packages/database/src/client.js");
 
+    const channel = await prisma.youtubeChannel.create({
+      data: {
+        channelId: "mock-channel-id-review",
+        title: "Mock Channel Review",
+        accessToken: "access-token-review",
+        refreshToken: "refresh-token-review",
+        expiryDate: new Date(Date.now() + 3600 * 1000),
+      },
+    });
+
     // 1. Create a project and attempt to approve it without a successful render job -> should fail
     const project = await prisma.project.create({
       data: {
         title: "Workflow Project",
         status: "ready_for_review",
+        youtubeChannelId: channel.id,
       },
     });
 
