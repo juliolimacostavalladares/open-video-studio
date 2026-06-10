@@ -1,4 +1,5 @@
 import multipart from "@fastify/multipart";
+import cors from "@fastify/cors";
 import Fastify from "fastify";
 
 import { audioPreviewRoutes } from "./routes/audio-preview.js";
@@ -15,6 +16,11 @@ export function buildApiApp() {
   });
 
   void app.register(multipart);
+  void app.register(cors, {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  });
 
   app.get("/health", async () => {
     return {
