@@ -13,3 +13,6 @@ apps/api/.env
 apps/web/.env.local
 packages/database/.env
 packages/database/src/generated
+.tmp
+storage
+

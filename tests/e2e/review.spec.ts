@@ -58,6 +58,23 @@ test.describe("project review screen", () => {
         ]),
       });
     });
+    // Mock YouTube Channel connected status by default for existing review screen tests
+    await page.route(
+      "**/projects/mock-project-id/youtube-channel",
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          headers: { "Access-Control-Allow-Origin": "*" },
+          body: JSON.stringify({
+            id: "mock-channel-id",
+            channelId: "UC_MOCK_CHANNEL_ID_12345",
+            title: "Mock Channel Solo Operator",
+            thumbnail: "https://placehold.co/100x100?text=MockChannel",
+          }),
+        });
+      },
+    );
   });
 
   test("displays project summary and plays the final video when render is ready", async ({

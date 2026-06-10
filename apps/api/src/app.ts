@@ -7,6 +7,7 @@ import { projectsRoutes } from "./routes/projects.js";
 import { scenesRoutes } from "./routes/scenes.js";
 import { voiceProfilesRoutes } from "./routes/voice-profiles.js";
 import { assetsRoutes } from "./routes/assets.js";
+import { youtubeOauthRoutes } from "./routes/youtube-oauth.js";
 
 export function buildApiApp() {
   const app = Fastify({
@@ -28,6 +29,7 @@ export function buildApiApp() {
   app.register(voiceProfilesRoutes);
   app.register(audioPreviewRoutes);
   app.register(assetsRoutes);
+  app.register(youtubeOauthRoutes);
 
   return app;
 }
