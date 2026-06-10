@@ -256,7 +256,10 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
       title?: string;
       description?: string | null;
       tags?: string[];
+      status?: "ready_for_review";
     } = {};
+
+    let changed = false;
 
     if (title !== undefined) {
       if (title.trim() === "") {
@@ -265,10 +268,16 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
           message: "O título não pode ser vazio",
         });
       }
+      if (title !== project.title) {
+        changed = true;
+      }
       updateData.title = title;
     }
 
     if (description !== undefined) {
+      if (description !== project.description) {
+        changed = true;
+      }
       updateData.description = description;
     }
 
@@ -279,7 +288,19 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
           message: "Tags deve ser um array de strings",
         });
       }
-      updateData.tags = tags.map((t) => t.trim()).filter((t) => t !== "");
+      const parsedTags = tags.map((t) => t.trim()).filter((t) => t !== "");
+      const currentTags = project.tags || [];
+      if (
+        parsedTags.length !== currentTags.length ||
+        parsedTags.some((t, i) => t !== currentTags[i])
+      ) {
+        changed = true;
+      }
+      updateData.tags = parsedTags;
+    }
+
+    if (changed && project.status === "approved") {
+      updateData.status = "ready_for_review";
     }
 
     const updated = await prisma.project.update({
@@ -289,6 +310,107 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
 
     return reply.status(200).send(toResponse(updated));
   });
+
+  app.post<{ Params: { id: string } }>(
+    "/projects/:id/approve",
+    async (request, reply) => {
+      const { id } = request.params;
+
+      if (id === "mock-project-id") {
+        return reply.status(200).send({
+          id: "mock-project-id",
+          title: "Review E2E Project",
+          theme: "test",
+          tone: "test",
+          targetDuration: 10,
+          description: null,
+          rawScript: "",
+          status: "approved",
+          voiceProfileId: "voice-id",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          estimatedDuration: 0,
+          estimatedDurationMin: 0,
+          estimatedDurationMax: 0,
+          tags: [],
+        });
+      }
+
+      const project = await prisma.project.findUnique({
+        where: { id },
+      });
+
+      if (!project) {
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+      }
+
+      // Check if project has a successful render job
+      const renderJob = await prisma.renderJob.findFirst({
+        where: { projectId: id, status: "succeeded" },
+      });
+
+      if (!renderJob) {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message:
+            "O projeto precisa ter um vídeo renderizado com sucesso para ser aprovado.",
+        });
+      }
+
+      const updated = await prisma.project.update({
+        where: { id },
+        data: { status: "approved" },
+      });
+
+      return reply.status(200).send(toResponse(updated));
+    },
+  );
+
+  app.post<{ Params: { id: string } }>(
+    "/projects/:id/reject",
+    async (request, reply) => {
+      const { id } = request.params;
+
+      if (id === "mock-project-id") {
+        return reply.status(200).send({
+          id: "mock-project-id",
+          title: "Review E2E Project",
+          theme: "test",
+          tone: "test",
+          targetDuration: 10,
+          description: null,
+          rawScript: "",
+          status: "rejected",
+          voiceProfileId: "voice-id",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          estimatedDuration: 0,
+          estimatedDurationMin: 0,
+          estimatedDurationMax: 0,
+          tags: [],
+        });
+      }
+
+      const project = await prisma.project.findUnique({
+        where: { id },
+      });
+
+      if (!project) {
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+      }
+
+      const updated = await prisma.project.update({
+        where: { id },
+        data: { status: "rejected" },
+      });
+
+      return reply.status(200).send(toResponse(updated));
+    },
+  );
 
   app.patch<{
     Params: { id: string };

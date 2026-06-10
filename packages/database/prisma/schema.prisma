@@ -12,6 +12,8 @@ enum ProjectStatus {
   scripting
   rendering
   ready_for_review
+  approved
+  rejected
   error
 }
 

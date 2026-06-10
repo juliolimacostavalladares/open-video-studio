@@ -42,12 +42,11 @@ function toScriptResponse(project: {
     updatedAt: project.updatedAt.toISOString(),
     estimatedDuration: duration.average,
     estimatedDurationMin: duration.min,
-    estimatedDurationMax: duration.max
+    estimatedDurationMax: duration.max,
   };
 }
 
 export async function scriptEditorRoutes(app: FastifyInstance): Promise<void> {
-
   /**
    * PATCH /projects/:id/script
    *
@@ -63,7 +62,7 @@ export async function scriptEditorRoutes(app: FastifyInstance): Promise<void> {
       if (rawScript === undefined || rawScript === null) {
         return reply.status(400).send({
           error: "BAD_REQUEST",
-          message: "rawScript é obrigatório"
+          message: "rawScript é obrigatório",
         });
       }
 
@@ -77,34 +76,37 @@ export async function scriptEditorRoutes(app: FastifyInstance): Promise<void> {
           updatedAt: new Date().toISOString(),
           estimatedDuration: duration.average,
           estimatedDurationMin: duration.min,
-          estimatedDurationMax: duration.max
+          estimatedDurationMax: duration.max,
         });
       }
 
       const existing = await prisma.project.findUnique({
         where: { id },
-        select: { id: true, status: true }
+        select: { id: true, status: true, rawScript: true },
       });
 
       if (!existing) {
-        return reply.status(404).send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
       }
 
-      const newStatus = existing.status === "draft" ? "scripting" : existing.status;
+      const hasScriptChanged = rawScript !== existing.rawScript;
+      const newStatus = hasScriptChanged ? "scripting" : existing.status;
 
       const updated = await prisma.project.update({
         where: { id },
         data: {
           rawScript,
-          status: newStatus
+          status: newStatus,
         },
         select: {
           id: true,
           title: true,
           rawScript: true,
           status: true,
-          updatedAt: true
-        }
+          updatedAt: true,
+        },
       });
 
       if (rawScript.trim()) {
@@ -112,6 +114,6 @@ export async function scriptEditorRoutes(app: FastifyInstance): Promise<void> {
       }
 
       return reply.status(200).send(toScriptResponse(updated));
-    }
+    },
   );
 }

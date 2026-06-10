@@ -289,4 +289,85 @@ describe("Project Review API integration", () => {
     });
     expect(invalidTagsRes.statusCode).toBe(400);
   });
+
+  it("should handle the approval and rejection flow, and invalidate approval on modifications", async () => {
+    const { prisma } = await import("../../packages/database/src/client.js");
+
+    // 1. Create a project and attempt to approve it without a successful render job -> should fail
+    const project = await prisma.project.create({
+      data: {
+        title: "Workflow Project",
+        status: "ready_for_review",
+      },
+    });
+
+    const approveFailRes = await app.inject({
+      method: "POST",
+      url: `/projects/${project.id}/approve`,
+    });
+    expect(approveFailRes.statusCode).toBe(400);
+
+    // 2. Create a successful render job and approve -> should succeed
+    await prisma.renderJob.create({
+      data: {
+        projectId: project.id,
+        status: "succeeded",
+        outputPath: "renders/workflow-render.mp4",
+      },
+    });
+
+    const approveSuccessRes = await app.inject({
+      method: "POST",
+      url: `/projects/${project.id}/approve`,
+    });
+    expect(approveSuccessRes.statusCode).toBe(200);
+    const approvedProject = JSON.parse(approveSuccessRes.body);
+    expect(approvedProject.status).toBe("approved");
+
+    // 3. Modifying metadata of an approved project -> should invalidate to ready_for_review
+    const patchMetadataRes = await app.inject({
+      method: "PATCH",
+      url: `/projects/${project.id}`,
+      payload: {
+        title: "Workflow Project Edited Title",
+      },
+    });
+    expect(patchMetadataRes.statusCode).toBe(200);
+    const patchedProject = JSON.parse(patchMetadataRes.body);
+    expect(patchedProject.status).toBe("ready_for_review");
+
+    // 4. Re-approve the project
+    const approveSuccessRes2 = await app.inject({
+      method: "POST",
+      url: `/projects/${project.id}/approve`,
+    });
+    expect(approveSuccessRes2.statusCode).toBe(200);
+
+    // 5. Modifying script of an approved project -> should invalidate to scripting
+    const patchScriptRes = await app.inject({
+      method: "PATCH",
+      url: `/projects/${project.id}/script`,
+      payload: {
+        rawScript: "[CENA 1]\nNew different script content.",
+      },
+    });
+    expect(patchScriptRes.statusCode).toBe(200);
+    const scriptBody = JSON.parse(patchScriptRes.body);
+    expect(scriptBody.status).toBe("scripting");
+
+    // 6. Test rejection transition
+    // Reset status to ready_for_review manually for testing
+    await prisma.project.update({
+      where: { id: project.id },
+      data: { status: "ready_for_review" },
+    });
+
+    const rejectRes = await app.inject({
+      method: "POST",
+      url: `/projects/${project.id}/reject`,
+    });
+    expect(rejectRes.statusCode).toBe(200);
+    const rejectedProject = JSON.parse(rejectRes.body);
+    expect(rejectedProject.status).toBe("rejected");
+  });
 });
