@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { validateMetadata } from "../utils/metadata-validation";
 
@@ -18,6 +18,13 @@ interface ProjectData {
   voiceProfileId: string | null;
   estimatedDuration: number;
   tags?: string[];
+  youtubeVideoId?: string | null;
+  youtubePublishStatus?: string;
+  youtubePublishError?: string | null;
+  publishedAt?: string | null;
+  scheduledPublishAt?: string | null;
+  scheduledPublishAtLocal?: string | null;
+  scheduledPublishTimezone?: string | null;
 }
 
 interface RenderJob {
@@ -211,6 +218,7 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
       if (!res.ok) {
         throw new Error(data.message || "Falha ao publicar o projeto");
       }
+      await loadData();
       setPublishSuccess(
         data.message ||
           (isScheduledMode
@@ -218,8 +226,33 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
             : "Vídeo publicado com sucesso!"),
       );
     } catch (err) {
+      await loadData();
       setPublishError(
         err instanceof Error ? err.message : "Erro ao publicar projeto",
+      );
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
+  const handleResetPublishStatus = async () => {
+    setIsPublishing(true);
+    setPublishError(null);
+    setPublishSuccess(null);
+    try {
+      const res = await fetch(
+        `${apiBaseUrl}/projects/${projectId}/youtube/reset`,
+        {
+          method: "POST",
+        },
+      );
+      if (!res.ok) {
+        throw new Error("Falha ao redefinir status de publicação");
+      }
+      await loadData();
+    } catch (err) {
+      setPublishError(
+        err instanceof Error ? err.message : "Erro ao redefinir status",
       );
     } finally {
       setIsPublishing(false);
@@ -304,104 +337,89 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
         };
     }
   };
+  const loadData = useCallback(async () => {
+    try {
+      // Fetch project details
+      const projectRes = await fetch(`${apiBaseUrl}/projects/${projectId}`, {
+        cache: "no-store",
+      });
+      if (!projectRes.ok) {
+        if (projectRes.status === 404) {
+          throw new Error("Projeto não encontrado");
+        }
+        throw new Error("Falha ao carregar os dados do projeto");
+      }
+      const projectData = (await projectRes.json()) as ProjectData;
 
-  useEffect(() => {
-    let active = true;
+      setProject(projectData);
+      setEditTitle(projectData.title || "");
+      setEditDescription(projectData.description || "");
+      setEditTags(projectData.tags ? projectData.tags.join(", ") : "");
 
-    async function loadData() {
+      // Fetch render job status
+      const renderRes = await fetch(
+        `${apiBaseUrl}/projects/${projectId}/renders`,
+        {
+          cache: "no-store",
+        },
+      );
+      if (renderRes.ok) {
+        const renderData = (await renderRes.json()) as RenderJob;
+        setRenderJob(renderData);
+      } else if (renderRes.status !== 404) {
+        console.error("Falha ao buscar status do render");
+      }
+
+      // Fetch scenes
+      const scenesRes = await fetch(
+        `${apiBaseUrl}/projects/${projectId}/scenes`,
+        {
+          cache: "no-store",
+        },
+      );
+      if (scenesRes.ok) {
+        const scenesData = await scenesRes.json();
+        const scenesList = Array.isArray(scenesData)
+          ? scenesData
+          : scenesData.scenes || [];
+        setScenes(
+          scenesList.sort((a: Scene, b: Scene) => a.orderIndex - b.orderIndex),
+        );
+      }
+
+      // Fetch voice profiles
+      const voicesRes = await fetch(`${apiBaseUrl}/voice-profiles`, {
+        cache: "no-store",
+      });
+      if (voicesRes.ok) {
+        const voicesData = (await voicesRes.json()) as VoiceProfile[];
+        setVoiceProfiles(voicesData);
+      }
+
+      // Fetch youtube channel
       try {
-        // Fetch project details
-        const projectRes = await fetch(`${apiBaseUrl}/projects/${projectId}`, {
-          cache: "no-store",
-        });
-        if (!projectRes.ok) {
-          if (projectRes.status === 404) {
-            throw new Error("Projeto não encontrado");
-          }
-          throw new Error("Falha ao carregar os dados do projeto");
-        }
-        const projectData = (await projectRes.json()) as ProjectData;
-
-        if (!active) return;
-        setProject(projectData);
-        setEditTitle(projectData.title || "");
-        setEditDescription(projectData.description || "");
-        setEditTags(projectData.tags ? projectData.tags.join(", ") : "");
-
-        // Fetch render job status
-        const renderRes = await fetch(
-          `${apiBaseUrl}/projects/${projectId}/renders`,
-          {
-            cache: "no-store",
-          },
+        const channelRes = await fetch(
+          `${apiBaseUrl}/projects/${projectId}/youtube-channel`,
+          { cache: "no-store" },
         );
-        if (renderRes.ok) {
-          const renderData = (await renderRes.json()) as RenderJob;
-          setRenderJob(renderData);
-        } else if (renderRes.status !== 404) {
-          console.error("Falha ao buscar status do render");
-        }
-
-        // Fetch scenes
-        const scenesRes = await fetch(
-          `${apiBaseUrl}/projects/${projectId}/scenes`,
-          {
-            cache: "no-store",
-          },
-        );
-        if (scenesRes.ok) {
-          const scenesData = await scenesRes.json();
-          // The API returns { projectId, scenes: [...] } or just [...]
-          const scenesList = Array.isArray(scenesData)
-            ? scenesData
-            : scenesData.scenes || [];
-          setScenes(
-            scenesList.sort(
-              (a: Scene, b: Scene) => a.orderIndex - b.orderIndex,
-            ),
-          );
-        }
-
-        // Fetch voice profiles
-        const voicesRes = await fetch(`${apiBaseUrl}/voice-profiles`, {
-          cache: "no-store",
-        });
-        if (voicesRes.ok) {
-          const voicesData = (await voicesRes.json()) as VoiceProfile[];
-          setVoiceProfiles(voicesData);
-        }
-
-        // Fetch youtube channel
-        try {
-          const channelRes = await fetch(
-            `${apiBaseUrl}/projects/${projectId}/youtube-channel`,
-            { cache: "no-store" },
-          );
-          if (channelRes.ok) {
-            const channelData = await channelRes.json();
-            setYoutubeChannel(channelData);
-          }
-        } catch (err) {
-          console.error("Falha ao buscar canal do YouTube", err);
+        if (channelRes.ok) {
+          const channelData = await channelRes.json();
+          setYoutubeChannel(channelData);
         }
       } catch (err) {
-        if (active) {
-          setError(err instanceof Error ? err.message : "Erro desconhecido");
-        }
-      } finally {
-        if (active) {
-          setIsLoading(false);
-          setIsLoadingChannel(false);
-        }
+        console.error("Falha ao buscar canal do YouTube", err);
       }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
+    } finally {
+      setIsLoading(false);
+      setIsLoadingChannel(false);
     }
-
-    void loadData();
-
-    return () => {
-      active = false;
-    };
   }, [projectId, apiBaseUrl]);
+
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -1371,187 +1389,502 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                       )}
                     </div>
 
-                    {/* Controles de Agendamento */}
-                    {youtubeChannel && (
+                    {/* Status de Publicação do YouTube ou Controles de Upload */}
+                    {youtubeChannel &&
+                    project.youtubePublishStatus &&
+                    project.youtubePublishStatus !== "idle" ? (
                       <div
                         style={{
-                          marginBottom: 16,
-                          padding: 12,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 12,
+                          padding: 16,
                           background: "rgba(255, 255, 255, 0.03)",
                           border: "1px solid rgba(255, 255, 255, 0.08)",
                           borderRadius: 8,
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 10,
+                          marginBottom: 16,
                         }}
                       >
-                        <label
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                            fontSize: 13,
-                            fontWeight: 500,
-                            cursor: "pointer",
-                            userSelect: "none",
-                          }}
-                        >
-                          <input
-                            id="schedule-publish-toggle"
-                            type="checkbox"
-                            checked={isScheduledMode}
-                            onChange={(e) =>
-                              setIsScheduledMode(e.target.checked)
-                            }
-                            style={{
-                              accentColor: "#6366f1",
-                              width: 16,
-                              height: 16,
-                            }}
-                          />
-                          <span>Agendar publicação no YouTube</span>
-                        </label>
-
-                        {isScheduledMode && (
+                        {project.youtubePublishStatus === "uploading" && (
                           <div
-                            id="schedule-inputs-container"
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: 8,
-                              marginTop: 4,
-                            }}
+                            id="youtube-status-uploading"
+                            style={{ textAlign: "center", padding: 12 }}
                           >
                             <div
+                              className="animate-spin"
                               style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 4,
+                                margin: "0 auto 8px",
+                                width: 24,
+                                height: 24,
+                                border: "3px solid #6366f1",
+                                borderTopColor: "transparent",
+                                borderRadius: "50%",
+                              }}
+                            />
+                            <span
+                              style={{
+                                fontSize: 13,
+                                fontWeight: 500,
+                                color: "#a5b4fc",
                               }}
                             >
-                              <span style={{ fontSize: 11, color: "#94a3b8" }}>
-                                Data e Hora Local:
-                              </span>
-                              <input
-                                id="scheduled-date-input"
-                                type="datetime-local"
-                                value={scheduledDateLocal}
-                                onChange={(e) =>
-                                  setScheduledDateLocal(e.target.value)
-                                }
+                              Enviando vídeo para o YouTube...
+                            </span>
+                          </div>
+                        )}
+
+                        {project.youtubePublishStatus === "processing" && (
+                          <div
+                            id="youtube-status-processing"
+                            style={{ textAlign: "center", padding: 12 }}
+                          >
+                            <div
+                              className="animate-pulse"
+                              style={{
+                                margin: "0 auto 8px",
+                                width: 40,
+                                height: 10,
+                                background: "#6366f1",
+                                borderRadius: 4,
+                              }}
+                            />
+                            <span
+                              style={{
+                                fontSize: 13,
+                                fontWeight: 500,
+                                color: "#a5b4fc",
+                              }}
+                            >
+                              Processando no YouTube...
+                            </span>
+                          </div>
+                        )}
+
+                        {project.youtubePublishStatus === "scheduled" && (
+                          <div
+                            id="youtube-status-scheduled"
+                            style={{
+                              borderLeft: "3px solid #8b5cf6",
+                              paddingLeft: 10,
+                            }}
+                          >
+                            <h4
+                              style={{
+                                margin: "0 0 4px 0",
+                                fontSize: 13,
+                                color: "#c084fc",
+                                fontWeight: 600,
+                              }}
+                            >
+                              Publicação Agendada
+                            </h4>
+                            <p
+                              style={{
+                                margin: 0,
+                                fontSize: 12,
+                                color: "#cbd5e1",
+                              }}
+                            >
+                              Seu vídeo está agendado para:{" "}
+                              <strong>{project.scheduledPublishAtLocal}</strong>{" "}
+                              ({project.scheduledPublishTimezone})
+                            </p>
+                            {project.youtubeVideoId && (
+                              <p
                                 style={{
-                                  background: "rgba(0, 0, 0, 0.2)",
-                                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                                  borderRadius: 6,
-                                  color: "#fff",
-                                  padding: "6px 10px",
-                                  fontSize: 13,
-                                  outline: "none",
+                                  margin: "6px 0 0 0",
+                                  fontSize: 11,
+                                  color: "#94a3b8",
                                 }}
-                              />
-                            </div>
+                              >
+                                ID do Vídeo: {project.youtubeVideoId}
+                              </p>
+                            )}
+                          </div>
+                        )}
+
+                        {project.youtubePublishStatus === "published" && (
+                          <div
+                            id="youtube-status-published"
+                            style={{
+                              borderLeft: "3px solid #10b981",
+                              paddingLeft: 10,
+                            }}
+                          >
+                            <h4
+                              style={{
+                                margin: "0 0 4px 0",
+                                fontSize: 13,
+                                color: "#34d399",
+                                fontWeight: 600,
+                              }}
+                            >
+                              Publicado com Sucesso!
+                            </h4>
+                            <p
+                              style={{
+                                margin: 0,
+                                fontSize: 12,
+                                color: "#cbd5e1",
+                              }}
+                            >
+                              Vídeo disponível no YouTube.
+                            </p>
+                            <a
+                              id="youtube-video-link"
+                              href={`https://www.youtube.com/watch?v=${project.youtubeVideoId}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                display: "inline-block",
+                                marginTop: 8,
+                                fontSize: 12,
+                                color: "#10b981",
+                                fontWeight: 500,
+                                textDecoration: "underline",
+                              }}
+                            >
+                              Assistir no YouTube
+                            </a>
+                          </div>
+                        )}
+
+                        {project.youtubePublishStatus === "error" && (
+                          <div
+                            id="youtube-status-error"
+                            style={{
+                              borderLeft: "3px solid #f43f5e",
+                              paddingLeft: 10,
+                            }}
+                          >
+                            <h4
+                              style={{
+                                margin: "0 0 4px 0",
+                                fontSize: 13,
+                                color: "#fb7185",
+                                fontWeight: 600,
+                              }}
+                            >
+                              Erro na Publicação
+                            </h4>
+                            <p
+                              style={{
+                                margin: 0,
+                                fontSize: 12,
+                                color: "#e2e8f0",
+                              }}
+                            >
+                              {project.youtubePublishError ||
+                                "Ocorreu um erro desconhecido durante o upload."}
+                            </p>
+                            <button
+                              id="retry-publish-btn"
+                              type="button"
+                              onClick={handleResetPublishStatus}
+                              disabled={isPublishing}
+                              style={{
+                                marginTop: 12,
+                                background: "#f43f5e",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: 6,
+                                padding: "6px 12px",
+                                fontSize: 11,
+                                fontWeight: 600,
+                                cursor: isPublishing
+                                  ? "not-allowed"
+                                  : "pointer",
+                                opacity: isPublishing ? 0.6 : 1,
+                              }}
+                            >
+                              Tentar Novamente
+                            </button>
+                          </div>
+                        )}
+
+                        {project.youtubePublishStatus === "download_only" && (
+                          <div
+                            id="youtube-status-fallback"
+                            style={{
+                              borderLeft: "3px solid #f97316",
+                              paddingLeft: 10,
+                            }}
+                          >
+                            <h4
+                              style={{
+                                margin: "0 0 4px 0",
+                                fontSize: 13,
+                                color: "#fb923c",
+                                fontWeight: 600,
+                              }}
+                            >
+                              Fallback: Modo Apenas Download Ativo
+                            </h4>
+                            <p
+                              style={{
+                                margin: 0,
+                                fontSize: 12,
+                                color: "#cbd5e1",
+                                lineHeight: "1.4",
+                              }}
+                            >
+                              Limite de quota diária do YouTube excedido para
+                              esta conta. A publicação automática está suspensa
+                              temporariamente.
+                            </p>
+                            <p
+                              style={{
+                                margin: "6px 0 0 0",
+                                fontSize: 12,
+                                color: "#cbd5e1",
+                              }}
+                            >
+                              O arquivo de vídeo renderizado foi preservado e
+                              está disponível para download local imediato:
+                            </p>
                             <div
                               style={{
                                 display: "flex",
-                                flexDirection: "column",
-                                gap: 4,
+                                gap: 10,
+                                marginTop: 12,
                               }}
                             >
-                              <span style={{ fontSize: 11, color: "#94a3b8" }}>
-                                Fuso Horário:
-                              </span>
-                              <select
-                                id="scheduled-timezone-select"
-                                value={scheduledTimezone}
-                                onChange={(e) =>
-                                  setScheduledTimezone(e.target.value)
-                                }
+                              <a
+                                id="download-fallback-video-btn"
+                                href={getVideoUrl()}
+                                download
                                 style={{
-                                  background: "rgba(0, 0, 0, 0.2)",
-                                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                                  borderRadius: 6,
+                                  background: "#f97316",
                                   color: "#fff",
-                                  padding: "6px 10px",
-                                  fontSize: 13,
-                                  outline: "none",
+                                  border: "none",
+                                  borderRadius: 6,
+                                  padding: "6px 12px",
+                                  fontSize: 11,
+                                  fontWeight: 600,
                                   cursor: "pointer",
+                                  textDecoration: "none",
+                                  display: "inline-block",
+                                  textAlign: "center",
                                 }}
                               >
-                                <option
-                                  value="America/Sao_Paulo"
-                                  style={{ background: "#1e1b4b" }}
-                                >
-                                  América/São Paulo (UTC-3)
-                                </option>
-                                <option
-                                  value="Europe/London"
-                                  style={{ background: "#1e1b4b" }}
-                                >
-                                  Europa/Londres (UTC+1)
-                                </option>
-                                <option
-                                  value="Asia/Tokyo"
-                                  style={{ background: "#1e1b4b" }}
-                                >
-                                  Ásia/Tóquio (UTC+9)
-                                </option>
-                                <option
-                                  value="America/New_York"
-                                  style={{ background: "#1e1b4b" }}
-                                >
-                                  América/Nova Iorque (UTC-4)
-                                </option>
-                                <option
-                                  value="UTC"
-                                  style={{ background: "#1e1b4b" }}
-                                >
-                                  UTC (UTC+0)
-                                </option>
-                              </select>
+                                Download do Vídeo (.mp4)
+                              </a>
+                              <button
+                                id="retry-publish-btn"
+                                type="button"
+                                onClick={handleResetPublishStatus}
+                                disabled={isPublishing}
+                                style={{
+                                  background: "rgba(255, 255, 255, 0.08)",
+                                  color: "#e2e8f0",
+                                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                                  borderRadius: 6,
+                                  padding: "6px 12px",
+                                  fontSize: 11,
+                                  fontWeight: 600,
+                                  cursor: isPublishing
+                                    ? "not-allowed"
+                                    : "pointer",
+                                  opacity: isPublishing ? 0.6 : 1,
+                                }}
+                              >
+                                Redefinir Status
+                              </button>
                             </div>
                           </div>
                         )}
                       </div>
-                    )}
+                    ) : (
+                      <>
+                        {/* Controles de Agendamento */}
+                        {youtubeChannel && (
+                          <div
+                            style={{
+                              marginBottom: 16,
+                              padding: 12,
+                              background: "rgba(255, 255, 255, 0.03)",
+                              border: "1px solid rgba(255, 255, 255, 0.08)",
+                              borderRadius: 8,
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 10,
+                            }}
+                          >
+                            <label
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                fontSize: 13,
+                                fontWeight: 500,
+                                cursor: "pointer",
+                                userSelect: "none",
+                              }}
+                            >
+                              <input
+                                id="schedule-publish-toggle"
+                                type="checkbox"
+                                checked={isScheduledMode}
+                                onChange={(e) =>
+                                  setIsScheduledMode(e.target.checked)
+                                }
+                                style={{
+                                  accentColor: "#6366f1",
+                                  width: 16,
+                                  height: 16,
+                                }}
+                              />
+                              <span>Agendar publicação no YouTube</span>
+                            </label>
 
-                    <button
-                      id="publish-project-btn"
-                      type="button"
-                      onClick={handlePublish}
-                      disabled={isPublishing}
-                      style={{
-                        width: "100%",
-                        background:
-                          project.status !== "approved" || !youtubeChannel
-                            ? "rgba(99, 102, 241, 0.15)"
-                            : "#6366f1",
-                        color:
-                          project.status !== "approved" || !youtubeChannel
-                            ? "#94a3b8"
-                            : "#fff",
-                        border:
-                          project.status !== "approved" || !youtubeChannel
-                            ? "1px solid rgba(255, 255, 255, 0.1)"
-                            : "none",
-                        borderRadius: 8,
-                        padding: "10px 16px",
-                        fontSize: 14,
-                        fontWeight: 600,
-                        cursor: isPublishing ? "not-allowed" : "pointer",
-                        opacity: isPublishing ? 0.6 : 1,
-                        boxShadow:
-                          project.status !== "approved" || !youtubeChannel
-                            ? "none"
-                            : "0 4px 12px rgba(99, 102, 241, 0.2)",
-                        transition: "all 0.2s ease",
-                      }}
-                    >
-                      {isPublishing
-                        ? "Publicando..."
-                        : isScheduledMode
-                          ? "Agendar Vídeo"
-                          : "Publicar Vídeo"}
-                    </button>
+                            {isScheduledMode && (
+                              <div
+                                id="schedule-inputs-container"
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: 8,
+                                  marginTop: 4,
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 4,
+                                  }}
+                                >
+                                  <span
+                                    style={{ fontSize: 11, color: "#94a3b8" }}
+                                  >
+                                    Data e Hora Local:
+                                  </span>
+                                  <input
+                                    id="scheduled-date-input"
+                                    type="datetime-local"
+                                    value={scheduledDateLocal}
+                                    onChange={(e) =>
+                                      setScheduledDateLocal(e.target.value)
+                                    }
+                                    style={{
+                                      background: "rgba(0, 0, 0, 0.2)",
+                                      border:
+                                        "1px solid rgba(255, 255, 255, 0.1)",
+                                      borderRadius: 6,
+                                      color: "#fff",
+                                      padding: "6px 10px",
+                                      fontSize: 13,
+                                      outline: "none",
+                                    }}
+                                  />
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 4,
+                                  }}
+                                >
+                                  <span
+                                    style={{ fontSize: 11, color: "#94a3b8" }}
+                                  >
+                                    Fuso Horário:
+                                  </span>
+                                  <select
+                                    id="scheduled-timezone-select"
+                                    value={scheduledTimezone}
+                                    onChange={(e) =>
+                                      setScheduledTimezone(e.target.value)
+                                    }
+                                    style={{
+                                      background: "rgba(0, 0, 0, 0.2)",
+                                      border:
+                                        "1px solid rgba(255, 255, 255, 0.1)",
+                                      borderRadius: 6,
+                                      color: "#fff",
+                                      padding: "6px 10px",
+                                      fontSize: 13,
+                                      outline: "none",
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    <option
+                                      value="America/Sao_Paulo"
+                                      style={{ background: "#1e1b4b" }}
+                                    >
+                                      América/São Paulo (UTC-3)
+                                    </option>
+                                    <option
+                                      value="Europe/London"
+                                      style={{ background: "#1e1b4b" }}
+                                    >
+                                      Europa/Londres (UTC+1)
+                                    </option>
+                                    <option
+                                      value="Asia/Tokyo"
+                                      style={{ background: "#1e1b4b" }}
+                                    >
+                                      Ásia/Tóquio (UTC+9)
+                                    </option>
+                                    <option
+                                      value="America/New_York"
+                                      style={{ background: "#1e1b4b" }}
+                                    >
+                                      América/Nova Iorque (UTC-4)
+                                    </option>
+                                    <option
+                                      value="UTC"
+                                      style={{ background: "#1e1b4b" }}
+                                    >
+                                      UTC (UTC+0)
+                                    </option>
+                                  </select>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <button
+                          id="publish-project-btn"
+                          type="button"
+                          onClick={handlePublish}
+                          disabled={isPublishing}
+                          style={{
+                            width: "100%",
+                            background:
+                              project.status !== "approved" || !youtubeChannel
+                                ? "rgba(99, 102, 241, 0.15)"
+                                : "#6366f1",
+                            color:
+                              project.status !== "approved" || !youtubeChannel
+                                ? "#94a3b8"
+                                : "#fff",
+                            border:
+                              project.status !== "approved" || !youtubeChannel
+                                ? "1px solid rgba(255, 255, 255, 0.1)"
+                                : "none",
+                            borderRadius: 8,
+                            padding: "10px 16px",
+                            fontSize: 14,
+                            fontWeight: 600,
+                            cursor: isPublishing ? "not-allowed" : "pointer",
+                            opacity: isPublishing ? 0.6 : 1,
+                            boxShadow:
+                              project.status !== "approved" || !youtubeChannel
+                                ? "none"
+                                : "0 4px 12px rgba(99, 102, 241, 0.2)",
+                            transition: "all 0.2s ease",
+                          }}
+                        >
+                          {isPublishing
+                            ? "Publicando..."
+                            : isScheduledMode
+                              ? "Agendar Vídeo"
+                              : "Publicar Vídeo"}
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               )}

@@ -16,6 +16,7 @@ import {
 import {
   YoutubeOAuthService,
   YoutubePublisherService,
+  YoutubeQuotaExceededError,
   convertLocalToUTC,
 } from "@repo/infrastructure";
 
@@ -41,6 +42,13 @@ interface CreateProjectResponse {
   status: string;
   voiceProfileId: string | null;
   youtubeChannelId: string | null;
+  youtubeVideoId: string | null;
+  youtubePublishStatus: string;
+  youtubePublishError: string | null;
+  publishedAt: string | null;
+  scheduledPublishAt: string | null;
+  scheduledPublishAtLocal: string | null;
+  scheduledPublishTimezone: string | null;
   createdAt: string;
   updatedAt: string;
   estimatedDuration: number;
@@ -60,6 +68,13 @@ function toResponse(project: {
   status: string;
   voiceProfileId: string | null;
   youtubeChannelId?: string | null;
+  youtubeVideoId?: string | null;
+  youtubePublishStatus?: string;
+  youtubePublishError?: string | null;
+  publishedAt?: Date | null;
+  scheduledPublishAt?: Date | null;
+  scheduledPublishAtLocal?: string | null;
+  scheduledPublishTimezone?: string | null;
   createdAt: Date;
   updatedAt: Date;
   tags?: string[];
@@ -76,6 +91,15 @@ function toResponse(project: {
     status: project.status,
     voiceProfileId: project.voiceProfileId,
     youtubeChannelId: project.youtubeChannelId ?? null,
+    youtubeVideoId: project.youtubeVideoId ?? null,
+    youtubePublishStatus: project.youtubePublishStatus ?? "idle",
+    youtubePublishError: project.youtubePublishError ?? null,
+    publishedAt: project.publishedAt ? project.publishedAt.toISOString() : null,
+    scheduledPublishAt: project.scheduledPublishAt
+      ? project.scheduledPublishAt.toISOString()
+      : null,
+    scheduledPublishAtLocal: project.scheduledPublishAtLocal ?? null,
+    scheduledPublishTimezone: project.scheduledPublishTimezone ?? null,
     createdAt: project.createdAt.toISOString(),
     updatedAt: project.updatedAt.toISOString(),
     estimatedDuration: duration.average,
@@ -573,6 +597,15 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
         }
       }
 
+      // Update status to uploading before dispatching
+      await prisma.project.update({
+        where: { id },
+        data: {
+          youtubePublishStatus: "uploading",
+          youtubePublishError: null,
+        },
+      });
+
       const publisherService = new YoutubePublisherService();
       try {
         const result = await publisherService.publishVideo(
@@ -591,6 +624,9 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
           data: {
             youtubeVideoId: result.videoId,
             youtubePublishError: null,
+            youtubePublishStatus: scheduledPublishAt
+              ? "scheduled"
+              : "published",
             publishedAt: scheduledPublishAt ? null : new Date(),
             scheduledPublishAt,
             scheduledPublishAtLocal,
@@ -608,9 +644,24 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
         });
       } catch (err) {
         const errMsg = err instanceof Error ? err.message : String(err);
+        if (err instanceof YoutubeQuotaExceededError) {
+          await prisma.project.update({
+            where: { id },
+            data: {
+              youtubePublishStatus: "download_only",
+              youtubePublishError: errMsg,
+            },
+          });
+          return reply.status(403).send({
+            error: "QUOTA_EXCEEDED",
+            message: errMsg,
+          });
+        }
+
         await prisma.project.update({
           where: { id },
           data: {
+            youtubePublishStatus: "error",
             youtubePublishError: errMsg,
           },
         });
@@ -619,6 +670,34 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
           message: `Erro ao publicar no YouTube: ${errMsg}`,
         });
       }
+    },
+  );
+  app.post<{ Params: { id: string } }>(
+    "/projects/:id/youtube/reset",
+    async (request, reply) => {
+      const { id } = request.params;
+
+      if (id === "mock-project-id") {
+        return reply.status(200).send({
+          success: true,
+          message: "Status de publicação redefinido com sucesso (Mock)",
+        });
+      }
+
+      const updated = await prisma.project.update({
+        where: { id },
+        data: {
+          youtubePublishStatus: "idle",
+          youtubePublishError: null,
+          youtubeVideoId: null,
+          publishedAt: null,
+          scheduledPublishAt: null,
+          scheduledPublishAtLocal: null,
+          scheduledPublishTimezone: null,
+        },
+      });
+
+      return reply.status(200).send(toResponse(updated));
     },
   );
 

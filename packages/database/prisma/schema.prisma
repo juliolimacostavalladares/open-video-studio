@@ -71,12 +71,24 @@ model Project {
   youtubeChannelId String?
   youtubeChannel   YoutubeChannel? @relation(fields: [youtubeChannelId], references: [id], onDelete: SetNull)
   youtubeVideoId   String?
+  youtubePublishStatus YoutubePublishStatus @default(idle)
   youtubePublishError String?
   publishedAt      DateTime?
   scheduledPublishAt DateTime?
   scheduledPublishAtLocal String?
   scheduledPublishTimezone String?
 }
+
+enum YoutubePublishStatus {
+  idle
+  uploading
+  processing
+  scheduled
+  published
+  error
+  download_only
+}
+
 
 model Scene {
   id             String        @id @default(cuid())

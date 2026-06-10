@@ -12,6 +12,13 @@ export interface YoutubePublishResult {
   url: string;
 }
 
+export class YoutubeQuotaExceededError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "YoutubeQuotaExceededError";
+  }
+}
+
 export class YoutubePublisherService {
   private isMockMode =
     !process.env.YOUTUBE_CLIENT_ID ||
@@ -35,6 +42,16 @@ export class YoutubePublisherService {
           : ""
       }`,
     );
+
+    if (accessToken === "mock_access_token_quota_error") {
+      console.log(
+        `[YouTube Publisher] Mock Mode: Simulating quota exceeded error`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      throw new YoutubeQuotaExceededError(
+        "Limite de quota do YouTube excedido. O vídeo está disponível apenas para download.",
+      );
+    }
 
     if (this.isMockMode || accessToken.startsWith("mock_access_token")) {
       console.log(`[YouTube Publisher] Mock Mode: Simulating upload success`);
@@ -115,6 +132,14 @@ export class YoutubePublisherService {
         console.error(
           `[YouTube Publisher] YouTube API error: ${res.statusText} (${res.status}) - ${errorText}`,
         );
+        if (
+          res.status === 403 &&
+          (errorText.includes("quotaExceeded") || errorText.includes("quota"))
+        ) {
+          throw new YoutubeQuotaExceededError(
+            `Limite de quota do YouTube excedido. O vídeo está disponível apenas para download.`,
+          );
+        }
         throw new Error(
           `YouTube API returned ${res.status} ${res.statusText}: ${errorText}`,
         );
