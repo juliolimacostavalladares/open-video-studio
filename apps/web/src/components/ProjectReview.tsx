@@ -117,6 +117,60 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
   const [publishSuccess, setPublishSuccess] = useState<string | null>(null);
   const [publishError, setPublishError] = useState<string | null>(null);
 
+  interface YoutubeChannel {
+    id: string;
+    channelId: string;
+    title: string;
+    thumbnail: string | null;
+  }
+
+  const [youtubeChannel, setYoutubeChannel] = useState<YoutubeChannel | null>(
+    null,
+  );
+  const [isLoadingChannel, setIsLoadingChannel] = useState(true);
+  const [channelError, setChannelError] = useState<string | null>(null);
+
+  const fetchYoutubeChannel = async () => {
+    setIsLoadingChannel(true);
+    setChannelError(null);
+    try {
+      const res = await fetch(
+        `${apiBaseUrl}/projects/${projectId}/youtube-channel`,
+        {
+          cache: "no-store",
+        },
+      );
+      if (!res.ok) {
+        throw new Error("Erro ao buscar canal do YouTube");
+      }
+      const data = await res.json();
+      setYoutubeChannel(data);
+    } catch (err) {
+      setChannelError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setIsLoadingChannel(false);
+    }
+  };
+
+  const handleConnectYoutube = async () => {
+    try {
+      const res = await fetch(
+        `${apiBaseUrl}/youtube/auth-url?projectId=${projectId}`,
+      );
+      if (!res.ok) {
+        throw new Error("Falha ao gerar URL de autenticação");
+      }
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      setChannelError(
+        err instanceof Error ? err.message : "Erro ao conectar canal",
+      );
+    }
+  };
+
   const handlePublish = async () => {
     setIsPublishing(true);
     setPublishError(null);
@@ -283,6 +337,20 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
           const voicesData = (await voicesRes.json()) as VoiceProfile[];
           setVoiceProfiles(voicesData);
         }
+
+        // Fetch youtube channel
+        try {
+          const channelRes = await fetch(
+            `${apiBaseUrl}/projects/${projectId}/youtube-channel`,
+            { cache: "no-store" },
+          );
+          if (channelRes.ok) {
+            const channelData = await channelRes.json();
+            setYoutubeChannel(channelData);
+          }
+        } catch (err) {
+          console.error("Falha ao buscar canal do YouTube", err);
+        }
       } catch (err) {
         if (active) {
           setError(err instanceof Error ? err.message : "Erro desconhecido");
@@ -290,6 +358,7 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
       } finally {
         if (active) {
           setIsLoading(false);
+          setIsLoadingChannel(false);
         }
       }
     }
@@ -299,6 +368,22 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
     return () => {
       active = false;
     };
+  }, [projectId, apiBaseUrl]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const oauthStatus = params.get("oauth");
+    const oauthMessage = params.get("message");
+    if (oauthStatus === "success") {
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+      void fetchYoutubeChannel();
+    } else if (oauthStatus === "error") {
+      setChannelError(oauthMessage || "Erro na autenticação com o YouTube.");
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, apiBaseUrl]);
 
   if (isLoading) {
@@ -1083,31 +1168,217 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                       </button>
                     </div>
 
+                    {/* YouTube Channel Connection */}
+                    <div
+                      id="youtube-channel-section"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 8,
+                        padding: "12px 16px",
+                        background: "rgba(255, 255, 255, 0.03)",
+                        border: "1px solid rgba(255, 255, 255, 0.08)",
+                        borderRadius: 8,
+                        marginTop: 4,
+                        marginBottom: 4,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: 13,
+                            fontWeight: 500,
+                            color: "#94a3b8",
+                          }}
+                        >
+                          Canal do YouTube
+                        </span>
+                        {youtubeChannel ? (
+                          <span
+                            style={{
+                              fontSize: 11,
+                              color: "#10b981",
+                              fontWeight: 600,
+                            }}
+                          >
+                            Conectado
+                          </span>
+                        ) : (
+                          <span
+                            style={{
+                              fontSize: 11,
+                              color: "#f43f5e",
+                              fontWeight: 600,
+                            }}
+                          >
+                            Desconectado
+                          </span>
+                        )}
+                      </div>
+
+                      {isLoadingChannel ? (
+                        <div style={{ fontSize: 13, color: "#94a3b8" }}>
+                          Carregando canal...
+                        </div>
+                      ) : youtubeChannel ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 10,
+                          }}
+                        >
+                          {youtubeChannel.thumbnail && (
+                            <img
+                              src={youtubeChannel.thumbnail}
+                              alt={youtubeChannel.title}
+                              style={{
+                                width: 28,
+                                height: 28,
+                                borderRadius: "50%",
+                              }}
+                            />
+                          )}
+                          <div
+                            style={{ display: "flex", flexDirection: "column" }}
+                          >
+                            <span
+                              id="youtube-channel-title"
+                              style={{
+                                fontSize: 13,
+                                fontWeight: 600,
+                                color: "#fff",
+                              }}
+                            >
+                              {youtubeChannel.title}
+                            </span>
+                            <span style={{ fontSize: 11, color: "#94a3b8" }}>
+                              ID: {youtubeChannel.channelId}
+                            </span>
+                          </div>
+                          <button
+                            id="connect-youtube-btn"
+                            type="button"
+                            onClick={handleConnectYoutube}
+                            style={{
+                              marginLeft: "auto",
+                              background: "transparent",
+                              color: "#a78bfa",
+                              border: "none",
+                              fontSize: 12,
+                              fontWeight: 600,
+                              cursor: "pointer",
+                            }}
+                          >
+                            Alterar
+                          </button>
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 8,
+                          }}
+                        >
+                          <p
+                            style={{
+                              fontSize: 12,
+                              color: "#94a3b8",
+                              margin: 0,
+                            }}
+                          >
+                            Conecte seu canal para publicar vídeos diretamente
+                            do estúdio.
+                          </p>
+                          <button
+                            id="connect-youtube-btn"
+                            type="button"
+                            onClick={handleConnectYoutube}
+                            style={{
+                              width: "100%",
+                              background: "#ff0000",
+                              color: "#fff",
+                              border: "none",
+                              borderRadius: 6,
+                              padding: "8px 12px",
+                              fontSize: 12,
+                              fontWeight: 600,
+                              cursor: "pointer",
+                              textAlign: "center",
+                              transition: "background 0.2s",
+                            }}
+                          >
+                            Conectar Canal
+                          </button>
+                        </div>
+                      )}
+
+                      {channelError && (
+                        <div
+                          id="youtube-error-message"
+                          style={{
+                            color: "#f43f5e",
+                            fontSize: 11,
+                            background: "rgba(244, 63, 94, 0.1)",
+                            border: "1px solid rgba(244, 63, 94, 0.2)",
+                            borderRadius: 6,
+                            padding: "6px 10px",
+                            marginTop: 4,
+                          }}
+                        >
+                          {channelError}
+                        </div>
+                      )}
+                    </div>
+
                     <button
                       id="publish-project-btn"
                       type="button"
                       onClick={handlePublish}
-                      disabled={isPublishing}
+                      disabled={
+                        isPublishing ||
+                        !youtubeChannel ||
+                        project.status !== "approved"
+                      }
                       style={{
                         width: "100%",
                         background:
-                          project.status !== "approved"
+                          project.status !== "approved" || !youtubeChannel
                             ? "rgba(99, 102, 241, 0.15)"
                             : "#6366f1",
                         color:
-                          project.status !== "approved" ? "#94a3b8" : "#fff",
+                          project.status !== "approved" || !youtubeChannel
+                            ? "#94a3b8"
+                            : "#fff",
                         border:
-                          project.status !== "approved"
+                          project.status !== "approved" || !youtubeChannel
                             ? "1px solid rgba(255, 255, 255, 0.1)"
                             : "none",
                         borderRadius: 8,
                         padding: "10px 16px",
                         fontSize: 14,
                         fontWeight: 600,
-                        cursor: isPublishing ? "not-allowed" : "pointer",
-                        opacity: isPublishing ? 0.6 : 1,
-                        boxShadow:
+                        cursor:
+                          isPublishing ||
+                          !youtubeChannel ||
                           project.status !== "approved"
+                            ? "not-allowed"
+                            : "pointer",
+                        opacity:
+                          isPublishing ||
+                          !youtubeChannel ||
+                          project.status !== "approved"
+                            ? 0.6
+                            : 1,
+                        boxShadow:
+                          project.status !== "approved" || !youtubeChannel
                             ? "none"
                             : "0 4px 12px rgba(99, 102, 241, 0.2)",
                         transition: "all 0.2s ease",

@@ -69,6 +69,8 @@ model Project {
   assets         Asset[]
   tags           String[]      @default([])
   approvalLogs   ApprovalLog[]
+  youtubeChannelId String?
+  youtubeChannel   YoutubeChannel? @relation(fields: [youtubeChannelId], references: [id], onDelete: SetNull)
 }
 
 model Scene {
@@ -141,3 +143,17 @@ model ApprovalLog {
   videoVersion String
   project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
+
+model YoutubeChannel {
+  id           String    @id @default(cuid())
+  channelId    String    @unique
+  title        String
+  thumbnail    String?
+  accessToken  String
+  refreshToken String
+  expiryDate   DateTime
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  projects     Project[]
+}
+

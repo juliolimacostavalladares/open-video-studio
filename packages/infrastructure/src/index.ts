@@ -33,3 +33,8 @@ export {
 } from "./assets.js";
 export { renderVideo } from "./renderer.js";
 export { buildVideoTimeline } from "./timeline.js";
+export {
+  YoutubeOAuthService,
+  type YoutubeTokens,
+  type YoutubeChannelDetails,
+} from "./youtube-oauth.js";

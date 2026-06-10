@@ -34,6 +34,7 @@ interface CreateProjectResponse {
   rawScript: string | null;
   status: string;
   voiceProfileId: string | null;
+  youtubeChannelId: string | null;
   createdAt: string;
   updatedAt: string;
   estimatedDuration: number;
@@ -52,6 +53,7 @@ function toResponse(project: {
   rawScript: string | null;
   status: string;
   voiceProfileId: string | null;
+  youtubeChannelId?: string | null;
   createdAt: Date;
   updatedAt: Date;
   tags?: string[];
@@ -67,6 +69,7 @@ function toResponse(project: {
     rawScript: project.rawScript,
     status: project.status,
     voiceProfileId: project.voiceProfileId,
+    youtubeChannelId: project.youtubeChannelId ?? null,
     createdAt: project.createdAt.toISOString(),
     updatedAt: project.updatedAt.toISOString(),
     estimatedDuration: duration.average,
