@@ -11,6 +11,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@fastify/cors": "^11.2.0",
     "@fastify/multipart": "9.3.0",
     "@repo/database": "workspace:*",
     "@repo/infrastructure": "workspace:*",
