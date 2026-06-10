@@ -16,13 +16,22 @@ export class YoutubeOAuthService {
   private redirectUri =
     process.env.YOUTUBE_REDIRECT_URI ??
     "http://localhost:4000/youtube/callback";
-  private isMockMode =
-    !process.env.YOUTUBE_CLIENT_ID ||
-    process.env.YOUTUBE_CLIENT_SECRET === "mock";
+  private isMockMode = process.env.YOUTUBE_MOCK_MODE === "true";
 
   constructor(forceMock = false) {
     if (forceMock) {
       this.isMockMode = true;
+    }
+  }
+
+  private assertConfigured(): void {
+    if (this.isMockMode) {
+      return;
+    }
+    if (!this.clientId || !this.clientSecret) {
+      throw new Error(
+        "YOUTUBE_CLIENT_ID and YOUTUBE_CLIENT_SECRET are required",
+      );
     }
   }
 
@@ -34,6 +43,8 @@ export class YoutubeOAuthService {
       });
       return `${this.redirectUri}?${params.toString()}`;
     }
+    this.assertConfigured();
+
     const params = new URLSearchParams({
       client_id: this.clientId,
       redirect_uri: this.redirectUri,
@@ -55,6 +66,7 @@ export class YoutubeOAuthService {
         expiryDate: new Date(Date.now() + 3600 * 1000), // 1 hour
       };
     }
+    this.assertConfigured();
 
     const res = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
@@ -95,6 +107,7 @@ export class YoutubeOAuthService {
         expiryDate: new Date(Date.now() + 3600 * 1000),
       };
     }
+    this.assertConfigured();
 
     const res = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
