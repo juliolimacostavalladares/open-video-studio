@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import * as fs from "node:fs";
 import { join } from "node:path";
 import { YoutubePublisherService } from "./youtube-publisher.js";
 
