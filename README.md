@@ -15,6 +15,17 @@ Base monorepo da Sprint 0 para o MVP do Open Video Studio.
 2. Rode `pnpm install`.
 3. Rode `pnpm dev`.
 
+Configuracao de IA local recomendada para este projeto:
+
+```bash
+AI_PROVIDER=qwenproxy
+QWENPROXY_BASE_URL=http://127.0.0.1:3000/v1
+QWENPROXY_API_KEY=sk-no-key-required
+QWENPROXY_MODEL=qwen-plus
+```
+
+Esse formato segue a compatibilidade OpenAI exposta pelo [QwenProxy](https://github.com/pedrofariasx/qwenproxy).
+
 Aplicacoes locais por padrao:
 
 - `web`: `http://localhost:3000`
