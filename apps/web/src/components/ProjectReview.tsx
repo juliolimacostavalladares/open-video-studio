@@ -172,9 +172,14 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
   };
 
   const handlePublish = async () => {
+    if (!youtubeChannel) {
+      setPublishError("Nenhum canal do YouTube conectado.");
+      return;
+    }
     setIsPublishing(true);
     setPublishError(null);
     setPublishSuccess(null);
+
     try {
       const res = await fetch(`${apiBaseUrl}/projects/${projectId}/publish`, {
         method: "POST",
@@ -1342,11 +1347,7 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                       id="publish-project-btn"
                       type="button"
                       onClick={handlePublish}
-                      disabled={
-                        isPublishing ||
-                        !youtubeChannel ||
-                        project.status !== "approved"
-                      }
+                      disabled={isPublishing}
                       style={{
                         width: "100%",
                         background:
@@ -1365,18 +1366,8 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                         padding: "10px 16px",
                         fontSize: 14,
                         fontWeight: 600,
-                        cursor:
-                          isPublishing ||
-                          !youtubeChannel ||
-                          project.status !== "approved"
-                            ? "not-allowed"
-                            : "pointer",
-                        opacity:
-                          isPublishing ||
-                          !youtubeChannel ||
-                          project.status !== "approved"
-                            ? 0.6
-                            : 1,
+                        cursor: isPublishing ? "not-allowed" : "pointer",
+                        opacity: isPublishing ? 0.6 : 1,
                         boxShadow:
                           project.status !== "approved" || !youtubeChannel
                             ? "none"
