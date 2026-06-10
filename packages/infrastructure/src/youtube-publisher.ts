@@ -4,6 +4,7 @@ export interface YoutubePublishMetadata {
   title: string;
   description: string;
   tags: string[];
+  scheduledPublishAt?: Date;
 }
 
 export interface YoutubePublishResult {
@@ -28,7 +29,11 @@ export class YoutubePublisherService {
     metadata: YoutubePublishMetadata,
   ): Promise<YoutubePublishResult> {
     console.log(
-      `[YouTube Publisher] Starting upload for video at ${videoPath} with title "${metadata.title}"`,
+      `[YouTube Publisher] Starting upload for video at ${videoPath} with title "${metadata.title}"${
+        metadata.scheduledPublishAt
+          ? ` (Scheduled to ${metadata.scheduledPublishAt.toISOString()})`
+          : ""
+      }`,
     );
 
     if (this.isMockMode || accessToken.startsWith("mock_access_token")) {
@@ -52,9 +57,14 @@ export class YoutubePublisherService {
         description: metadata.description,
         tags: metadata.tags,
       },
-      status: {
-        privacyStatus: "unlisted", // Default to unlisted for OVS
-      },
+      status: metadata.scheduledPublishAt
+        ? {
+            privacyStatus: "private",
+            publishAt: metadata.scheduledPublishAt.toISOString(),
+          }
+        : {
+            privacyStatus: "unlisted", // Default to unlisted for OVS
+          },
     };
 
     const metadataPart = [

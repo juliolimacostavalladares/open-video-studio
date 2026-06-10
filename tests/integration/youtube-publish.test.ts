@@ -266,4 +266,118 @@ describe("YouTube Publish API Endpoint", () => {
 
     await app.close();
   });
+
+  it("rejects publish if scheduled date is in the past", async () => {
+    const { buildApiApp } = await import("../../apps/api/src/app.js");
+    const { prisma } = await import("../../packages/database/src/client.js");
+    const app = buildApiApp();
+    await app.ready();
+
+    const channel = await prisma.youtubeChannel.create({
+      data: {
+        channelId: "UC_PUBLISH_PAST_CHANNEL",
+        title: "Past Channel",
+        accessToken: "mock_access_token",
+        refreshToken: "mock_refresh_token",
+        expiryDate: new Date(Date.now() + 3600 * 1000),
+      },
+    });
+
+    const project = await prisma.project.create({
+      data: {
+        title: "Approved Project Past Schedule",
+        status: "approved",
+        youtubeChannelId: channel.id,
+      },
+    });
+
+    const res = await app.inject({
+      method: "POST",
+      url: `/projects/${project.id}/publish`,
+      body: {
+        scheduledPublishAtLocal: "2020-01-01 12:00",
+        scheduledPublishTimezone: "America/Sao_Paulo",
+      },
+    });
+
+    expect(res.statusCode).toBe(400);
+    const body = JSON.parse(res.body);
+    expect(body.message).toContain("futuro");
+
+    await app.close();
+  });
+
+  it("schedules successfully, converting timezone and updating project fields", async () => {
+    const { buildApiApp } = await import("../../apps/api/src/app.js");
+    const { prisma } = await import("../../packages/database/src/client.js");
+    const app = buildApiApp();
+    await app.ready();
+
+    const channel = await prisma.youtubeChannel.create({
+      data: {
+        channelId: "UC_PUBLISH_SCHED_CHANNEL",
+        title: "Sched Channel",
+        accessToken: "mock_access_token",
+        refreshToken: "mock_refresh_token",
+        expiryDate: new Date(Date.now() + 3600 * 1000),
+      },
+    });
+
+    const project = await prisma.project.create({
+      data: {
+        title: "Approved Project Sched Publish",
+        status: "approved",
+        youtubeChannelId: channel.id,
+      },
+    });
+
+    const dummyVideoPath = join(
+      process.cwd(),
+      `.tmp/dummy-video-${project.id}.mp4`,
+    );
+    fs.writeFileSync(dummyVideoPath, "dummy-video-content");
+
+    await prisma.renderJob.create({
+      data: {
+        projectId: project.id,
+        status: "succeeded",
+        outputPath: dummyVideoPath,
+      },
+    });
+
+    // Schedule for a date in the future (e.g. 2030-06-12 15:30)
+    const res = await app.inject({
+      method: "POST",
+      url: `/projects/${project.id}/publish`,
+      body: {
+        scheduledPublishAtLocal: "2030-06-12 15:30",
+        scheduledPublishTimezone: "America/Sao_Paulo",
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    const body = JSON.parse(res.body);
+    expect(body.success).toBe(true);
+    expect(body.message).toContain("agendado");
+
+    const updated = await prisma.project.findUnique({
+      where: { id: project.id },
+    });
+
+    // publishedAt should be null (since it's scheduled)
+    expect(updated?.publishedAt).toBeNull();
+    expect(updated?.scheduledPublishAtLocal).toBe("2030-06-12 15:30");
+    expect(updated?.scheduledPublishTimezone).toBe("America/Sao_Paulo");
+
+    // America/Sao_Paulo is UTC-3, so 15:30 local should be 18:30 UTC
+    expect(updated?.scheduledPublishAt?.toISOString()).toBe(
+      "2030-06-12T18:30:00.000Z",
+    );
+
+    if (fs.existsSync(dummyVideoPath)) {
+      fs.unlinkSync(dummyVideoPath);
+    }
+
+    await app.close();
+  });
 });

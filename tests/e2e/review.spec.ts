@@ -16,6 +16,7 @@ test.describe("project review screen", () => {
           status: "ready_for_review",
           voiceProfileId: "voice-id",
           estimatedDuration: 15,
+          youtubeChannelId: "mock-channel-id",
         }),
       });
     });
@@ -524,6 +525,132 @@ test.describe("project review screen", () => {
     // Verify success message is shown
     await expect(page.locator("#publish-success-message")).toContainText(
       "Projeto publicado com sucesso (Mock)",
+    );
+  });
+
+  test("allows scheduling publish with local date/time and timezone", async ({
+    page,
+  }) => {
+    // Intercept mock GET /renders so video player works
+    await page.route("**/projects/mock-project-id/renders", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: JSON.stringify({
+          id: "job-id",
+          projectId: "mock-project-id",
+          status: "succeeded",
+          outputPath: "renders/mock-review-video.mp4",
+        }),
+      });
+    });
+
+    const projectState = {
+      id: "mock-project-id",
+      title: "Review E2E Project",
+      description: "This is a test project description for E2E review.",
+      rawScript: "[CENA 1]\nTexto de teste para a cena.",
+      status: "ready_for_review",
+      voiceProfileId: "voice-id",
+      estimatedDuration: 15,
+      tags: [] as string[],
+      youtubeChannelId: "mock-channel-id",
+    };
+
+    await page.route("**/projects/mock-project-id", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: JSON.stringify(projectState),
+      });
+    });
+
+    // Intercept publish endpoint to verify the schedule payload
+    await page.route("**/projects/mock-project-id/publish", async (route) => {
+      const requestBody = route.request().postDataJSON();
+      expect(requestBody.scheduledPublishAtLocal).toBe("2030-06-12 15:30");
+      expect(requestBody.scheduledPublishTimezone).toBe("Europe/London");
+
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: JSON.stringify({
+          success: true,
+          message: "Projeto agendado com sucesso (Mock)",
+        }),
+      });
+    });
+
+    // Intercept approve endpoint
+    await page.route("**/projects/mock-project-id/approve", async (route) => {
+      projectState.status = "approved";
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: JSON.stringify(projectState),
+      });
+    });
+
+    // Explicitly mock the channel endpoint for this test to be sure
+    await page.route(
+      "**/projects/mock-project-id/youtube-channel",
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          headers: { "Access-Control-Allow-Origin": "*" },
+          body: JSON.stringify({
+            id: "mock-channel-id",
+            channelId: "UC_MOCK_CHANNEL_ID_12345",
+            title: "Mock Channel Solo Operator",
+            thumbnail: "https://placehold.co/100x100?text=MockChannel",
+          }),
+        });
+      },
+    );
+
+    page.on("console", (msg) =>
+      console.log("E2E BROWSER CONSOLE:", msg.text(), "at", msg.location().url),
+    );
+    page.on("pageerror", (err) =>
+      console.log("E2E BROWSER EXCEPTION:", err.message, err.stack),
+    );
+
+    await page.goto("/projects/mock-project-id/review");
+
+    // 1. Approve project
+    const approveBtn = page.locator("#approve-project-btn");
+    await approveBtn.click();
+    await expect(page.locator("#review-status-label")).toContainText(
+      "Aprovado",
+    );
+
+    // 2. Select schedule checkbox
+    const scheduleToggle = page.locator("#schedule-publish-toggle");
+    await expect(scheduleToggle).toBeVisible();
+    await scheduleToggle.check();
+
+    // 3. Fill in local date and timezone
+    const dateInput = page.locator("#scheduled-date-input");
+    await expect(dateInput).toBeVisible();
+    await dateInput.fill("2030-06-12T15:30");
+
+    const timezoneSelect = page.locator("#scheduled-timezone-select");
+    await expect(timezoneSelect).toBeVisible();
+    await timezoneSelect.selectOption("Europe/London");
+
+    // 4. Click schedule button (text is now "Agendar Vídeo")
+    const publishBtn = page.locator("#publish-project-btn");
+    await expect(publishBtn).toHaveText("Agendar Vídeo");
+    await publishBtn.click();
+
+    // Verify success message is shown
+    await expect(page.locator("#publish-success-message")).toContainText(
+      "Projeto agendado com sucesso (Mock)",
     );
   });
 });

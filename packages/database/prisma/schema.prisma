@@ -1,6 +1,5 @@
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -74,6 +73,9 @@ model Project {
   youtubeVideoId   String?
   youtubePublishError String?
   publishedAt      DateTime?
+  scheduledPublishAt DateTime?
+  scheduledPublishAtLocal String?
+  scheduledPublishTimezone String?
 }
 
 model Scene {

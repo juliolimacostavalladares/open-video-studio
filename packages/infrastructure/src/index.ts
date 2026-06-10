@@ -43,3 +43,4 @@ export {
   type YoutubePublishMetadata,
   type YoutubePublishResult,
 } from "./youtube-publisher.js";
+export { convertLocalToUTC } from "./timezone.js";

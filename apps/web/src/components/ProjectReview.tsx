@@ -116,6 +116,10 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishSuccess, setPublishSuccess] = useState<string | null>(null);
   const [publishError, setPublishError] = useState<string | null>(null);
+  const [isScheduledMode, setIsScheduledMode] = useState(false);
+  const [scheduledDateLocal, setScheduledDateLocal] = useState("");
+  const [scheduledTimezone, setScheduledTimezone] =
+    useState("America/Sao_Paulo");
 
   interface YoutubeChannel {
     id: string;
@@ -181,14 +185,38 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
     setPublishSuccess(null);
 
     try {
+      const payload: {
+        scheduledPublishAtLocal?: string;
+        scheduledPublishTimezone?: string;
+      } = {};
+      if (isScheduledMode) {
+        if (!scheduledDateLocal) {
+          throw new Error(
+            "Por favor, selecione uma data e hora para o agendamento.",
+          );
+        }
+        // Format from "YYYY-MM-DDTHH:MM" to "YYYY-MM-DD HH:MM"
+        payload.scheduledPublishAtLocal = scheduledDateLocal.replace("T", " ");
+        payload.scheduledPublishTimezone = scheduledTimezone;
+      }
+
       const res = await fetch(`${apiBaseUrl}/projects/${projectId}/publish`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         throw new Error(data.message || "Falha ao publicar o projeto");
       }
-      setPublishSuccess(data.message || "Vídeo publicado com sucesso!");
+      setPublishSuccess(
+        data.message ||
+          (isScheduledMode
+            ? "Vídeo agendado com sucesso!"
+            : "Vídeo publicado com sucesso!"),
+      );
     } catch (err) {
       setPublishError(
         err instanceof Error ? err.message : "Erro ao publicar projeto",
@@ -1343,6 +1371,149 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                       )}
                     </div>
 
+                    {/* Controles de Agendamento */}
+                    {youtubeChannel && (
+                      <div
+                        style={{
+                          marginBottom: 16,
+                          padding: 12,
+                          background: "rgba(255, 255, 255, 0.03)",
+                          border: "1px solid rgba(255, 255, 255, 0.08)",
+                          borderRadius: 8,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 10,
+                        }}
+                      >
+                        <label
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                            fontSize: 13,
+                            fontWeight: 500,
+                            cursor: "pointer",
+                            userSelect: "none",
+                          }}
+                        >
+                          <input
+                            id="schedule-publish-toggle"
+                            type="checkbox"
+                            checked={isScheduledMode}
+                            onChange={(e) =>
+                              setIsScheduledMode(e.target.checked)
+                            }
+                            style={{
+                              accentColor: "#6366f1",
+                              width: 16,
+                              height: 16,
+                            }}
+                          />
+                          <span>Agendar publicação no YouTube</span>
+                        </label>
+
+                        {isScheduledMode && (
+                          <div
+                            id="schedule-inputs-container"
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 8,
+                              marginTop: 4,
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 4,
+                              }}
+                            >
+                              <span style={{ fontSize: 11, color: "#94a3b8" }}>
+                                Data e Hora Local:
+                              </span>
+                              <input
+                                id="scheduled-date-input"
+                                type="datetime-local"
+                                value={scheduledDateLocal}
+                                onChange={(e) =>
+                                  setScheduledDateLocal(e.target.value)
+                                }
+                                style={{
+                                  background: "rgba(0, 0, 0, 0.2)",
+                                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                                  borderRadius: 6,
+                                  color: "#fff",
+                                  padding: "6px 10px",
+                                  fontSize: 13,
+                                  outline: "none",
+                                }}
+                              />
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 4,
+                              }}
+                            >
+                              <span style={{ fontSize: 11, color: "#94a3b8" }}>
+                                Fuso Horário:
+                              </span>
+                              <select
+                                id="scheduled-timezone-select"
+                                value={scheduledTimezone}
+                                onChange={(e) =>
+                                  setScheduledTimezone(e.target.value)
+                                }
+                                style={{
+                                  background: "rgba(0, 0, 0, 0.2)",
+                                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                                  borderRadius: 6,
+                                  color: "#fff",
+                                  padding: "6px 10px",
+                                  fontSize: 13,
+                                  outline: "none",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                <option
+                                  value="America/Sao_Paulo"
+                                  style={{ background: "#1e1b4b" }}
+                                >
+                                  América/São Paulo (UTC-3)
+                                </option>
+                                <option
+                                  value="Europe/London"
+                                  style={{ background: "#1e1b4b" }}
+                                >
+                                  Europa/Londres (UTC+1)
+                                </option>
+                                <option
+                                  value="Asia/Tokyo"
+                                  style={{ background: "#1e1b4b" }}
+                                >
+                                  Ásia/Tóquio (UTC+9)
+                                </option>
+                                <option
+                                  value="America/New_York"
+                                  style={{ background: "#1e1b4b" }}
+                                >
+                                  América/Nova Iorque (UTC-4)
+                                </option>
+                                <option
+                                  value="UTC"
+                                  style={{ background: "#1e1b4b" }}
+                                >
+                                  UTC (UTC+0)
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <button
                       id="publish-project-btn"
                       type="button"
@@ -1375,7 +1546,11 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                         transition: "all 0.2s ease",
                       }}
                     >
-                      {isPublishing ? "Publicando..." : "Publicar Vídeo"}
+                      {isPublishing
+                        ? "Publicando..."
+                        : isScheduledMode
+                          ? "Agendar Vídeo"
+                          : "Publicar Vídeo"}
                     </button>
                   </div>
                 </div>
