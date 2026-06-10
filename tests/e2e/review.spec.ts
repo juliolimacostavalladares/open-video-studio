@@ -406,4 +406,107 @@ test.describe("project review screen", () => {
       "Pronto para revisão!",
     );
   });
+
+  test("enforces publish guards and handles publishing successfully when approved", async ({
+    page,
+  }) => {
+    // Intercept mock GET /renders so video player works
+    await page.route("**/projects/mock-project-id/renders", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: JSON.stringify({
+          id: "job-id",
+          projectId: "mock-project-id",
+          status: "succeeded",
+          outputPath: "renders/mock-review-video.mp4",
+        }),
+      });
+    });
+
+    const projectState = {
+      id: "mock-project-id",
+      title: "Review E2E Project",
+      description: "This is a test project description for E2E review.",
+      rawScript: "[CENA 1]\nTexto de teste para a cena.",
+      status: "ready_for_review",
+      voiceProfileId: "voice-id",
+      estimatedDuration: 15,
+      tags: [] as string[],
+    };
+
+    // Route projects/mock-project-id requests dynamically based on state
+    await page.route("**/projects/mock-project-id", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: JSON.stringify(projectState),
+      });
+    });
+
+    // Intercept publish endpoint
+    await page.route("**/projects/mock-project-id/publish", async (route) => {
+      if (projectState.status !== "approved") {
+        await route.fulfill({
+          status: 400,
+          contentType: "application/json",
+          headers: { "Access-Control-Allow-Origin": "*" },
+          body: JSON.stringify({
+            error: "BAD_REQUEST",
+            message: "O projeto precisa ser aprovado antes de ser publicado.",
+          }),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          headers: { "Access-Control-Allow-Origin": "*" },
+          body: JSON.stringify({
+            success: true,
+            message: "Projeto publicado com sucesso (Mock)",
+          }),
+        });
+      }
+    });
+
+    // Intercept approve endpoint
+    await page.route("**/projects/mock-project-id/approve", async (route) => {
+      projectState.status = "approved";
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: JSON.stringify(projectState),
+      });
+    });
+
+    await page.goto("/projects/mock-project-id/review");
+
+    // 1. Initial state is ready_for_review. Clicking publish should fail due to guard
+    const publishBtn = page.locator("#publish-project-btn");
+    await expect(publishBtn).toBeVisible();
+    await publishBtn.click();
+
+    // Verify error message is shown
+    await expect(page.locator("#publish-error-message")).toContainText(
+      "O projeto precisa ser aprovado antes de ser publicado.",
+    );
+
+    // 2. Approve the project
+    const approveBtn = page.locator("#approve-project-btn");
+    await approveBtn.click();
+    await expect(page.locator("#review-status-label")).toContainText(
+      "Aprovado",
+    );
+
+    // 3. Click publish now that it is approved. It should succeed.
+    await publishBtn.click();
+
+    // Verify success message is shown
+    await expect(page.locator("#publish-success-message")).toContainText(
+      "Projeto publicado com sucesso (Mock)",
+    );
+  });
 });

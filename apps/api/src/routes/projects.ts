@@ -7,7 +7,11 @@
 
 import type { FastifyInstance } from "fastify";
 
-import { prisma, calculateEstimatedDuration } from "@repo/database";
+import {
+  prisma,
+  calculateEstimatedDuration,
+  canPublishProject,
+} from "@repo/database";
 
 import { buildAiClient } from "../ai/client.js";
 import { generateScript } from "../ai/script-generator.js";
@@ -359,9 +363,21 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
         });
       }
 
-      const updated = await prisma.project.update({
-        where: { id },
-        data: { status: "approved" },
+      const updated = await prisma.$transaction(async (tx) => {
+        const u = await tx.project.update({
+          where: { id },
+          data: { status: "approved" },
+        });
+
+        await tx.approvalLog.create({
+          data: {
+            projectId: id,
+            approvedBy: "operator", // MVP single operator default
+            videoVersion: renderJob.outputPath || "unknown",
+          },
+        });
+
+        return u;
       });
 
       return reply.status(200).send(toResponse(updated));
@@ -409,6 +425,45 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
       });
 
       return reply.status(200).send(toResponse(updated));
+    },
+  );
+
+  app.post<{ Params: { id: string } }>(
+    "/projects/:id/publish",
+    async (request, reply) => {
+      const { id } = request.params;
+
+      if (id === "mock-project-id") {
+        return reply.status(200).send({
+          success: true,
+          message: "Projeto publicado com sucesso (Mock)",
+        });
+      }
+
+      const project = await prisma.project.findUnique({
+        where: { id },
+      });
+
+      if (!project) {
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+      }
+
+      // Enforce approved guard
+      if (!canPublishProject(project.status)) {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message: "O projeto precisa ser aprovado antes de ser publicado.",
+        });
+      }
+
+      // Return success for now (mocking the publish action as requested since actual publish is Sprint 6)
+      return reply.status(200).send({
+        success: true,
+        message: "Projeto publicado com sucesso",
+        projectId: id,
+      });
     },
   );
 

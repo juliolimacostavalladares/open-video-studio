@@ -113,6 +113,32 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
   const [isProcessingAction, setIsProcessingAction] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishSuccess, setPublishSuccess] = useState<string | null>(null);
+  const [publishError, setPublishError] = useState<string | null>(null);
+
+  const handlePublish = async () => {
+    setIsPublishing(true);
+    setPublishError(null);
+    setPublishSuccess(null);
+    try {
+      const res = await fetch(`${apiBaseUrl}/projects/${projectId}/publish`, {
+        method: "POST",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || "Falha ao publicar o projeto");
+      }
+      setPublishSuccess(data.message || "Vídeo publicado com sucesso!");
+    } catch (err) {
+      setPublishError(
+        err instanceof Error ? err.message : "Erro ao publicar projeto",
+      );
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
   const handleApprove = async () => {
     setIsProcessingAction(true);
     setActionError(null);
@@ -956,6 +982,40 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                       </div>
                     )}
 
+                    {publishError && (
+                      <div
+                        id="publish-error-message"
+                        style={{
+                          color: "#f43f5e",
+                          fontSize: 13,
+                          textAlign: "center",
+                          background: "rgba(244, 63, 94, 0.1)",
+                          border: "1px solid rgba(244, 63, 94, 0.2)",
+                          borderRadius: 8,
+                          padding: "8px 12px",
+                        }}
+                      >
+                        {publishError}
+                      </div>
+                    )}
+
+                    {publishSuccess && (
+                      <div
+                        id="publish-success-message"
+                        style={{
+                          color: "#10b981",
+                          fontSize: 13,
+                          textAlign: "center",
+                          background: "rgba(16, 185, 129, 0.1)",
+                          border: "1px solid rgba(16, 185, 129, 0.2)",
+                          borderRadius: 8,
+                          padding: "8px 12px",
+                        }}
+                      >
+                        {publishSuccess}
+                      </div>
+                    )}
+
                     <div style={{ display: "flex", gap: 12, width: "100%" }}>
                       <button
                         id="reject-project-btn"
@@ -1022,6 +1082,39 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                           : "Aprovar"}
                       </button>
                     </div>
+
+                    <button
+                      id="publish-project-btn"
+                      type="button"
+                      onClick={handlePublish}
+                      disabled={isPublishing}
+                      style={{
+                        width: "100%",
+                        background:
+                          project.status !== "approved"
+                            ? "rgba(99, 102, 241, 0.15)"
+                            : "#6366f1",
+                        color:
+                          project.status !== "approved" ? "#94a3b8" : "#fff",
+                        border:
+                          project.status !== "approved"
+                            ? "1px solid rgba(255, 255, 255, 0.1)"
+                            : "none",
+                        borderRadius: 8,
+                        padding: "10px 16px",
+                        fontSize: 14,
+                        fontWeight: 600,
+                        cursor: isPublishing ? "not-allowed" : "pointer",
+                        opacity: isPublishing ? 0.6 : 1,
+                        boxShadow:
+                          project.status !== "approved"
+                            ? "none"
+                            : "0 4px 12px rgba(99, 102, 241, 0.2)",
+                        transition: "all 0.2s ease",
+                      }}
+                    >
+                      {isPublishing ? "Publicando..." : "Publicar Vídeo"}
+                    </button>
                   </div>
                 </div>
               )}

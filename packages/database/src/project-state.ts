@@ -14,3 +14,7 @@ export function canEditProject(state: ProjectState) {
     state as (typeof editableProjectStates)[number],
   );
 }
+
+export function canPublishProject(state: ProjectState): boolean {
+  return state === "approved";
+}
