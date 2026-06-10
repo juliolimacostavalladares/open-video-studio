@@ -195,7 +195,10 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
     async (request, reply) => {
       const { id } = request.params;
 
-      if (id === "mock-project-id") {
+      if (
+        (process.env.NODE_ENV === "test" || process.env.VITEST) &&
+        id === "mock-project-id"
+      ) {
         return reply.status(200).send({
           id: "mock-project-id",
           title: "E2E Duration Test Project",
@@ -241,7 +244,10 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
     const { id } = request.params;
     const { title, description, tags } = request.body;
 
-    if (id === "mock-project-id") {
+    if (
+      (process.env.NODE_ENV === "test" || process.env.VITEST) &&
+      id === "mock-project-id"
+    ) {
       if (title !== undefined && title.trim() === "") {
         return reply.status(400).send({
           error: "BAD_REQUEST",
@@ -353,7 +359,10 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
     async (request, reply) => {
       const { id } = request.params;
 
-      if (id === "mock-project-id") {
+      if (
+        (process.env.NODE_ENV === "test" || process.env.VITEST) &&
+        id === "mock-project-id"
+      ) {
         return reply.status(200).send({
           id: "mock-project-id",
           title: "Review E2E Project",
@@ -422,7 +431,10 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
     async (request, reply) => {
       const { id } = request.params;
 
-      if (id === "mock-project-id") {
+      if (
+        (process.env.NODE_ENV === "test" || process.env.VITEST) &&
+        id === "mock-project-id"
+      ) {
         return reply.status(200).send({
           id: "mock-project-id",
           title: "Review E2E Project",
@@ -473,7 +485,10 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
       const { scheduledPublishAtLocal, scheduledPublishTimezone } =
         request.body || {};
 
-      if (id === "mock-project-id") {
+      if (
+        (process.env.NODE_ENV === "test" || process.env.VITEST) &&
+        id === "mock-project-id"
+      ) {
         if (scheduledPublishAtLocal && scheduledPublishTimezone) {
           try {
             const date = convertLocalToUTC(
@@ -677,7 +692,10 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
     async (request, reply) => {
       const { id } = request.params;
 
-      if (id === "mock-project-id") {
+      if (
+        (process.env.NODE_ENV === "test" || process.env.VITEST) &&
+        id === "mock-project-id"
+      ) {
         return reply.status(200).send({
           success: true,
           message: "Status de publicação redefinido com sucesso (Mock)",
@@ -708,7 +726,10 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
     const { id } = request.params;
     const { voiceProfileId } = request.body;
 
-    if (id === "mock-project-id") {
+    if (
+      (process.env.NODE_ENV === "test" || process.env.VITEST) &&
+      id === "mock-project-id"
+    ) {
       return reply.status(200).send({
         id: "mock-project-id",
         title: "E2E Duration Test Project",

@@ -14,7 +14,7 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: `API_PORT=${testPorts.e2eApiPort} pnpm --filter api start`,
+      command: `NODE_ENV=test API_PORT=${testPorts.e2eApiPort} pnpm --filter api start`,
       port: testPorts.e2eApiPort,
       reuseExistingServer: !isCI,
       timeout: 120_000,

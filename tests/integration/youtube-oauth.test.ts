@@ -84,6 +84,8 @@ function runPsqlWithRetry(sql: string, attempts = 10) {
 }
 
 beforeAll(async () => {
+  process.env.YOUTUBE_MOCK_MODE = "true";
+
   if (!isPostgresRunning()) {
     runDockerCommand([...composeArgs, "up", "-d", "postgres"]);
   }
@@ -108,6 +110,7 @@ afterAll(async () => {
   const { prisma } = await import("../../packages/database/src/client.js");
   await prisma.$disconnect();
   runPsqlWithRetry(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`);
+  delete process.env.YOUTUBE_MOCK_MODE;
 });
 
 describe("YouTube OAuth2 API endpoints", () => {
