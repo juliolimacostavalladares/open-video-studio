@@ -13,6 +13,11 @@ import {
   canPublishProject,
 } from "@repo/database";
 
+import {
+  YoutubeOAuthService,
+  YoutubePublisherService,
+} from "@repo/infrastructure";
+
 import { buildAiClient } from "../ai/client.js";
 import { generateScript } from "../ai/script-generator.js";
 
@@ -440,11 +445,14 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
         return reply.status(200).send({
           success: true,
           message: "Projeto publicado com sucesso (Mock)",
+          videoId: "mock_youtube_video_id_998877",
+          url: "https://www.youtube.com/watch?v=mock_youtube_video_id_998877",
         });
       }
 
       const project = await prisma.project.findUnique({
         where: { id },
+        include: { youtubeChannel: true },
       });
 
       if (!project) {
@@ -461,12 +469,99 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
         });
       }
 
-      // Return success for now (mocking the publish action as requested since actual publish is Sprint 6)
-      return reply.status(200).send({
-        success: true,
-        message: "Projeto publicado com sucesso",
-        projectId: id,
+      // Enforce connected channel guard
+      if (!project.youtubeChannel) {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message: "Nenhum canal do YouTube conectado.",
+        });
+      }
+
+      // Enforce final render check (get latest succeeded RenderJob)
+      const renderJob = await prisma.renderJob.findFirst({
+        where: { projectId: id, status: "succeeded" },
+        orderBy: { updatedAt: "desc" },
       });
+
+      if (!renderJob || !renderJob.outputPath) {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message: "Nenhum render finalizado encontrado para publicação.",
+        });
+      }
+
+      let youtubeChannel = project.youtubeChannel;
+      const oauthService = new YoutubeOAuthService();
+
+      // Check if access token is expired (or close to expiring, e.g., in less than 60s)
+      if (youtubeChannel.expiryDate.getTime() <= Date.now() + 60 * 1000) {
+        try {
+          console.log(
+            `[Publish Route] Access token expired or expiring soon, refreshing...`,
+          );
+          const refreshedTokens = await oauthService.refreshTokens(
+            youtubeChannel.refreshToken,
+          );
+          youtubeChannel = await prisma.youtubeChannel.update({
+            where: { id: youtubeChannel.id },
+            data: {
+              accessToken: refreshedTokens.accessToken,
+              expiryDate: refreshedTokens.expiryDate,
+            },
+          });
+        } catch (err) {
+          const errMsg = err instanceof Error ? err.message : String(err);
+          console.error(
+            `[Publish Route] Failed to refresh YouTube access token:`,
+            err,
+          );
+          return reply.status(500).send({
+            error: "INTERNAL_SERVER_ERROR",
+            message: `Falha ao renovar autenticação do YouTube: ${errMsg}`,
+          });
+        }
+      }
+
+      const publisherService = new YoutubePublisherService();
+      try {
+        const result = await publisherService.publishVideo(
+          youtubeChannel.accessToken,
+          renderJob.outputPath,
+          {
+            title: project.title,
+            description: project.description ?? "",
+            tags: project.tags,
+          },
+        );
+
+        await prisma.project.update({
+          where: { id },
+          data: {
+            youtubeVideoId: result.videoId,
+            youtubePublishError: null,
+            publishedAt: new Date(),
+          },
+        });
+
+        return reply.status(200).send({
+          success: true,
+          message: "Projeto publicado com sucesso no YouTube!",
+          videoId: result.videoId,
+          url: result.url,
+        });
+      } catch (err) {
+        const errMsg = err instanceof Error ? err.message : String(err);
+        await prisma.project.update({
+          where: { id },
+          data: {
+            youtubePublishError: errMsg,
+          },
+        });
+        return reply.status(500).send({
+          error: "INTERNAL_SERVER_ERROR",
+          message: `Erro ao publicar no YouTube: ${errMsg}`,
+        });
+      }
     },
   );
 

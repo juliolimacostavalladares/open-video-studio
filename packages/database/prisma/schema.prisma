@@ -71,6 +71,9 @@ model Project {
   approvalLogs   ApprovalLog[]
   youtubeChannelId String?
   youtubeChannel   YoutubeChannel? @relation(fields: [youtubeChannelId], references: [id], onDelete: SetNull)
+  youtubeVideoId   String?
+  youtubePublishError String?
+  publishedAt      DateTime?
 }
 
 model Scene {
