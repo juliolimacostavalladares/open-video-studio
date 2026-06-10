@@ -16,7 +16,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:reset": "prisma migrate reset --force --skip-generate",
-    "db:seed": "tsx prisma/seed.ts",
+    "db:seed": "prisma db seed",
     "lint": "eslint src prisma --ext .ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
