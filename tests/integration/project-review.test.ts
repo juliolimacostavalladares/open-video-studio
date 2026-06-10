@@ -87,6 +87,8 @@ function runPsqlWithRetry(sql: string, attempts = 10) {
 }
 
 beforeAll(async () => {
+  process.env.YOUTUBE_MOCK_MODE = "true";
+
   if (!isPostgresRunning()) {
     runDockerCommand([...composeArgs, "up", "-d", "postgres"]);
   }
