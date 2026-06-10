@@ -13,7 +13,7 @@ import {
 import {
   OmniVoiceStudioTTSBackend,
   createStorageService,
-  MockAssetProvider,
+  createAssetProvider,
   type SuggestedAsset,
 } from "@repo/infrastructure";
 
@@ -245,6 +245,7 @@ export async function syncProjectScenesFromRawScript(
 export async function scenesRoutes(app: FastifyInstance): Promise<void> {
   const ttsBackend = new OmniVoiceStudioTTSBackend();
   const storage = createStorageService();
+  const assetProvider = createAssetProvider();
 
   app.post<{ Params: { id: string } }>(
     "/projects/:id/scenes/recompose",
@@ -336,8 +337,6 @@ export async function scenesRoutes(app: FastifyInstance): Promise<void> {
         scenes = await listProjectScenes(id);
       }
       // ----------------------
-
-      const assetProvider = new MockAssetProvider();
 
       const scenesWithSuggestions = await Promise.all(
         scenes.map(async (scene) => {
