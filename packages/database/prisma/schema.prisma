@@ -65,6 +65,7 @@ model Project {
   scenes         Scene[]
   renderJobs     RenderJob[]
   assets         Asset[]
+  tags           String[]      @default([])
 }
 
 model Scene {

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { validateMetadata } from "../utils/metadata-validation";
 
 interface ProjectReviewProps {
   projectId: string;
@@ -16,6 +17,7 @@ interface ProjectData {
   status: string;
   voiceProfileId: string | null;
   estimatedDuration: number;
+  tags?: string[];
 }
 
 interface RenderJob {
@@ -46,6 +48,68 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editTags, setEditTags] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<{
+    title?: string;
+    tags?: string;
+  }>({});
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setValidationErrors({});
+    setSaveSuccess(null);
+
+    const validation = validateMetadata({
+      title: editTitle,
+      description: editDescription,
+      tagsString: editTags,
+    });
+
+    if (!validation.isValid) {
+      setValidationErrors(validation.errors);
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const res = await fetch(`${apiBaseUrl}/projects/${projectId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: validation.parsed.title,
+          description: validation.parsed.description,
+          tags: validation.parsed.tags,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Falha ao salvar metadados");
+      }
+
+      const updatedProject = (await res.json()) as ProjectData;
+      setProject(updatedProject);
+      setEditTitle(updatedProject.title || "");
+      setEditDescription(updatedProject.description || "");
+      setEditTags(updatedProject.tags ? updatedProject.tags.join(", ") : "");
+
+      setSaveSuccess("Metadados salvos com sucesso!");
+      setTimeout(() => setSaveSuccess(null), 3000);
+    } catch (err) {
+      setValidationErrors({
+        title: err instanceof Error ? err.message : "Erro ao salvar metadados",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   useEffect(() => {
     let active = true;
 
@@ -65,6 +129,9 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
 
         if (!active) return;
         setProject(projectData);
+        setEditTitle(projectData.title || "");
+        setEditDescription(projectData.description || "");
+        setEditTags(projectData.tags ? projectData.tags.join(", ") : "");
 
         // Fetch render job status
         const renderRes = await fetch(
@@ -236,6 +303,42 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         * { font-family: 'Inter', system-ui, sans-serif; }
+        .metadata-input {
+          background: rgba(0, 0, 0, 0.25);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          padding: 10px 14px;
+          color: #f1f5f9;
+          width: 100%;
+          box-sizing: border-box;
+          outline: none;
+          font-size: 14px;
+          transition: all 0.2s ease;
+        }
+        .metadata-input:focus {
+          border-color: #6366f1;
+          background: rgba(0, 0, 0, 0.35);
+          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+        .save-btn {
+          background: #6366f1;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          padding: 10px 20px;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .save-btn:hover:not(:disabled) {
+          background: #4f46e5;
+          transform: translateY(-1px);
+        }
+        .save-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
       `}</style>
 
       <div
@@ -335,13 +438,17 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                   color: "#f8fafc",
                 }}
               >
-                Resumo do Projeto
+                Metadados do Projeto
               </h2>
+
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
                   gap: 16,
+                  marginBottom: 24,
+                  paddingBottom: 20,
+                  borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
                 }}
               >
                 <div>
@@ -402,36 +509,150 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                 </div>
               </div>
 
-              {project.description && (
-                <div
-                  style={{
-                    marginTop: 20,
-                    paddingTop: 16,
-                    borderTop: "1px solid rgba(255,255,255,0.06)",
-                  }}
-                >
-                  <span
+              <form
+                onSubmit={handleSave}
+                style={{ display: "flex", flexDirection: "column", gap: 16 }}
+              >
+                <div>
+                  <label
+                    htmlFor="metadata-title-input"
                     style={{
-                      fontSize: 12,
-                      color: "#64748b",
                       display: "block",
-                      marginBottom: 4,
+                      fontSize: 12,
+                      color: "#94a3b8",
+                      fontWeight: 500,
+                      marginBottom: 6,
+                    }}
+                  >
+                    Título *
+                  </label>
+                  <input
+                    id="metadata-title-input"
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="metadata-input"
+                    placeholder="Ex: Como programar em TypeScript"
+                  />
+                  {validationErrors.title && (
+                    <span
+                      id="metadata-validation-error-title"
+                      style={{
+                        display: "block",
+                        color: "#f43f5e",
+                        fontSize: 12,
+                        marginTop: 4,
+                      }}
+                    >
+                      {validationErrors.title}
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="metadata-description-input"
+                    style={{
+                      display: "block",
+                      fontSize: 12,
+                      color: "#94a3b8",
+                      fontWeight: 500,
+                      marginBottom: 6,
                     }}
                   >
                     Descrição
-                  </span>
-                  <p
+                  </label>
+                  <textarea
+                    id="metadata-description-input"
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    className="metadata-input"
+                    rows={3}
+                    placeholder="Descrição detalhada do projeto para publicação..."
+                    style={{ resize: "vertical" }}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="metadata-tags-input"
                     style={{
-                      fontSize: 14,
+                      display: "block",
+                      fontSize: 12,
                       color: "#94a3b8",
-                      margin: 0,
-                      lineHeight: 1.5,
+                      fontWeight: 500,
+                      marginBottom: 6,
                     }}
                   >
-                    {project.description}
-                  </p>
+                    Tags (separadas por vírgula)
+                  </label>
+                  <input
+                    id="metadata-tags-input"
+                    type="text"
+                    value={editTags}
+                    onChange={(e) => setEditTags(e.target.value)}
+                    className="metadata-input"
+                    placeholder="Ex: tutorial, programação, ts"
+                  />
+                  {validationErrors.tags && (
+                    <span
+                      id="metadata-validation-error-tags"
+                      style={{
+                        display: "block",
+                        color: "#f43f5e",
+                        fontSize: 12,
+                        marginTop: 4,
+                      }}
+                    >
+                      {validationErrors.tags}
+                    </span>
+                  )}
+                  <span
+                    style={{
+                      display: "block",
+                      color: "#64748b",
+                      fontSize: 11,
+                      marginTop: 4,
+                    }}
+                  >
+                    Use vírgulas para separar as tags. Ex: tutorial, ts, web
+                  </span>
                 </div>
-              )}
+
+                {saveSuccess && (
+                  <div
+                    id="metadata-save-success"
+                    style={{
+                      color: "#10b981",
+                      fontSize: 13,
+                      background: "rgba(16, 185, 129, 0.1)",
+                      border: "1px solid rgba(16, 185, 129, 0.2)",
+                      borderRadius: 8,
+                      padding: "10px 14px",
+                      textAlign: "center",
+                    }}
+                  >
+                    {saveSuccess}
+                  </div>
+                )}
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    marginTop: 8,
+                  }}
+                >
+                  <button
+                    id="save-metadata-btn"
+                    type="submit"
+                    disabled={isSaving}
+                    className="save-btn"
+                  >
+                    {isSaving ? "Salvando..." : "Salvar Metadados"}
+                  </button>
+                </div>
+              </form>
             </section>
 
             {/* Scenes Breakdown Card */}
