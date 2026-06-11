@@ -12,10 +12,14 @@ import { youtubeOauthRoutes } from "./routes/youtube-oauth.js";
 
 export function buildApiApp() {
   const app = Fastify({
-    logger: false,
+    logger: true,
   });
 
-  void app.register(multipart);
+  void app.register(multipart, {
+    limits: {
+      fileSize: 50 * 1024 * 1024, // 50MB limit
+    },
+  });
   void app.register(cors, {
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],

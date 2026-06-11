@@ -379,6 +379,11 @@ export function VoiceProfileManager({
 
       const job = (await response.json()) as { id: string; status: string };
       setRenderMessage("Render enfileirado com sucesso");
+      window.dispatchEvent(
+        new CustomEvent("open-video-studio:render-queued", {
+          detail: { projectId },
+        }),
+      );
       pollRenderStatus(job.id);
     } catch (error) {
       setRenderMessage(
