@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { buildApiApp } from "./app.js";
 import { createPipelineWorker } from "@repo/infrastructure";
 

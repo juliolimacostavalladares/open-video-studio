@@ -68,6 +68,33 @@ interface SceneSyncResult {
   scenes: SceneListItem[];
 }
 
+const sceneListSelect = {
+  audioContentHash: true,
+  audioDurationSeconds: true,
+  audioGeneratedAt: true,
+  audioMimeType: true,
+  audioPath: true,
+  createdAt: true,
+  id: true,
+  keywords: true,
+  orderIndex: true,
+  script: true,
+  status: true,
+  title: true,
+  updatedAt: true,
+  voiceProfileId: true,
+  assetId: true,
+  asset: {
+    select: {
+      id: true,
+      kind: true,
+      path: true,
+      source: true,
+      status: true,
+    },
+  },
+} as const;
+
 function invalidateSceneAudio() {
   return {
     audioContentHash: null,
@@ -122,32 +149,7 @@ async function listProjectScenes(projectId: string) {
   return prisma.scene.findMany({
     where: { projectId },
     orderBy: { orderIndex: "asc" },
-    select: {
-      audioContentHash: true,
-      audioDurationSeconds: true,
-      audioGeneratedAt: true,
-      audioMimeType: true,
-      audioPath: true,
-      createdAt: true,
-      id: true,
-      keywords: true,
-      orderIndex: true,
-      script: true,
-      status: true,
-      title: true,
-      updatedAt: true,
-      voiceProfileId: true,
-      assetId: true,
-      asset: {
-        select: {
-          id: true,
-          kind: true,
-          path: true,
-          source: true,
-          status: true,
-        },
-      },
-    },
+    select: sceneListSelect,
   }) as Promise<SceneListItem[]>;
 }
 
@@ -156,36 +158,51 @@ export async function syncProjectScenesFromRawScript(
   rawScript: string,
 ): Promise<SceneSyncResult> {
   const parsedScenes = parseScenes(rawScript);
-  const existingScenes = await listProjectScenes(projectId);
-  const existingByOrder = new Map(
-    existingScenes.map((scene) => [scene.orderIndex, scene]),
-  );
   const nextOrderIndexes = new Set(
     parsedScenes.map((scene) => scene.orderIndex),
   );
 
   let scenesCreated = 0;
   let scenesUpdated = 0;
+  let scenesDeleted = 0;
 
   await prisma.$transaction(async (tx) => {
+    const existingScenes = (await tx.scene.findMany({
+      where: { projectId },
+      orderBy: { orderIndex: "asc" },
+      select: sceneListSelect,
+    })) as SceneListItem[];
+
+    const existingByOrder = new Map(
+      existingScenes.map((scene) => [scene.orderIndex, scene]),
+    );
+    const scenesToCreate = parsedScenes.filter(
+      (scene) => !existingByOrder.has(scene.orderIndex),
+    );
+
+    if (scenesToCreate.length > 0) {
+      const result = await tx.scene.createMany({
+        data: scenesToCreate.map((parsedScene) => ({
+          keywords: generateSceneKeywords({
+            script: parsedScene.script,
+            title: parsedScene.title,
+          }),
+          orderIndex: parsedScene.orderIndex,
+          projectId,
+          script: parsedScene.script,
+          status: "draft",
+          title: parsedScene.title,
+        })),
+        skipDuplicates: true,
+      });
+
+      scenesCreated = result.count;
+    }
+
     for (const parsedScene of parsedScenes) {
       const existing = existingByOrder.get(parsedScene.orderIndex);
 
       if (!existing) {
-        scenesCreated += 1;
-        await tx.scene.create({
-          data: {
-            keywords: generateSceneKeywords({
-              script: parsedScene.script,
-              title: parsedScene.title,
-            }),
-            orderIndex: parsedScene.orderIndex,
-            projectId,
-            script: parsedScene.script,
-            status: "draft",
-            title: parsedScene.title,
-          },
-        });
         continue;
       }
 
@@ -217,20 +234,18 @@ export async function syncProjectScenesFromRawScript(
       .map((scene) => scene.id);
 
     if (idsToDelete.length > 0) {
-      await tx.scene.deleteMany({
+      const result = await tx.scene.deleteMany({
         where: {
           id: {
             in: idsToDelete,
           },
         },
       });
+      scenesDeleted = result.count;
     }
   });
 
   const scenes = await listProjectScenes(projectId);
-  const scenesDeleted = existingScenes.filter(
-    (scene) => !nextOrderIndexes.has(scene.orderIndex),
-  ).length;
 
   return {
     parsedScenes,
@@ -298,7 +313,7 @@ export async function scenesRoutes(app: FastifyInstance): Promise<void> {
 
       const project = await prisma.project.findUnique({
         where: { id },
-        select: { id: true, voiceProfileId: true },
+        select: { id: true, voiceProfileId: true, rawScript: true },
       });
 
       if (!project) {
@@ -308,6 +323,13 @@ export async function scenesRoutes(app: FastifyInstance): Promise<void> {
       }
 
       let scenes = await listProjectScenes(id);
+
+      // --- Self-healing: if no scenes exist in DB but script is present, sync them on-the-fly ---
+      if (scenes.length === 0 && project.rawScript && project.rawScript.trim()) {
+        app.log.info({ projectId: id }, "Self-healing: No scenes found in DB, parsing and syncing from rawScript");
+        await syncProjectScenesFromRawScript(id, project.rawScript);
+        scenes = await listProjectScenes(id);
+      }
 
       // --- Fallback logic ---
       const scenesWithoutAsset = scenes.filter((scene) => !scene.assetId);

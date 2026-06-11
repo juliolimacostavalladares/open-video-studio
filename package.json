@@ -7,7 +7,7 @@
     "postinstall": "pnpm db:generate",
     "dev": "pnpm --parallel --filter web --filter api dev",
     "build": "pnpm -r --if-present build",
-    "infra:start": "docker compose -p open-video-studio-infrastructure -f docker-compose.infrastructure.yml up -d redis minio",
+    "infra:start": "docker compose -p open-video-studio-infrastructure -f docker-compose.infrastructure.yml up -d redis minio qwenproxy",
     "infra:stop": "docker compose -p open-video-studio-infrastructure -f docker-compose.infrastructure.yml down -v",
     "lint": "pnpm -r --if-present lint && eslint packages/config/src tests --ext .ts",
     "db:start": "docker compose -p open-video-studio-database -f docker-compose.database.yml up -d postgres",

@@ -461,11 +461,6 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
               margin: "0 auto 16px",
             }}
           />
-          <style>{`
-            @keyframes spin {
-              to { transform: rotate(360deg); }
-            }
-          `}</style>
           <p style={{ fontSize: 16 }}>Carregando dados para revisão...</p>
         </div>
       </div>
@@ -544,47 +539,6 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
         color: "#f1f5f9",
       }}
     >
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        * { font-family: 'Inter', system-ui, sans-serif; }
-        .metadata-input {
-          background: rgba(0, 0, 0, 0.25);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 8px;
-          padding: 10px 14px;
-          color: #f1f5f9;
-          width: 100%;
-          box-sizing: border-box;
-          outline: none;
-          font-size: 14px;
-          transition: all 0.2s ease;
-        }
-        .metadata-input:focus {
-          border-color: #6366f1;
-          background: rgba(0, 0, 0, 0.35);
-          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-        }
-        .save-btn {
-          background: #6366f1;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          padding: 10px 20px;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        .save-btn:hover:not(:disabled) {
-          background: #4f46e5;
-          transform: translateY(-1px);
-        }
-        .save-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-      `}</style>
-
       <div
         style={{
           maxWidth: 1200,

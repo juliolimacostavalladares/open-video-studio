@@ -140,7 +140,7 @@ describe("POST /projects", () => {
       },
     });
 
-    expect(response.statusCode).toBeOneOf([201, 207]);
+    expect(response.statusCode).toBe(201);
 
     const body = JSON.parse(response.body) as {
       id: string;
@@ -161,6 +161,39 @@ describe("POST /projects", () => {
     expect(body.rawScript).toBeTruthy();
     expect(body.rawScript).toContain("[CENA");
 
+    await app.close();
+  });
+
+  it("não persiste projeto vazio quando a geração por IA falha", async () => {
+    const { prisma } = await import("../../packages/database/src/client.js");
+    const { buildApiApp } = await import("../../apps/api/src/app.js");
+    process.env.AI_PROVIDER = "unsupported-provider";
+
+    const countBefore = await prisma.project.count();
+    const app = buildApiApp();
+    await app.ready();
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/projects",
+      payload: {
+        title: "Projeto Sem IA",
+        theme: "falha controlada",
+        tone: "educativo",
+        targetDuration: 5,
+      },
+    });
+
+    expect(response.statusCode).toBe(502);
+    expect(JSON.parse(response.body)).toMatchObject({
+      error: "AI_GENERATION_FAILED",
+    });
+    await expect(
+      prisma.project.count({ where: { title: "Projeto Sem IA" } }),
+    ).resolves.toBe(0);
+    await expect(prisma.project.count()).resolves.toBe(countBefore);
+
+    process.env.AI_PROVIDER = "mock";
     await app.close();
   });
 

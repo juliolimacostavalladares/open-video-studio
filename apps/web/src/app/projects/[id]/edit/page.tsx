@@ -91,17 +91,6 @@ export default async function ProjectEditPage({
         boxSizing: "border-box",
       }}
     >
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-        * { font-family: 'Inter', system-ui, sans-serif; }
-
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.3; }
-        }
-      `}</style>
-
       <div
         style={{
           maxWidth: 880,
@@ -162,12 +151,33 @@ export default async function ProjectEditPage({
             backdropFilter: "blur(12px)",
           }}
         >
-          <ScriptEditor
-            projectId={project.id}
-            initialScript={project.rawScript ?? ""}
-            projectTitle={project.title}
-            apiBaseUrl={clientApiUrl}
-          />
+          {project.status === "error" && !project.rawScript?.trim() ? (
+            <div
+              role="alert"
+              style={{
+                color: "#fecaca",
+                background: "rgba(239, 68, 68, 0.12)",
+                border: "1px solid rgba(239, 68, 68, 0.25)",
+                borderRadius: 12,
+                padding: 20,
+              }}
+            >
+              <h2 style={{ color: "#fee2e2", fontSize: 18, margin: "0 0 8px" }}>
+                Roteiro não foi gerado
+              </h2>
+              <p style={{ color: "#fca5a5", fontSize: 14, lineHeight: 1.6, margin: 0 }}>
+                A criação deste projeto falhou durante a geração por IA. Volte para a lista
+                de projetos e crie novamente depois de corrigir a configuração do provedor.
+              </p>
+            </div>
+          ) : (
+            <ScriptEditor
+              projectId={project.id}
+              initialScript={project.rawScript ?? ""}
+              projectTitle={project.title}
+              apiBaseUrl={clientApiUrl}
+            />
+          )}
         </section>
 
         <VoiceProfileManager
