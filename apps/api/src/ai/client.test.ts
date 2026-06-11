@@ -4,20 +4,58 @@ import { buildAiClient } from "./client.js";
 
 describe("buildAiClient", () => {
   afterEach(() => {
+    delete process.env.AI_PROVIDER;
+    delete process.env.AI_API_KEY;
+    delete process.env.AI_BASE_URL;
+    delete process.env.AI_MODEL;
+    delete process.env.AI_TIMEOUT_MS;
+    delete process.env.GEMINI_API_KEY;
+    delete process.env.GEMINI_TIMEOUT_MS;
+    delete process.env.OPENAI_API_KEY;
+    delete process.env.QWENPROXY_API_KEY;
+    delete process.env.QWENPROXY_BASE_URL;
+    delete process.env.QWENPROXY_MODEL;
+    delete process.env.QWENPROXY_TIMEOUT_MS;
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
   });
 
-  it("usa QwenProxy via API compatível com OpenAI", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
+  it("usa QwenProxy por padrão e normaliza a URL sem /v1", async () => {
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
       new Response(
         JSON.stringify({
-          choices: [
-            {
-              message: {
-                content: "[CENA 1]\n\nRoteiro gerado",
-              },
-            },
-          ],
+          choices: [{ message: { content: "Roteiro vindo do Qwen" } }],
+        }),
+        { status: 200 },
+      ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    process.env.QWENPROXY_BASE_URL = "http://127.0.0.1:3001/";
+    process.env.QWENPROXY_API_KEY = "local-key";
+
+    const client = buildAiClient();
+
+    await expect(client.generate("roteiro teste")).resolves.toBe(
+      "Roteiro vindo do Qwen",
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://127.0.0.1:3001/v1/chat/completions",
+      expect.objectContaining({
+        headers: {
+          Authorization: "Bearer local-key",
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        signal: expect.any(AbortSignal),
+      }),
+    );
+  });
+
+  it("envia payload OpenAI compatível com opções explícitas", async () => {
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          choices: [{ message: { content: "Roteiro gerado" } }],
         }),
         { status: 200 },
       ),
@@ -31,30 +69,18 @@ describe("buildAiClient", () => {
       provider: "qwenproxy",
     });
 
-    await expect(client.generate("Crie um roteiro")).resolves.toBe(
-      "[CENA 1]\n\nRoteiro gerado",
-    );
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      "http://127.0.0.1:3001/v1/chat/completions",
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          Authorization: "Bearer test-key",
-          "Content-Type": "application/json",
-        }),
-        method: "POST",
-        signal: expect.any(AbortSignal),
-      }),
-    );
+    await client.generate("Crie um roteiro");
 
     const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
     expect(JSON.parse(String(request.body))).toMatchObject({
+      messages: [{ content: "Crie um roteiro", role: "user" }],
       model: "test-model",
+      stream: false,
     });
   });
 
   it("usa o modelo anunciado pelo QwenProxy como padrão", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
       new Response(
         JSON.stringify({
           choices: [{ message: { content: "Roteiro gerado" } }],
@@ -64,32 +90,12 @@ describe("buildAiClient", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    const previousQwenModel = process.env.QWENPROXY_MODEL;
-    const previousAiModel = process.env.AI_MODEL;
-    delete process.env.QWENPROXY_MODEL;
-    delete process.env.AI_MODEL;
-
-    try {
-      const client = buildAiClient({
-        apiKey: "test-key",
-        baseUrl: "http://127.0.0.1:3001/v1",
-        provider: "qwenproxy",
-      });
-
-      await client.generate("Crie um roteiro");
-    } finally {
-      if (previousQwenModel === undefined) {
-        delete process.env.QWENPROXY_MODEL;
-      } else {
-        process.env.QWENPROXY_MODEL = previousQwenModel;
-      }
-
-      if (previousAiModel === undefined) {
-        delete process.env.AI_MODEL;
-      } else {
-        process.env.AI_MODEL = previousAiModel;
-      }
-    }
+    const client = buildAiClient({
+      apiKey: "test-key",
+      baseUrl: "http://127.0.0.1:3001/v1",
+      provider: "qwenproxy",
+    });
+    await client.generate("Crie um roteiro");
 
     const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
     expect(JSON.parse(String(request.body))).toMatchObject({
@@ -97,7 +103,19 @@ describe("buildAiClient", () => {
     });
   });
 
-  it("falha para AI_PROVIDER desconhecido em vez de cair em mock", () => {
+  it("usa mock apenas quando configurado explicitamente", async () => {
+    const client = buildAiClient({ provider: "mock" });
+
+    await expect(client.generate("tema: ciência")).resolves.toContain("[CENA");
+  });
+
+  it("falha quando Gemini é selecionado sem chave", () => {
+    expect(() => buildAiClient({ provider: "gemini" })).toThrow(
+      "GEMINI_API_KEY is required when AI_PROVIDER=gemini",
+    );
+  });
+
+  it("falha para provedores desconhecidos", () => {
     expect(() => buildAiClient({ provider: "desconhecido" })).toThrow(
       'Unsupported AI_PROVIDER "desconhecido"',
     );

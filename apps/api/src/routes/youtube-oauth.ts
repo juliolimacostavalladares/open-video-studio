@@ -121,7 +121,10 @@ export async function youtubeOauthRoutes(app: FastifyInstance): Promise<void> {
     async (request, reply) => {
       const { id } = request.params;
 
-      if (id === "mock-project-id") {
+      if (
+        (process.env.NODE_ENV === "test" || process.env.VITEST) &&
+        id === "mock-project-id"
+      ) {
         return {
           id: "mock-channel-id",
           channelId: "UC_MOCK_CHANNEL_ID_12345",

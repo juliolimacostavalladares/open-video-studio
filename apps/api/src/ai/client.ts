@@ -1,8 +1,8 @@
 /**
  * Cliente de IA configurável.
  *
- * Em produção usa a variável AI_PROVIDER para selecionar o provedor.
- * Suporta "gemini", "qwenproxy" e "mock" (para testes sem chave).
+ * Usa a variável AI_PROVIDER para selecionar o provedor.
+ * Suporta "qwenproxy" (default), "gemini" e "mock" para testes.
  *
  * Contrato: recebe prompt string, retorna string.
  */
@@ -62,13 +62,18 @@ function buildGeminiClient(apiKey: string, timeoutMs: number): AiClient {
       const url =
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
-      const response = await fetchWithTimeout("Gemini", timeoutMs, `${url}?key=${apiKey}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
-        })
-      });
+      const response = await fetchWithTimeout(
+        "Gemini",
+        timeoutMs,
+        `${url}?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+          }),
+        },
+      );
 
       if (!response.ok) {
         const body = await response.text();
@@ -80,7 +85,6 @@ function buildGeminiClient(apiKey: string, timeoutMs: number): AiClient {
           content?: { parts?: Array<{ text?: string }> };
         }>;
       };
-
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
       if (!text) {
@@ -88,23 +92,34 @@ function buildGeminiClient(apiKey: string, timeoutMs: number): AiClient {
       }
 
       return text;
-    }
+    },
   };
 }
 
-function buildOpenAiCompatibleClient(options: {
+function normalizeOpenAiCompatibleBaseUrl(baseUrl: string): string {
+  const trimmed = baseUrl.trim().replace(/\/+$/, "");
+
+  if (!trimmed) {
+    throw new Error(
+      "QWENPROXY_BASE_URL is required when AI_PROVIDER=qwenproxy",
+    );
+  }
+
+  return trimmed.endsWith("/v1") ? trimmed : `${trimmed}/v1`;
+}
+
+function buildQwenProxyClient(options: {
   apiKey: string;
   baseUrl: string;
   model: string;
-  providerName: string;
   timeoutMs: number;
 }): AiClient {
-  const baseUrl = options.baseUrl.replace(/\/$/, "");
+  const baseUrl = normalizeOpenAiCompatibleBaseUrl(options.baseUrl);
 
   return {
     async generate(prompt: string): Promise<string> {
       const response = await fetchWithTimeout(
-        options.providerName,
+        "QwenProxy",
         options.timeoutMs,
         `${baseUrl}/chat/completions`,
         {
@@ -114,13 +129,9 @@ function buildOpenAiCompatibleClient(options: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            messages: [
-              {
-                content: prompt,
-                role: "user",
-              },
-            ],
+            messages: [{ content: prompt, role: "user" }],
             model: options.model,
+            stream: false,
             temperature: 0.7,
           }),
         },
@@ -128,23 +139,21 @@ function buildOpenAiCompatibleClient(options: {
 
       if (!response.ok) {
         const body = await response.text();
-        throw new Error(
-          `${options.providerName} API error ${response.status}: ${body}`,
-        );
+        throw new Error(`QwenProxy API error ${response.status}: ${body}`);
       }
 
       const data = (await response.json()) as {
         choices?: Array<{
-          message?: { content?: string };
+          message?: { content?: string | null };
           text?: string;
         }>;
       };
-
       const text =
-        data.choices?.[0]?.message?.content ?? data.choices?.[0]?.text;
+        data.choices?.[0]?.message?.content?.trim() ??
+        data.choices?.[0]?.text?.trim();
 
       if (!text) {
-        throw new Error(`${options.providerName} returned empty response`);
+        throw new Error("QwenProxy returned empty response");
       }
 
       return text;
@@ -155,7 +164,6 @@ function buildOpenAiCompatibleClient(options: {
 function buildMockClient(): AiClient {
   return {
     async generate(prompt: string): Promise<string> {
-      // Extrai tema do prompt para gerar roteiro mock estruturado
       const themeMatch = /tema[:\s]+["']?([^"'\n,]+)/i.exec(prompt);
       const theme = themeMatch?.[1]?.trim() ?? "Tema Geral";
 
@@ -170,12 +178,39 @@ Vamos aprofundar os principais pontos sobre ${theme}. Este tema é essencial par
 [CENA 3] Conclusão
 
 Chegamos ao fim do nosso vídeo sobre ${theme}. Espero que tenha sido útil. Deixe seu like e se inscreva no canal!`;
-    }
+    },
   };
 }
 
 export function buildAiClient(options: AiClientOptions = {}): AiClient {
-  const provider = options.provider ?? process.env.AI_PROVIDER ?? "mock";
+  const provider = options.provider ?? process.env.AI_PROVIDER ?? "qwenproxy";
+
+  if (provider === "qwenproxy") {
+    return buildQwenProxyClient({
+      apiKey:
+        options.apiKey ??
+        process.env.QWENPROXY_API_KEY ??
+        process.env.AI_API_KEY ??
+        process.env.OPENAI_API_KEY ??
+        "sk-no-key-required",
+      baseUrl:
+        options.baseUrl ??
+        process.env.QWENPROXY_BASE_URL ??
+        process.env.AI_BASE_URL ??
+        "http://127.0.0.1:3001/v1",
+      model:
+        options.model ??
+        process.env.QWENPROXY_MODEL ??
+        process.env.AI_MODEL ??
+        "qwen3.7-plus",
+      timeoutMs: parseTimeout(
+        options.timeoutMs ??
+          process.env.QWENPROXY_TIMEOUT_MS ??
+          process.env.AI_TIMEOUT_MS,
+        DEFAULT_QWENPROXY_TIMEOUT_MS,
+      ),
+    });
+  }
 
   if (provider === "gemini") {
     const apiKey = options.apiKey ?? process.env.GEMINI_API_KEY ?? "";
@@ -194,38 +229,11 @@ export function buildAiClient(options: AiClientOptions = {}): AiClient {
     );
   }
 
-  if (provider === "qwenproxy") {
-    return buildOpenAiCompatibleClient({
-      apiKey:
-        options.apiKey ??
-        process.env.QWENPROXY_API_KEY ??
-        process.env.AI_API_KEY ??
-        "sk-no-key-required",
-      baseUrl:
-        options.baseUrl ??
-        process.env.QWENPROXY_BASE_URL ??
-        process.env.AI_BASE_URL ??
-        "http://127.0.0.1:3001/v1",
-      model:
-        options.model ??
-        process.env.QWENPROXY_MODEL ??
-        process.env.AI_MODEL ??
-        "qwen3.7-plus",
-      providerName: "QwenProxy",
-      timeoutMs: parseTimeout(
-        options.timeoutMs ??
-          process.env.QWENPROXY_TIMEOUT_MS ??
-          process.env.AI_TIMEOUT_MS,
-        DEFAULT_QWENPROXY_TIMEOUT_MS,
-      ),
-    });
-  }
-
   if (provider === "mock") {
     return buildMockClient();
   }
 
   throw new Error(
-    `Unsupported AI_PROVIDER "${provider}". Use "gemini", "qwenproxy" or "mock".`,
+    `Unsupported AI_PROVIDER "${provider}". Expected "qwenproxy", "gemini" or "mock".`,
   );
 }

@@ -41,10 +41,24 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-open_video_studio}?schema=public
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      AI_PROVIDER: ${AI_PROVIDER:-gemini}
+      REDIS_URL: redis://redis:6379
+      STORAGE_DRIVER: s3
+      STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      STORAGE_ENDPOINT: http://minio:9000
+      STORAGE_BUCKET: open-video-studio
+      STORAGE_REGION: us-east-1
+      STORAGE_FORCE_PATH_STYLE: "true"
+      OMNIVOICE_BASE_URL: ${OMNIVOICE_BASE_URL:-http://host.docker.internal:8000}
+      AI_PROVIDER: ${AI_PROVIDER:-qwenproxy}
+      QWENPROXY_BASE_URL: ${QWENPROXY_BASE_URL:-http://host.docker.internal:3000/v1}
+      QWENPROXY_API_KEY: ${QWENPROXY_API_KEY:-sk-no-key-required}
+      QWENPROXY_MODEL: ${QWENPROXY_MODEL:-qwen-plus}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
+      YOUTUBE_CLIENT_ID: ${YOUTUBE_CLIENT_ID}
+      YOUTUBE_CLIENT_SECRET: ${YOUTUBE_CLIENT_SECRET}
+      YOUTUBE_REDIRECT_URI: ${YOUTUBE_REDIRECT_URI}
+      YOUTUBE_MOCK_MODE: ${YOUTUBE_MOCK_MODE:-false}
       API_PORT: 4000
     labels:
       - "coolify.managed=true"

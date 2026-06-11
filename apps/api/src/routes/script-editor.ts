@@ -66,7 +66,10 @@ export async function scriptEditorRoutes(app: FastifyInstance): Promise<void> {
         });
       }
 
-      if (id === "mock-project-id") {
+      if (
+        (process.env.NODE_ENV === "test" || process.env.VITEST) &&
+        id === "mock-project-id"
+      ) {
         const duration = calculateEstimatedDuration(rawScript);
         return reply.status(200).send({
           id: "mock-project-id",
