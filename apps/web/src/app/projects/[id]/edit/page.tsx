@@ -85,15 +85,14 @@ export default async function ProjectEditPage({
     <main
       style={{
         minHeight: "100vh",
-        background:
-          "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)",
-        padding: "24px",
+        background: "transparent",
+        padding: "32px",
         boxSizing: "border-box",
       }}
     >
       <div
         style={{
-          maxWidth: 880,
+          maxWidth: 1120,
           margin: "0 auto",
           display: "flex",
           flexDirection: "column",
@@ -101,9 +100,16 @@ export default async function ProjectEditPage({
         }}
       >
         {/* Header */}
-        <header style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <header
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
           <a
-            href="/"
+            href="/projects"
             aria-label="Voltar"
             style={{
               color: "#94a3b8",
@@ -138,7 +144,68 @@ export default async function ProjectEditPage({
           >
             {project.status}
           </span>
+          <a
+            href={`/projects/${project.id}/review`}
+            style={{
+              color: "#fff",
+              textDecoration: "none",
+              fontSize: 13,
+              fontWeight: 700,
+              padding: "9px 14px",
+              borderRadius: 9,
+              background: "#7657ff",
+            }}
+          >
+            Abrir revisão →
+          </a>
         </header>
+
+        <nav
+          aria-label="Etapas do projeto"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+            border: "1px solid rgba(255,255,255,0.07)",
+            borderRadius: 14,
+            overflow: "hidden",
+            background: "rgba(255,255,255,0.025)",
+          }}
+        >
+          {[
+            ["01", "Roteiro", "Edite a narrativa"],
+            ["02", "Voz e áudio", "Defina a narração"],
+            ["03", "Cenas", "Escolha os visuais"],
+            ["04", "Render", "Finalize o vídeo"],
+          ].map(([number, label, description], index) => (
+            <div
+              key={number}
+              style={{
+                padding: "15px 16px",
+                borderRight:
+                  index < 3 ? "1px solid rgba(255,255,255,0.07)" : 0,
+              }}
+            >
+              <span
+                style={{ color: "#8b7cff", fontSize: 10, fontWeight: 800 }}
+              >
+                {number}
+              </span>
+              <strong
+                style={{
+                  color: "#f8fafc",
+                  display: "block",
+                  fontSize: 12,
+                  marginTop: 4,
+                }}
+              >
+                {label}
+              </strong>
+              <small style={{ color: "#64748b", fontSize: 10 }}>
+                {description}
+              </small>
+            </div>
+          ))}
+        </nav>
 
         {/* Editor */}
         <section

@@ -3,15 +3,19 @@ import "./globals.css";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { AppShell } from "../components/AppShell";
+
 export const metadata: Metadata = {
   title: "Open Video Studio",
-  description: "Base workspace for the Open Video Studio MVP"
+  description: "Crie, produza e publique vídeos com IA."
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="pt-BR">
+      <body>
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }
