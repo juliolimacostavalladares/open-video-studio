@@ -165,66 +165,64 @@ export function ProjectEditStudio({
           })}
         </aside>
 
-        {activeToolData ? (
-          <aside className="edit-tool-drawer">
-            <div className="edit-tool-drawer-heading">
-              <div>
-                <span className="eyebrow">{activeToolData.description}</span>
-                <h2>{activeToolData.label}</h2>
-              </div>
-              <button
-                aria-label="Recolher painel"
-                className="edit-drawer-close"
-                onClick={() => setActiveTool(null)}
-                type="button"
-              >
-                <ChevronLeft size={18} />
-              </button>
+        <aside
+          className="edit-tool-drawer"
+          style={{ display: activeToolData ? "block" : "none" }}
+        >
+          <div className="edit-tool-drawer-heading">
+            <div>
+              <span className="eyebrow">{activeToolData?.description}</span>
+              <h2>{activeToolData?.label}</h2>
             </div>
+            <button
+              aria-label="Recolher painel"
+              className="edit-drawer-close"
+              onClick={() => setActiveTool(null)}
+              type="button"
+            >
+              <ChevronLeft size={18} />
+            </button>
+          </div>
 
-            {activeTool === "script" ? (
-              project.status === "error" && !project.rawScript?.trim() ? (
-                <div className="edit-error-state" role="alert">
-                  <h2>Roteiro não foi gerado</h2>
-                  <p>
-                    A criação deste projeto falhou durante a geração por IA.
-                    Volte para a lista de projetos e crie novamente depois de
-                    corrigir a configuração do provedor.
-                  </p>
-                </div>
-              ) : (
-                <ScriptEditor
-                  apiBaseUrl={apiBaseUrl}
-                  initialScript={project.rawScript ?? ""}
-                  projectId={project.id}
-                  projectTitle={project.title}
-                />
-              )
-            ) : null}
-
-            {activeTool === "voice" ? (
-              <VoiceProfileManager
+          <div style={{ display: activeTool === "script" ? "block" : "none" }}>
+            {project.status === "error" && !project.rawScript?.trim() ? (
+              <div className="edit-error-state" role="alert">
+                <h2>Roteiro não foi gerado</h2>
+                <p>
+                  A criação deste projeto falhou durante a geração por IA. Volte
+                  para a lista de projetos e crie novamente depois de corrigir a
+                  configuração do provedor.
+                </p>
+              </div>
+            ) : (
+              <ScriptEditor
                 apiBaseUrl={apiBaseUrl}
-                initialVoiceProfileId={project.voiceProfileId}
+                initialScript={project.rawScript ?? ""}
                 projectId={project.id}
+                projectTitle={project.title}
               />
-            ) : null}
+            )}
+          </div>
 
-            {activeTool === "assets" ? (
-              <SceneAssetManager
-                apiBaseUrl={apiBaseUrl}
-                projectId={project.id}
-              />
-            ) : null}
+          <div style={{ display: activeTool === "voice" ? "block" : "none" }}>
+            <VoiceProfileManager
+              apiBaseUrl={apiBaseUrl}
+              initialVoiceProfileId={project.voiceProfileId}
+              projectId={project.id}
+            />
+          </div>
 
-            {activeTool === "render" ? (
-              <VideoPreviewPlayer
-                apiBaseUrl={apiBaseUrl}
-                projectId={project.id}
-              />
-            ) : null}
-          </aside>
-        ) : null}
+          <div style={{ display: activeTool === "assets" ? "block" : "none" }}>
+            <SceneAssetManager apiBaseUrl={apiBaseUrl} projectId={project.id} />
+          </div>
+
+          <div style={{ display: activeTool === "render" ? "block" : "none" }}>
+            <VideoPreviewPlayer
+              apiBaseUrl={apiBaseUrl}
+              projectId={project.id}
+            />
+          </div>
+        </aside>
 
         <section className="edit-stage" aria-label="Pré-visualização do vídeo">
           <div className="edit-stage-header">

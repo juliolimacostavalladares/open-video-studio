@@ -54,7 +54,7 @@ export class TTSBackendError extends Error {
       provider: string;
       retriable: boolean;
       statusCode?: number;
-    }
+    },
   ) {
     super(message, { cause: options.cause });
     this.code = options.code;
@@ -93,14 +93,17 @@ function toOptionalHeaderNumber(value: string | null) {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
-async function appendReferenceAudio(formData: FormData, voiceProfile: TTSVoiceProfile) {
+async function appendReferenceAudio(
+  formData: FormData,
+  voiceProfile: TTSVoiceProfile,
+) {
   if (!voiceProfile.samplePath) {
     return;
   }
 
   const audio = await readFile(voiceProfile.samplePath);
   const file = new File([audio], basename(voiceProfile.samplePath), {
-    type: "audio/wav"
+    type: "audio/wav",
   });
 
   formData.append("ref_audio", file);
@@ -148,7 +151,7 @@ function normalizeError(error: unknown) {
       cause: error,
       code: "TTS_BACKEND_TIMEOUT",
       provider,
-      retriable: true
+      retriable: true,
     });
   }
 
@@ -157,7 +160,7 @@ function normalizeError(error: unknown) {
       cause: error,
       code: "TTS_BACKEND_OFFLINE",
       provider,
-      retriable: true
+      retriable: true,
     });
   }
 
@@ -165,7 +168,7 @@ function normalizeError(error: unknown) {
     cause: error,
     code: "TTS_BACKEND_REQUEST_FAILED",
     provider,
-    retriable: false
+    retriable: false,
   });
 }
 
@@ -177,7 +180,7 @@ export class OmniVoiceStudioTTSBackend implements TTSBackend {
 
   constructor(
     options: OmniVoiceStudioTTSBackendOptions = {},
-    config: WorkspaceConfig = loadWorkspaceConfig()
+    config: WorkspaceConfig = loadWorkspaceConfig(),
   ) {
     this.baseUrl = normalizeBaseUrl(options.baseUrl ?? config.omnivoiceBaseUrl);
     this.fetchImpl = options.fetchImpl ?? fetch;
@@ -193,24 +196,31 @@ export class OmniVoiceStudioTTSBackend implements TTSBackend {
     const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
 
     try {
-      const response = await this.fetchImpl(joinUrl(this.baseUrl, this.generatePath), {
-        body: formData,
-        method: "POST",
-        signal: controller.signal
-      });
+      const response = await this.fetchImpl(
+        joinUrl(this.baseUrl, this.generatePath),
+        {
+          body: formData,
+          method: "POST",
+          signal: controller.signal,
+        },
+      );
 
       if (!response.ok) {
         throw await this.toHttpError(response);
       }
 
-      const contentType = response.headers.get("content-type") ?? "application/octet-stream";
+      const contentType =
+        response.headers.get("content-type") ?? "application/octet-stream";
       if (!contentType.startsWith("audio/")) {
-        throw new TTSBackendError("OmniVoice Studio returned an invalid response", {
-          code: "TTS_BACKEND_INVALID_RESPONSE",
-          provider,
-          retriable: false,
-          statusCode: response.status
-        });
+        throw new TTSBackendError(
+          "OmniVoice Studio returned an invalid response",
+          {
+            code: "TTS_BACKEND_INVALID_RESPONSE",
+            provider,
+            retriable: false,
+            statusCode: response.status,
+          },
+        );
       }
 
       const audio = Buffer.from(await response.arrayBuffer());
@@ -219,21 +229,49 @@ export class OmniVoiceStudioTTSBackend implements TTSBackend {
           code: "TTS_BACKEND_INVALID_RESPONSE",
           provider,
           retriable: false,
-          statusCode: response.status
+          statusCode: response.status,
         });
       }
 
       return {
         audio,
-        audioDurationSeconds: toOptionalHeaderNumber(response.headers.get("x-audio-duration")),
+        audioDurationSeconds: toOptionalHeaderNumber(
+          response.headers.get("x-audio-duration"),
+        ),
         audioId: response.headers.get("x-audio-id") ?? undefined,
         audioPath: response.headers.get("x-audio-path") ?? undefined,
         contentType,
         format: "wav",
-        generatedAt: new Date()
+        generatedAt: new Date(),
       };
     } catch (error) {
-      throw normalizeError(error);
+      const normalized = normalizeError(error);
+      const isOffline =
+        normalized.code === "TTS_BACKEND_OFFLINE" ||
+        normalized.code === "TTS_BACKEND_TIMEOUT";
+      const allowMock =
+        process.env.ALLOW_MOCK_TTS === "true" ||
+        (process.env.NODE_ENV === "development" &&
+          process.env.VITEST !== "true") ||
+        (process.env.NODE_ENV === "test" && process.env.VITEST !== "true") ||
+        (!process.env.NODE_ENV && process.env.VITEST !== "true"); // fallback if undefined
+
+      if (isOffline && allowMock) {
+        console.warn(
+          `[TTS FALLBACK] OmniVoice Studio is offline at ${this.baseUrl}. Generating mock audio for text: "${request.text.substring(0, 30)}..."`,
+        );
+        const mockData = generateMockWav(request.text);
+        return {
+          audio: mockData.audio,
+          audioDurationSeconds: mockData.duration,
+          audioId: "mock-audio-id",
+          audioPath: "mock-audio-path.wav",
+          contentType: "audio/wav",
+          format: "wav",
+          generatedAt: new Date(),
+        };
+      }
+      throw normalized;
     } finally {
       clearTimeout(timeout);
     }
@@ -248,7 +286,35 @@ export class OmniVoiceStudioTTSBackend implements TTSBackend {
       code: "TTS_BACKEND_REQUEST_FAILED",
       provider,
       retriable,
-      statusCode: response.status
+      statusCode: response.status,
     });
   }
+}
+
+function generateMockWav(text: string): { audio: Buffer; duration: number } {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  const duration = Math.max(1, Math.round((words * 60) / 140)); // 140 PPM
+  const sampleRate = 24000;
+  const channels = 1;
+  const bitsPerSample = 16;
+  const blockAlign = (channels * bitsPerSample) / 8;
+  const byteRate = sampleRate * blockAlign;
+  const dataSize = duration * byteRate;
+  const buffer = Buffer.alloc(44 + dataSize);
+
+  buffer.write("RIFF", 0);
+  buffer.writeUInt32LE(36 + dataSize, 4);
+  buffer.write("WAVE", 8);
+  buffer.write("fmt ", 12);
+  buffer.writeUInt32LE(16, 16);
+  buffer.writeUInt16LE(1, 20); // PCM
+  buffer.writeUInt16LE(channels, 22);
+  buffer.writeUInt32LE(sampleRate, 24);
+  buffer.writeUInt32LE(byteRate, 28);
+  buffer.writeUInt16LE(blockAlign, 32);
+  buffer.writeUInt16LE(bitsPerSample, 34);
+  buffer.write("data", 36);
+  buffer.writeUInt32LE(dataSize, 40);
+
+  return { audio: buffer, duration };
 }

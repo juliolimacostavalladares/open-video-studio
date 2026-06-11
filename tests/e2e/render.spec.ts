@@ -140,12 +140,14 @@ test.describe("render queue and status tracking", () => {
 
     // Go to project edit page
     await page.goto("/projects/mock-project-id/edit");
+    await page.getByRole("button", { name: "Render", exact: true }).click();
 
     // Initially, there should be no render state shown in the video player section
     const noRenderState = page.locator("#no-render-state");
     await expect(noRenderState).toBeVisible();
 
-    // Click the render button
+    // Click the render button (located in "Voz" tab)
+    await page.getByRole("button", { name: "Voz", exact: true }).click();
     const renderButton = page.locator("#queue-render");
     await expect(renderButton).toBeVisible();
     await renderButton.click();
@@ -153,6 +155,9 @@ test.describe("render queue and status tracking", () => {
     // Verify first queued/starting state in both status message and player
     const renderStatus = page.locator("#render-status");
     await expect(renderStatus).toContainText("Render enfileirado com sucesso");
+
+    // Open "Render" tab to view the player status polling
+    await page.getByRole("button", { name: "Render", exact: true }).click();
 
     const statusBadge = page.locator("#video-render-status-badge");
     await expect(statusBadge).toContainText("Na Fila");
@@ -299,12 +304,16 @@ test.describe("render queue and status tracking", () => {
     });
 
     await page.goto("/projects/mock-project-id/edit");
+    await page.getByRole("button", { name: "Voz", exact: true }).click();
 
     const renderButton = page.locator("#queue-render");
     await renderButton.click();
 
     const renderStatus = page.locator("#render-status");
     await expect(renderStatus).toContainText("Render enfileirado com sucesso");
+
+    // Open "Render" tab to view the player status polling
+    await page.getByRole("button", { name: "Render", exact: true }).click();
 
     const statusBadge = page.locator("#video-render-status-badge");
     await expect(statusBadge).toContainText("Na Fila");

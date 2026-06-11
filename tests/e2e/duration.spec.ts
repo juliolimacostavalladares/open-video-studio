@@ -41,6 +41,7 @@ test.describe("estimated duration E2E", () => {
     });
 
     await page.goto("/projects/mock-project-id/edit");
+    await page.getByRole("button", { name: "Roteiro", exact: true }).click();
 
     // Duração inicial deve ser 0s
     const durationBadge = page.locator("#estimated-duration");
