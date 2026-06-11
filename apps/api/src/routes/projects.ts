@@ -110,6 +110,40 @@ function toResponse(project: {
 }
 
 export async function projectsRoutes(app: FastifyInstance): Promise<void> {
+  app.get("/projects", async (_request, reply) => {
+    const projects = await prisma.project.findMany({
+      orderBy: { updatedAt: "desc" },
+      include: {
+        _count: {
+          select: { scenes: true },
+        },
+        renderJobs: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: {
+            status: true,
+            outputPath: true,
+          },
+        },
+        voiceProfile: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return reply.status(200).send({
+      projects: projects.map((project) => ({
+        ...toResponse(project),
+        latestRender: project.renderJobs[0] ?? null,
+        sceneCount: project._count.scenes,
+        voiceProfile: project.voiceProfile,
+      })),
+    });
+  });
+
   /**
    * POST /projects
    *

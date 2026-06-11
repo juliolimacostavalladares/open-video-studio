@@ -19,7 +19,7 @@ Configuracao de IA local recomendada para este projeto:
 
 ```bash
 AI_PROVIDER=qwenproxy
-QWENPROXY_BASE_URL=http://127.0.0.1:3000/v1
+QWENPROXY_BASE_URL=http://127.0.0.1:3001/v1
 QWENPROXY_API_KEY=sk-no-key-required
 QWENPROXY_MODEL=qwen-plus
 ```
@@ -40,13 +40,15 @@ Aplicacoes locais por padrao:
 - `pnpm test`: executa suites unit e integration
 - `pnpm test:unit`: valida o carregamento da configuracao compartilhada
 - `pnpm test:integration`: smoke de boot de `web` e `api` e CRUD minimo do banco
-- `pnpm infra:start`: sobe Redis e MinIO locais para fila e storage
-- `pnpm infra:stop`: derruba Redis e MinIO locais e remove volumes
+- `pnpm infra:start`: sobe Redis, MinIO e QwenProxy locais
+- `pnpm infra:login`: abre o gerenciador interativo de contas do QwenProxy
+- `pnpm infra:stop`: derruba Redis, MinIO e QwenProxy e remove volumes
 - `pnpm db:start`: sobe o PostgreSQL local via Docker Compose
 - `pnpm db:stop`: derruba o PostgreSQL local e remove o volume
 - `pnpm db:generate`: gera o client do banco
 - `pnpm db:migrate`: aplica migrations locais
 - `pnpm db:seed`: popula dados minimos de desenvolvimento
+- `pnpm db:studio`: abre o Prisma Studio conectado ao banco local
 - `pnpm db:reset`: recria o banco local com migration e seed
 
 ## Banco local
@@ -65,7 +67,7 @@ Reset completo:
 
 1. `pnpm db:reset`
 
-## Fila e storage locais
+## Infraestrutura local
 
 Para a infra do pipeline:
 
@@ -73,6 +75,12 @@ Para a infra do pipeline:
 2. Redis: `redis://127.0.0.1:6379`
 3. MinIO S3 compatível: `http://127.0.0.1:9000`
 4. Credenciais padrão do MinIO: `minioadmin` / `minioadmin`
+5. QwenProxy: `http://127.0.0.1:3001`
+
+O QwenProxy usa a porta `3001` no host para não conflitar com o app web na
+porta `3000`. Para login automático, preencha `QWEN_EMAIL` e `QWEN_PASSWORD`
+no `.env` da raiz. Os dados e perfis de navegador ficam persistidos em volumes
+Docker.
 
 Defaults do workspace:
 

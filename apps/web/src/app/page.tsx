@@ -1,42 +1,25 @@
-export default function HomePage() {
-  return (
-    <main
-      style={{
-        alignItems: "center",
-        display: "flex",
-        justifyContent: "center",
-        padding: "48px 24px"
-      }}
-    >
-      <section
-        style={{
-          background: "rgba(255, 255, 255, 0.82)",
-          border: "1px solid rgba(0, 0, 0, 0.08)",
-          borderRadius: 24,
-          boxShadow: "0 18px 60px rgba(77, 59, 36, 0.14)",
-          maxWidth: 760,
-          padding: 40,
-          width: "100%"
-        }}
-      >
-        <p
-          style={{
-            fontSize: 13,
-            letterSpacing: "0.2em",
-            margin: 0,
-            textTransform: "uppercase"
-          }}
-        >
-          Sprint 0
-        </p>
-        <h1 style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", marginBottom: 16, marginTop: 12 }}>
-          Open Video Studio
-        </h1>
-        <p style={{ fontSize: 18, lineHeight: 1.6, margin: 0 }}>
-          Workspace base pronta para evoluir `web` e `api` de forma previsivel, com scripts
-          padronizados e smoke checks para bootstrap local.
-        </p>
-      </section>
-    </main>
-  );
+import { ProjectDashboard, type ProjectSummary } from "../components/ProjectDashboard";
+import { getServerApiUrl } from "../lib/api";
+
+async function getProjects() {
+  try {
+    const response = await fetch(`${getServerApiUrl()}/projects`, {
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const body = (await response.json()) as { projects: ProjectSummary[] };
+    return { projects: body.projects };
+  } catch (error) {
+    return {
+      projects: [],
+      error: error instanceof Error ? error.message : "Falha de conexão",
+    };
+  }
+}
+
+export default async function HomePage() {
+  const result = await getProjects();
+  return <ProjectDashboard connectionError={result.error} projects={result.projects} />;
 }
