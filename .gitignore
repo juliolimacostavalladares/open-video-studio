@@ -15,4 +15,4 @@ packages/database/.env
 packages/database/src/generated
 .tmp
 storage
-
+data

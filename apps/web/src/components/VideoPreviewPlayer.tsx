@@ -103,6 +103,29 @@ export function VideoPreviewPlayer({
   useEffect(() => {
     if (!mounted) return;
 
+    const handleRenderQueued = (event: Event) => {
+      const detail = (event as CustomEvent<{ projectId?: string }>).detail;
+      if (detail?.projectId !== projectId) return;
+      void fetchStatus();
+    };
+
+    window.addEventListener(
+      "open-video-studio:render-queued",
+      handleRenderQueued,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "open-video-studio:render-queued",
+        handleRenderQueued,
+      );
+    };
+  }, [fetchStatus, mounted, projectId]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (!job) return;
+
     const isDone =
       job && (job.status === "succeeded" || job.status === "failed");
     if (isDone) return;

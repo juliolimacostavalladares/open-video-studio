@@ -22,6 +22,7 @@ import {
 
 import { buildAiClient } from "../ai/client.js";
 import { generateScript } from "../ai/script-generator.js";
+import { syncProjectScenesFromRawScript } from "./scenes.js";
 
 interface CreateProjectBody {
   title: string;
@@ -111,6 +112,27 @@ function toResponse(project: {
 
 export async function projectsRoutes(app: FastifyInstance): Promise<void> {
   /**
+   * GET /projects
+   *
+   * Retorna a lista de todos os projetos cadastrados.
+   */
+  app.get("/projects", async (request, reply) => {
+    try {
+      app.log.info("Executing prisma.project.findMany");
+      const projects = await prisma.project.findMany({
+        orderBy: { createdAt: "desc" },
+      });
+      return reply.status(200).send(projects.map(toResponse));
+    } catch (err) {
+      app.log.error(err, "Prisma findMany projects failed");
+      return reply.status(500).send({
+        error: "DB_ERROR",
+        message: err instanceof Error ? err.message : String(err),
+      });
+    }
+  });
+
+  /**
    * POST /projects
    *
    * Cria um projeto, gera roteiro inicial via IA e persiste.
@@ -133,21 +155,8 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
       });
     }
 
-    // Cria o projeto com status scripting
-    const project = await prisma.project.create({
-      data: {
-        title,
-        theme,
-        tone,
-        targetDuration,
-        description: description ?? null,
-        status: "scripting",
-      },
-    });
-
     // Gera o roteiro via IA
-    let rawScript: string | null = null;
-    let aiError: string | null = null;
+    let rawScript: string;
 
     try {
       const aiClient = buildAiClient();
@@ -158,31 +167,51 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
 
       rawScript = result.rawScript;
     } catch (error) {
-      // Falha do provedor de IA é tratável — projeto criado sem roteiro
-      aiError = error instanceof Error ? error.message : String(error);
+      const aiError = error instanceof Error ? error.message : String(error);
       app.log.error(
-        { projectId: project.id, error: aiError },
+        { error: aiError },
         "AI generation failed",
       );
+
+      return reply.status(502).send({
+        error: "AI_GENERATION_FAILED",
+        message: aiError,
+      });
     }
 
-    // Persiste roteiro e atualiza status
-    const updated = await prisma.project.update({
-      where: { id: project.id },
+    if (!rawScript.trim()) {
+      return reply.status(502).send({
+        error: "AI_GENERATION_FAILED",
+        message: "O provedor de IA retornou um roteiro vazio",
+      });
+    }
+
+    const project = await prisma.project.create({
       data: {
+        title,
+        theme,
+        tone,
+        targetDuration,
+        description: description ?? null,
         rawScript,
-        status: aiError ? "error" : "scripting",
+        status: "scripting",
       },
     });
 
-    const status = aiError ? 207 : 201;
+    try {
+      await syncProjectScenesFromRawScript(project.id, rawScript);
+    } catch (syncErr) {
+      app.log.error(
+        { projectId: project.id, error: syncErr },
+        "Failed to sync initial scenes from script during creation",
+      );
+    }
 
-    const responseBody: CreateProjectResponse & { aiError?: string } = {
-      ...toResponse(updated),
-      ...(aiError ? { aiError } : {}),
-    };
+    const created = await prisma.project.findUniqueOrThrow({
+      where: { id: project.id },
+    });
 
-    return reply.status(status).send(responseBody);
+    return reply.status(201).send(toResponse(created));
   });
 
   /**
