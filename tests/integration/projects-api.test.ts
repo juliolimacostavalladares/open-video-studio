@@ -266,4 +266,62 @@ describe("POST /projects", () => {
 
     await app.close();
   });
+
+  it("exclui projeto e remove dados relacionados em cascata", async () => {
+    const { prisma } = await import("../../packages/database/src/client.js");
+    const { buildApiApp } = await import("../../apps/api/src/app.js");
+    const app = buildApiApp();
+    await app.ready();
+
+    const project = await prisma.project.create({
+      data: {
+        title: "Projeto para excluir",
+        theme: "limpeza",
+        tone: "direto",
+        targetDuration: 1,
+        rawScript: "[CENA 1]\n\nTeste",
+        status: "ready_for_review",
+        scenes: {
+          create: {
+            orderIndex: 0,
+            title: "Cena 1",
+            script: "Teste",
+            keywords: ["teste"],
+          },
+        },
+        renderJobs: {
+          create: {
+            status: "queued",
+          },
+        },
+        approvalLogs: {
+          create: {
+            approvedBy: "test",
+            videoVersion: "v1",
+          },
+        },
+      },
+    });
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/projects/${project.id}`,
+    });
+
+    expect(response.statusCode).toBe(204);
+    await expect(
+      prisma.project.findUnique({ where: { id: project.id } }),
+    ).resolves.toBeNull();
+    await expect(
+      prisma.scene.count({ where: { projectId: project.id } }),
+    ).resolves.toBe(0);
+    await expect(
+      prisma.renderJob.count({ where: { projectId: project.id } }),
+    ).resolves.toBe(0);
+    await expect(
+      prisma.approvalLog.count({ where: { projectId: project.id } }),
+    ).resolves.toBe(0);
+
+    await app.close();
+  });
 });
