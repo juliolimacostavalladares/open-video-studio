@@ -2,19 +2,34 @@
 
 import React, { useMemo, useState, useEffect, useCallback } from "react";
 import {
-  Mic,
-  Image as ImageIcon,
-  ArrowLeft,
-  ArrowRight,
-  Play,
-  ChevronLeft,
-  type LucideIcon,
-  Video,
+  Mic as MicIconRaw,
+  Image as ImageIconRaw,
+  ArrowLeft as ArrowLeftIconRaw,
+  ArrowRight as ArrowRightIconRaw,
+  Play as PlayIconRaw,
+  ChevronLeft as ChevronLeftIconRaw,
+  Video as VideoIconRaw,
 } from "lucide-react";
 
 import { SceneAssetManager } from "./SceneAssetManager";
 import { VoiceProfileManager } from "./VoiceProfileManager";
 import { calculateEstimatedDuration } from "../utils/duration";
+
+type EditorIcon = (props: {
+  className?: string;
+  fill?: string;
+  size?: number;
+  strokeWidth?: number;
+  style?: React.CSSProperties;
+}) => JSX.Element;
+
+const Mic = MicIconRaw as unknown as EditorIcon;
+const ImageIcon = ImageIconRaw as unknown as EditorIcon;
+const ArrowLeft = ArrowLeftIconRaw as unknown as EditorIcon;
+const ArrowRight = ArrowRightIconRaw as unknown as EditorIcon;
+const Play = PlayIconRaw as unknown as EditorIcon;
+const ChevronLeft = ChevronLeftIconRaw as unknown as EditorIcon;
+const Video = VideoIconRaw as unknown as EditorIcon;
 
 export interface ProjectEditStudioData {
   estimatedDuration: number;
@@ -48,6 +63,7 @@ interface Scene {
 
 interface ProjectEditStudioProps {
   apiBaseUrl: string;
+  editorBaseUrl: string;
   project: ProjectEditStudioData;
   scenes: Array<{ label: string; preview: string }>;
 }
@@ -56,7 +72,7 @@ type ToolId = "assets" | "voice";
 
 const tools: Array<{
   description: string;
-  icon: LucideIcon;
+  icon: EditorIcon;
   id: ToolId;
   label: string;
 }> = [
@@ -86,6 +102,7 @@ function formatDuration(seconds: number): string {
 
 export function ProjectEditStudio({
   apiBaseUrl,
+  editorBaseUrl,
   project,
 }: ProjectEditStudioProps) {
   const [activeTool, setActiveTool] = useState<ToolId | null>(null);
@@ -194,6 +211,7 @@ export function ProjectEditStudio({
       : (tools.find((tool) => tool.id === activeTool) ?? null);
 
   const currentScene = scenesList[selectedSceneIndex];
+  const remotionEditorUrl = `${editorBaseUrl.replace(/\/$/, "")}/edit/${project.id}`;
 
   return (
     <main className="edit-studio">
@@ -215,6 +233,15 @@ export function ProjectEditStudio({
           <span className={`status status-${project.status}`}>
             {project.status}
           </span>
+          <a
+            className="button button-secondary button-small"
+            href={remotionEditorUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <Video size={14} strokeWidth={2} style={{ marginRight: 6 }} />
+            Editor avançado
+          </a>
           <a
             className="button button-primary button-small"
             href={`/projects/${project.id}/review`}

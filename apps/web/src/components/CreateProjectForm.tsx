@@ -41,7 +41,7 @@ export function CreateProjectForm({ apiBaseUrl }: { apiBaseUrl: string }) {
       }
 
       const project = (await response.json()) as { id: string; aiError?: string };
-      router.push(`/projects/${project.id}/edit`);
+      router.push(`/editor/edit/${project.id}`);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Não foi possível criar o projeto.");
       setIsSubmitting(false);

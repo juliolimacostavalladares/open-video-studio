@@ -298,7 +298,7 @@ export function ProjectDashboard({
                   <div className="project-actions">
                     <Link
                       className="project-link"
-                      href={`/projects/${project.id}/edit`}
+                      href={`/editor/edit/${project.id}`}
                     >
                       Continuar produção
                       <ArrowIcon />
