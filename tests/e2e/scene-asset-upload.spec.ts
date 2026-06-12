@@ -1,11 +1,14 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("scene asset upload E2E", () => {
-  test("allows uploading asset manually for a scene and updates status", async ({
+  test("allows uploading asset manually for a project and associating it with a scene", async ({
     page,
   }) => {
     const rawScript = `[CENA 1 - Cena 1]
-Texto base da primeira cena.`;
+Texto base da primeira cena.
+
+[CENA 2 - Cena 2]
+Texto base da segunda cena.`;
 
     const scenes = [
       {
@@ -16,7 +19,26 @@ Texto base da primeira cena.`;
         assetId: null,
         asset: null,
       },
+      {
+        id: "scene-2",
+        title: "Cena 2",
+        script: "Texto base da segunda cena.",
+        keywords: ["cena", "segunda"],
+        assetId: null,
+        asset: null,
+      },
     ];
+
+    const assetsList: Array<{
+      id: string;
+      kind: string;
+      path: string;
+      source: string;
+      status: string;
+      createdAt?: string;
+    }> = [];
+    let uploadCalled = false;
+    let associateCalled = false;
 
     // Mock project API
     await page.route("**/projects/mock-project-id", async (route) => {
@@ -54,27 +76,63 @@ Texto base da primeira cena.`;
       });
     });
 
-    // Mock POST upload asset API
-    let uploadCalled = false;
+    // Mock GET assets
+    await page.route("**/projects/mock-project-id/assets", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ assets: assetsList }),
+      });
+    });
+
+    // Mock POST upload asset and associate to scene 1 API
     await page.route(
       "**/projects/mock-project-id/scenes/scene-1/asset",
       async (route) => {
-        uploadCalled = true;
-        // Update scene with mock asset
-        scenes[0].assetId = "asset-1";
-        scenes[0].asset = {
-          id: "asset-1",
-          kind: "image",
-          path: "assets/manual/asset-1.png",
-          source: "upload",
-          status: "ready",
-        };
+        if (route.request().method() === "POST") {
+          uploadCalled = true;
+          const newAsset = {
+            id: "asset-1",
+            kind: "image",
+            path: "assets/manual/test-scene-asset.png",
+            source: "upload",
+            status: "ready",
+            createdAt: new Date().toISOString(),
+          };
+          assetsList.push(newAsset);
+          scenes[0].assetId = "asset-1";
+          scenes[0].asset = newAsset;
 
-        await route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify(scenes[0]),
-        });
+          await route.fulfill({
+            status: 201,
+            contentType: "application/json",
+            body: JSON.stringify(scenes[0]),
+          });
+        }
+      },
+    );
+
+    // Mock PUT associate asset to scene 2 API
+    await page.route(
+      "**/projects/mock-project-id/scenes/scene-2/asset",
+      async (route) => {
+        if (route.request().method() === "PUT") {
+          associateCalled = true;
+          scenes[1].assetId = "asset-1";
+          scenes[1].asset = {
+            id: "asset-1",
+            kind: "image",
+            path: "assets/manual/test-scene-asset.png",
+            source: "upload",
+            status: "ready",
+          } as never;
+
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify(scenes[1]),
+          });
+        }
       },
     );
 
@@ -87,33 +145,40 @@ Texto base da primeira cena.`;
 
     // Go to edit page
     await page.goto("/projects/mock-project-id/edit");
-    await page.getByRole("button", { name: "Cenas", exact: true }).click();
+    await page.getByRole("button", { name: "Mídias", exact: true }).click();
 
-    // Check header and initial status
+    // Check header is visible
+    await expect(page.locator(".edit-tool-drawer h2")).toContainText("Mídias");
+
+    // Perform file upload simulation (associating to default active Scene 1)
+    await page
+      .locator('input[type="file"]')
+      .first()
+      .setInputFiles({
+        name: "test-scene-asset.png",
+        mimeType: "image/png",
+        buffer: Buffer.from("fake-png-binary-data"),
+      });
+
+    // Verify upload and auto-associate succeeded
     await expect(
-      page.getByText("Gerenciador de Assets por Cena"),
-    ).toBeVisible();
-    await expect(page.locator("#scene-asset-status-scene-1")).toContainText(
-      "Fallback Visual Ativo",
-    );
-
-    // Perform file upload simulation
-    const fileChooserPromise = page.waitForEvent("filechooser");
-    await page.click("text=Substituir Asset (Upload)");
-    const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles({
-      name: "test-scene-asset.png",
-      mimeType: "image/png",
-      buffer: Buffer.from("fake-png-binary-data"),
-    });
-
-    // Verify upload API call was made and the UI reflects the manual asset
-    await expect(
-      page.getByText("Asset enviado e associado com sucesso!"),
+      page.getByText("Mídia enviada e associada com sucesso!"),
     ).toBeVisible();
     expect(uploadCalled).toBe(true);
-    await expect(page.locator("#scene-asset-status-scene-1")).toContainText(
-      "Imagem Manual",
-    );
+
+    // Now select Scene 2 on the visual timeline
+    await page.locator(".timeline-visual-block").nth(1).click();
+
+    // Click on the asset card in the library grid to associate with the newly active Scene 2
+    await page.locator(".group.relative.rounded-xl").first().click();
+
+    // Verify association API was called and the success message is shown
+    await expect(page.getByText("Mídia associada com sucesso!")).toBeVisible();
+    expect(associateCalled).toBe(true);
+
+    // Verify timeline clip contains the image preview attribute
+    await expect(
+      page.locator(".timeline-visual-block img").first(),
+    ).toHaveAttribute("src", /.*test-scene-asset\.png$/);
   });
 });

@@ -325,8 +325,15 @@ export async function scenesRoutes(app: FastifyInstance): Promise<void> {
       let scenes = await listProjectScenes(id);
 
       // --- Self-healing: if no scenes exist in DB but script is present, sync them on-the-fly ---
-      if (scenes.length === 0 && project.rawScript && project.rawScript.trim()) {
-        app.log.info({ projectId: id }, "Self-healing: No scenes found in DB, parsing and syncing from rawScript");
+      if (
+        scenes.length === 0 &&
+        project.rawScript &&
+        project.rawScript.trim()
+      ) {
+        app.log.info(
+          { projectId: id },
+          "Self-healing: No scenes found in DB, parsing and syncing from rawScript",
+        );
         await syncProjectScenesFromRawScript(id, project.rawScript);
         scenes = await listProjectScenes(id);
       }
@@ -651,6 +658,335 @@ export async function scenesRoutes(app: FastifyInstance): Promise<void> {
       } finally {
         await cleanup();
       }
+    },
+  );
+
+  app.get<{ Params: { id: string } }>(
+    "/projects/:id/assets",
+    async (request, reply) => {
+      const { id: projectId } = request.params;
+
+      const project = await prisma.project.findUnique({
+        where: { id: projectId },
+        select: { id: true },
+      });
+
+      if (!project) {
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+      }
+
+      const assets = await prisma.asset.findMany({
+        where: {
+          projectId,
+          source: "upload",
+          status: "ready",
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      return reply.status(200).send({ assets });
+    },
+  );
+
+  app.post<{ Params: { id: string } }>(
+    "/projects/:id/assets",
+    async (request, reply) => {
+      const { id: projectId } = request.params;
+
+      const project = await prisma.project.findUnique({
+        where: { id: projectId },
+        select: { id: true },
+      });
+
+      if (!project) {
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+      }
+
+      let fileName = "";
+      let mimeType = "";
+      let assetBuffer: Buffer | null = null;
+
+      for await (const part of request.parts()) {
+        if (part.type === "file" && part.fieldname === "asset") {
+          fileName = part.filename;
+          mimeType = part.mimetype;
+          assetBuffer = await part.toBuffer();
+        }
+      }
+
+      if (!assetBuffer) {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message: "O arquivo do asset é obrigatório",
+        });
+      }
+
+      try {
+        const metadata = validateAsset({
+          buffer: assetBuffer,
+          fileName,
+          mimeType,
+        });
+
+        const createdAsset = await prisma.$transaction(async (tx) => {
+          const assetRecord = await tx.asset.create({
+            data: {
+              projectId,
+              kind: metadata.kind,
+              source: "upload",
+              path: "",
+              status: "ready",
+            },
+          });
+
+          const extension = fileName
+            .toLowerCase()
+            .slice(fileName.lastIndexOf("."));
+          const storageKey = `manual/${assetRecord.id}${extension}`;
+
+          await storage.putObject(
+            "assets",
+            storageKey,
+            assetBuffer!,
+            metadata.mimeType,
+          );
+
+          return tx.asset.update({
+            where: { id: assetRecord.id },
+            data: {
+              path: `assets/${storageKey}`,
+            },
+          });
+        });
+
+        return reply.status(201).send(createdAsset);
+      } catch (error) {
+        return reply.status(400).send({
+          error: "BAD_REQUEST",
+          message:
+            error instanceof Error
+              ? error.message
+              : "O arquivo enviado é inválido",
+        });
+      }
+    },
+  );
+
+  app.put<{
+    Params: { id: string; sceneId: string };
+    Body: { assetId: string | null };
+  }>("/projects/:id/scenes/:sceneId/asset", async (request, reply) => {
+    const { id: projectId, sceneId } = request.params;
+    const { assetId } = request.body;
+
+    const scene = await prisma.scene.findUnique({
+      where: { id: sceneId, projectId },
+      select: { id: true },
+    });
+
+    if (!scene) {
+      return reply
+        .status(404)
+        .send({ error: "NOT_FOUND", message: "Cena não encontrada" });
+    }
+
+    if (assetId) {
+      const asset = await prisma.asset.findUnique({
+        where: { id: assetId, projectId },
+        select: { id: true },
+      });
+
+      if (!asset) {
+        return reply.status(404).send({
+          error: "NOT_FOUND",
+          message: "Asset não encontrado no projeto",
+        });
+      }
+    }
+
+    const updatedScene = await prisma.scene.update({
+      where: { id: sceneId, projectId },
+      data: {
+        assetId,
+        status: "ready",
+      },
+      select: {
+        id: true,
+        projectId: true,
+        orderIndex: true,
+        title: true,
+        script: true,
+        keywords: true,
+        status: true,
+        voiceProfileId: true,
+        assetId: true,
+        asset: {
+          select: {
+            id: true,
+            kind: true,
+            path: true,
+            source: true,
+            status: true,
+          },
+        },
+        audioContentHash: true,
+        audioDurationSeconds: true,
+        audioGeneratedAt: true,
+        audioMimeType: true,
+        audioPath: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { voiceProfileId: true },
+    });
+
+    return reply
+      .status(200)
+      .send(toSceneResponse(updatedScene, project?.voiceProfileId ?? null));
+  });
+
+  app.patch<{
+    Params: { id: string; sceneId: string };
+    Body: { script?: string; title?: string; assetId?: string | null };
+  }>("/projects/:id/scenes/:sceneId", async (request, reply) => {
+    const { id: projectId, sceneId } = request.params;
+    const { script, title, assetId } = request.body;
+
+    const scene = await prisma.scene.findUnique({
+      where: { id: sceneId, projectId },
+      select: { id: true },
+    });
+
+    if (!scene) {
+      return reply
+        .status(404)
+        .send({ error: "NOT_FOUND", message: "Cena não encontrada" });
+    }
+
+    const updateData: {
+      script?: string;
+      title?: string;
+      assetId?: string | null;
+    } = {};
+    if (script !== undefined) updateData.script = script;
+    if (title !== undefined) updateData.title = title;
+    if (assetId !== undefined) {
+      updateData.assetId = assetId;
+      if (assetId) {
+        const asset = await prisma.asset.findUnique({
+          where: { id: assetId, projectId },
+          select: { id: true },
+        });
+
+        if (!asset) {
+          return reply.status(404).send({
+            error: "NOT_FOUND",
+            message: "Asset não encontrado no projeto",
+          });
+        }
+      }
+    }
+
+    const updatedScene = await prisma.scene.update({
+      where: { id: sceneId, projectId },
+      data: updateData,
+      select: {
+        id: true,
+        projectId: true,
+        orderIndex: true,
+        title: true,
+        script: true,
+        keywords: true,
+        status: true,
+        voiceProfileId: true,
+        assetId: true,
+        asset: {
+          select: {
+            id: true,
+            kind: true,
+            path: true,
+            source: true,
+            status: true,
+          },
+        },
+        audioContentHash: true,
+        audioDurationSeconds: true,
+        audioGeneratedAt: true,
+        audioMimeType: true,
+        audioPath: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { voiceProfileId: true },
+    });
+
+    return reply
+      .status(200)
+      .send(toSceneResponse(updatedScene, project?.voiceProfileId ?? null));
+  });
+
+  app.delete<{ Params: { id: string; assetId: string } }>(
+    "/projects/:id/assets/:assetId",
+    async (request, reply) => {
+      const { id: projectId, assetId } = request.params;
+
+      const asset = await prisma.asset.findUnique({
+        where: { id: assetId, projectId },
+        select: { id: true, path: true },
+      });
+
+      if (!asset) {
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Asset não encontrado" });
+      }
+
+      // Check if any scene is currently using this asset
+      const usingScenes = await prisma.scene.findMany({
+        where: { assetId },
+        select: { id: true },
+      });
+
+      if (usingScenes.length > 0) {
+        // Set assetId to null on these scenes
+        await prisma.scene.updateMany({
+          where: { assetId },
+          data: { assetId: null },
+        });
+      }
+
+      // Delete from MinIO storage if it's manual/local
+      if (asset.path.startsWith("assets/manual/")) {
+        const relativeKey = asset.path.replace(/^assets\//, "");
+        try {
+          await storage.deleteObject("assets", relativeKey);
+        } catch (err) {
+          app.log.error(
+            err,
+            `Falha ao excluir arquivo do asset no bucket: ${asset.path}`,
+          );
+        }
+      }
+
+      await prisma.asset.delete({
+        where: { id: assetId },
+      });
+
+      return reply.status(204).send();
     },
   );
 }

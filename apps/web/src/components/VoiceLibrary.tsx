@@ -23,14 +23,20 @@ export function VoiceLibrary({ apiBaseUrl }: { apiBaseUrl: string }) {
   const [error, setError] = useState<string | null>(null);
 
   const loadProfiles = useCallback(async () => {
-    const response = await fetch(`${apiBaseUrl}/voice-profiles`, { cache: "no-store" });
+    const response = await fetch(`${apiBaseUrl}/voice-profiles`, {
+      cache: "no-store",
+    });
     if (!response.ok) throw new Error(await readApiError(response));
     setProfiles((await response.json()) as VoiceProfile[]);
   }, [apiBaseUrl]);
 
   useEffect(() => {
     loadProfiles()
-      .catch((cause) => setError(cause instanceof Error ? cause.message : "Erro ao carregar vozes."))
+      .catch((cause) =>
+        setError(
+          cause instanceof Error ? cause.message : "Erro ao carregar vozes.",
+        ),
+      )
       .finally(() => setLoading(false));
   }, [loadProfiles]);
 
@@ -47,13 +53,18 @@ export function VoiceLibrary({ apiBaseUrl }: { apiBaseUrl: string }) {
     data.append("sample", sample);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/voice-profiles`, { method: "POST", body: data });
+      const response = await fetch(`${apiBaseUrl}/voice-profiles`, {
+        method: "POST",
+        body: data,
+      });
       if (!response.ok) throw new Error(await readApiError(response));
       setName("");
       setSample(null);
       await loadProfiles();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Erro ao criar perfil.");
+      setError(
+        cause instanceof Error ? cause.message : "Erro ao criar perfil.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -69,25 +80,39 @@ export function VoiceLibrary({ apiBaseUrl }: { apiBaseUrl: string }) {
           </div>
           <span className="count-pill">{profiles.length} perfis</span>
         </div>
-        {loading ? <div className="skeleton-list"><span /><span /><span /></div> : null}
+        {loading ? (
+          <div className="skeleton-list">
+            <span />
+            <span />
+            <span />
+          </div>
+        ) : null}
         {!loading && profiles.length === 0 ? (
           <div className="empty-state compact">
-            <span className="empty-icon"><MicIcon /></span>
+            <span className="empty-icon">
+              <MicIcon />
+            </span>
             <h3>Nenhuma voz cadastrada</h3>
             <p>Envie uma amostra limpa para criar seu primeiro perfil.</p>
           </div>
         ) : (
-          <div className="voice-grid">
+          <div className="voice-grid" id="voice-profile-list">
             {profiles.map((profile, index) => (
               <article className="voice-card" key={profile.id}>
-                <span className={`voice-avatar voice-${index % 4}`}><MicIcon /></span>
+                <span className={`voice-avatar voice-${index % 4}`}>
+                  <MicIcon />
+                </span>
                 <div>
                   <h3>{profile.name}</h3>
                   <p>{profile.provider}</p>
                 </div>
                 <div className="voice-meta">
-                  <span>{profile.sampleDurationSeconds.toFixed(1)}s de amostra</span>
-                  <span className="status status-approved">{profile.status}</span>
+                  <span>
+                    {profile.sampleDurationSeconds.toFixed(1)}s de amostra
+                  </span>
+                  <span className="status status-approved">
+                    {profile.status}
+                  </span>
                 </div>
               </article>
             ))}
@@ -102,16 +127,36 @@ export function VoiceLibrary({ apiBaseUrl }: { apiBaseUrl: string }) {
         <form onSubmit={submit}>
           <label className="field">
             <span>Nome do perfil</span>
-            <input onChange={(event) => setName(event.target.value)} placeholder="Ex.: Narrador institucional" required value={name} />
+            <input
+              id="voice-profile-name"
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Ex.: Narrador institucional"
+              required
+              value={name}
+            />
           </label>
           <label className="upload-field">
             <MicIcon />
             <strong>{sample?.name ?? "Selecionar amostra WAV"}</strong>
             <small>Arquivo de voz com duração curta</small>
-            <input accept=".wav,audio/wav" onChange={(event) => setSample(event.target.files?.[0] ?? null)} type="file" />
+            <input
+              id="voice-sample-input"
+              accept=".wav,audio/wav"
+              onChange={(event) => setSample(event.target.files?.[0] ?? null)}
+              type="file"
+            />
           </label>
-          {error ? <div className="notice notice-error">{error}</div> : null}
-          <button className="button button-primary" disabled={submitting} type="submit">
+          {error ? (
+            <div className="notice notice-error" id="voice-profile-error">
+              {error}
+            </div>
+          ) : null}
+          <button
+            id="voice-profile-submit"
+            className="button button-primary"
+            disabled={submitting}
+            type="submit"
+          >
             <PlusIcon />
             {submitting ? "Criando..." : "Criar perfil de voz"}
           </button>

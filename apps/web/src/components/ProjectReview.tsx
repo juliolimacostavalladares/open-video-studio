@@ -54,6 +54,31 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
   const [voiceProfiles, setVoiceProfiles] = useState<VoiceProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isRenderingVideo, setIsRenderingVideo] = useState(false);
+
+  const handleStartRender = async () => {
+    setIsRenderingVideo(true);
+    setActionError(null);
+    try {
+      const res = await fetch(`${apiBaseUrl}/projects/${projectId}/renders`, {
+        method: "POST",
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Falha ao iniciar renderização");
+      }
+
+      const job = (await res.json()) as RenderJob;
+      setRenderJob(job);
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : "Erro ao iniciar render",
+      );
+    } finally {
+      setIsRenderingVideo(false);
+    }
+  };
 
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
@@ -420,6 +445,16 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
   useEffect(() => {
     void loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    if (!renderJob) return;
+    if (renderJob.status === "queued" || renderJob.status === "running") {
+      const interval = setInterval(() => {
+        void loadData();
+      }, 2000);
+      return () => clearInterval(interval);
+    }
+  }, [renderJob, loadData]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -961,7 +996,7 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                   id="no-render-state"
                   style={{
                     width: "100%",
-                    padding: "60px 20px",
+                    padding: "40px 20px",
                     border: "2px dashed rgba(255, 255, 255, 0.08)",
                     borderRadius: 12,
                     textAlign: "center",
@@ -976,17 +1011,98 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
                   <span>
                     ⚠️ Vídeo não renderizado ou render ainda em progresso.
                   </span>
-                  <Link
-                    href={`/projects/${projectId}/edit`}
-                    style={{
-                      display: "inline-block",
-                      fontSize: 13,
-                      color: "#6366f1",
-                      textDecoration: "underline",
-                    }}
-                  >
-                    Ir para o Editor para Renderizar
-                  </Link>
+
+                  {renderJob?.status === "failed" && (
+                    <div
+                      id="rendering-failed-state"
+                      style={{
+                        color: "#ef4444",
+                        fontSize: 13,
+                        margin: "8px 0",
+                      }}
+                    >
+                      Erro no render:{" "}
+                      <span id="video-render-status-badge">Erro</span> (
+                      {renderJob.errorMessage || "Erro desconhecido"})
+                    </div>
+                  )}
+
+                  {renderJob?.status === "queued" && (
+                    <div
+                      id="rendering-queued-state"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      <span
+                        id="video-render-status-badge"
+                        style={{ color: "#fb923c", fontWeight: 600 }}
+                      >
+                        Na Fila
+                      </span>
+                      <span style={{ fontSize: 12, color: "#94a3b8" }}>
+                        Aguardando fila de processamento...
+                      </span>
+                    </div>
+                  )}
+
+                  {renderJob?.status === "running" && (
+                    <div
+                      id="rendering-running-state"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      <span
+                        id="video-render-status-badge"
+                        style={{ color: "#60a5fa", fontWeight: 600 }}
+                      >
+                        Processando
+                      </span>
+                      <span style={{ fontSize: 12, color: "#94a3b8" }}>
+                        Sintetizando áudios e gerando cenas...
+                      </span>
+                    </div>
+                  )}
+
+                  {(!renderJob || renderJob.status === "failed") && (
+                    <button
+                      id="queue-render"
+                      type="button"
+                      onClick={handleStartRender}
+                      disabled={isRenderingVideo}
+                      style={{
+                        padding: "8px 16px",
+                        background: "#6366f1",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 8,
+                        fontSize: 13,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        marginTop: 8,
+                      }}
+                    >
+                      {isRenderingVideo ? "Iniciando..." : "Renderizar Vídeo"}
+                    </button>
+                  )}
+
+                  {renderJob &&
+                    (renderJob.status === "queued" ||
+                      renderJob.status === "running") && (
+                      <span
+                        id="render-status"
+                        style={{ fontSize: 12, color: "#10b981", marginTop: 4 }}
+                      >
+                        Render enfileirado com sucesso
+                      </span>
+                    )}
                 </div>
               ) : (
                 <div

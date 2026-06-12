@@ -26,8 +26,8 @@ function buildWavBase64(durationSeconds: number) {
   return buffer.toString("base64");
 }
 
-test.describe("voice profile upload", () => {
-  test("uploads voice, generates per-scene audio and only regenerates the edited scene", async ({
+test.describe("voice profile upload and narration editing", () => {
+  test("creates a voice profile, edits scene scripts and generates narration audios", async ({
     page,
   }) => {
     const profiles: Array<{
@@ -37,78 +37,32 @@ test.describe("voice profile upload", () => {
       sampleDurationSeconds: number;
       status: string;
     }> = [];
-    let generateCallCount = 0;
-    let rawScript = `[CENA 1 - Cena 1]
-Texto base da primeira cena.
 
-[CENA 2 - Cena 2]
-Texto base da segunda cena.`;
+    let generateCallCount = 0;
     const scenes = [
       {
-        hasValidAudio: false,
         id: "scene-1",
-        script: "Texto base da primeira cena.",
         title: "Cena 1",
+        script: "Texto base da primeira cena.",
+        orderIndex: 0,
+        status: "draft",
+        hasValidAudio: false,
+        audioPath: null,
+        audioDurationSeconds: null,
       },
       {
-        hasValidAudio: false,
         id: "scene-2",
-        script: "Texto base da segunda cena.",
         title: "Cena 2",
+        script: "Texto base da segunda cena.",
+        orderIndex: 1,
+        status: "draft",
+        hasValidAudio: false,
+        audioPath: null,
+        audioDurationSeconds: null,
       },
     ];
-    let selectedVoiceProfileId: string | null = null;
 
-    await page.route("**/projects/mock-project-id", async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({
-          id: "mock-project-id",
-          title: "Projeto com Voz",
-          rawScript,
-          status: "draft",
-          voiceProfileId: selectedVoiceProfileId,
-        }),
-      });
-    });
-
-    await page.route("**/projects/mock-project-id/scenes", async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({
-          projectId: "mock-project-id",
-          scenes,
-        }),
-      });
-    });
-
-    await page.route("**/projects/mock-project-id/script", async (route) => {
-      const payload = route.request().postDataJSON() as { rawScript: string };
-      rawScript = payload.rawScript;
-      scenes[1] = {
-        ...scenes[1],
-        hasValidAudio: false,
-        script: "Texto base da segunda cena alterada.",
-      };
-
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({
-          id: "mock-project-id",
-          title: "Projeto com Voz",
-          rawScript,
-          status: "scripting",
-          updatedAt: new Date().toISOString(),
-          estimatedDuration: 0,
-          estimatedDurationMin: 0,
-          estimatedDurationMax: 0,
-        }),
-      });
-    });
-
+    // Mock voice profiles list & create
     await page.route("**/voice-profiles", async (route) => {
       if (route.request().method() === "GET") {
         await route.fulfill({
@@ -152,41 +106,64 @@ Texto base da segunda cena.`;
       });
     });
 
-    await page.route(
-      "**/projects/mock-project-id/voice-profile",
-      async (route) => {
-        const payload = route.request().postDataJSON() as {
-          voiceProfileId: string | null;
-        };
-        selectedVoiceProfileId = payload.voiceProfileId;
+    // Mock project API
+    await page.route("**/projects/mock-project-id", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          id: "mock-project-id",
+          title: "Projeto com Voz",
+          rawScript:
+            "[CENA 1]\nTexto base da primeira cena.\n[CENA 2]\nTexto base da segunda cena.",
+          status: "draft",
+          voiceProfileId: "voice-created",
+        }),
+      });
+    });
 
+    // Mock project scenes API
+    await page.route("**/projects/mock-project-id/scenes", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          projectId: "mock-project-id",
+          scenes,
+        }),
+      });
+    });
+
+    // Mock scene script patch
+    await page.route(
+      "**/projects/mock-project-id/scenes/scene-1",
+      async (route) => {
+        const payload = route.request().postDataJSON() as { script?: string };
+        if (payload.script !== undefined) {
+          scenes[0].script = payload.script;
+        }
         await route.fulfill({
           status: 200,
           contentType: "application/json",
-          body: JSON.stringify({
-            id: "mock-project-id",
-            title: "Projeto com Voz",
-            rawScript,
-            status: "draft",
-            voiceProfileId: selectedVoiceProfileId,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            estimatedDuration: 0,
-            estimatedDurationMin: 0,
-            estimatedDurationMax: 0,
-          }),
+          body: JSON.stringify(scenes[0]),
         });
       },
     );
 
+    // Mock audio generate API
     await page.route(
       "**/projects/mock-project-id/scenes/audio/generate",
       async (route) => {
         generateCallCount += 1;
-
         if (generateCallCount === 1) {
-          scenes[0] = { ...scenes[0], hasValidAudio: true };
-          scenes[1] = { ...scenes[1], hasValidAudio: true };
+          scenes[0].hasValidAudio = true;
+          scenes[0].audioPath = "audio/scene-1.wav";
+          scenes[0].audioDurationSeconds = 4.2;
+
+          scenes[1].hasValidAudio = true;
+          scenes[1].audioPath = "audio/scene-2.wav";
+          scenes[1].audioDurationSeconds = 3.8;
+
           await route.fulfill({
             status: 200,
             contentType: "application/json",
@@ -197,73 +174,36 @@ Texto base da segunda cena.`;
               skippedCount: 0,
             }),
           });
-          return;
-        }
+        } else {
+          scenes[0].hasValidAudio = true;
+          scenes[0].audioPath = "audio/scene-1-new.wav";
+          scenes[0].audioDurationSeconds = 5.0;
 
-        scenes[1] = { ...scenes[1], hasValidAudio: true };
-        await route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify({
-            generatedCount: 1,
-            projectId: "mock-project-id",
-            scenes,
-            skippedCount: 1,
-          }),
-        });
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+              generatedCount: 1,
+              projectId: "mock-project-id",
+              scenes,
+              skippedCount: 1,
+            }),
+          });
+        }
       },
     );
 
-    await page.route("**/projects/mock-project-id/renders", async (route) => {
-      const hasInvalidAudio = scenes.some((scene) => !scene.hasValidAudio);
-      if (hasInvalidAudio) {
-        await route.fulfill({
-          status: 409,
-          contentType: "application/json",
-          body: JSON.stringify({
-            message: "Existem cenas sem áudio válido para iniciar o render",
-          }),
-        });
-        return;
-      }
-
+    // Mock play preview audio binary
+    await page.route("**/audio/scene-1.wav", async (route) => {
       await route.fulfill({
-        status: 201,
-        contentType: "application/json",
-        body: JSON.stringify({
-          id: "render-1",
-          projectId: "mock-project-id",
-          status: "queued",
-        }),
+        status: 200,
+        contentType: "audio/wav",
+        body: Buffer.from("preview-wav-data"),
       });
     });
 
-    await page.route(
-      "**/projects/mock-project-id/scenes/scene-1/preview",
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: "audio/wav",
-          body: Buffer.from("preview-wav"),
-        });
-      },
-    );
-
-    await page.route(
-      "**/projects/mock-project-id/scenes/scene-2/preview",
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: "audio/wav",
-          body: Buffer.from("preview-wav-2"),
-        });
-      },
-    );
-
-    await page.goto("/projects/mock-project-id/edit");
-
-    // Open "Voz" tab to add and select voice profile
-    await page.getByRole("button", { name: "Voz", exact: true }).click();
+    // 1. Visit voices list page to upload voice
+    await page.goto("/voices");
 
     await page.locator("#voice-profile-name").fill("Narrador E2E");
     await page.locator("#voice-sample-input").setInputFiles({
@@ -286,45 +226,53 @@ Texto base da segunda cena.`;
     await expect(page.locator("#voice-profile-list")).toContainText(
       "Narrador E2E",
     );
-    await page.locator('input[name="selected-voice-profile"]').first().check();
-    await page.locator("#save-project-voice").click();
-    await expect(page.locator("#voice-selection-status")).toContainText(
-      "Voz salva",
-    );
 
-    // Try queueing render on the Voz tab
-    await page.locator("#queue-render").click();
-    await expect(page.locator("#render-status")).toContainText(
-      "Existem cenas sem áudio válido",
-    );
-    await page.locator("#generate-scene-audio").click();
+    // 2. Go to project editor
+    await page.goto("/projects/mock-project-id/edit");
+
+    // Open "Voz" tab
+    await page.getByRole("button", { name: "Voz", exact: true }).click();
+
+    // Verify scenes are listed in the Voice tab when selected via timeline
+    await expect(
+      page.locator(".voice-scene-title").filter({ hasText: "Cena 1" }),
+    ).toBeVisible();
+
+    // Click Cena 2 audio block in the timeline to select it and focus the voice tab on it
+    await page.locator(".timeline-audio-block").nth(1).click();
+    await expect(
+      page.locator(".voice-scene-title").filter({ hasText: "Cena 2" }),
+    ).toBeVisible();
+
+    // Click Cena 1 audio block to select it again
+    await page.locator(".timeline-audio-block").nth(0).click();
+    await expect(
+      page.locator(".voice-scene-title").filter({ hasText: "Cena 1" }),
+    ).toBeVisible();
+
+    // Click "Gerar Todos os Áudios" button
+    const generateBtn = page.locator("#generate-scene-audio");
+    await generateBtn.click();
+
+    // Verify success banner contains the count of generated audios
     await expect(page.locator("#scene-audio-status")).toContainText(
-      "2 cena(s) gerada(s), 0 reaproveitada(s)",
+      "Geração completa! 2 cena(s) processada(s)",
     );
 
-    await page.locator("#preview-scene-scene-1").click();
+    // Play/preview audio for Cena 1
+    const playBtn = page.locator("#preview-scene-scene-1");
+    await expect(playBtn).toBeVisible();
+    await playBtn.click();
     await expect(page.locator("#scene-preview-audio")).toBeVisible();
 
-    // Open "Roteiro" tab to edit script
-    await page.getByRole("button", { name: "Roteiro", exact: true }).click();
-    await page.locator("#script-editor").fill(`[CENA 1 - Cena 1]
-Texto base da primeira cena.
+    // Edit Cena 1 narration text
+    const editor = page.locator("#script-editor").first();
+    await editor.fill("Texto modificado para testar regeneração.");
 
-[CENA 2 - Cena 2]
-Texto base da segunda cena alterada.`);
-    await page.locator("#save-button").click();
-
-    // Open "Voz" tab to regenerate scene audios
-    await page.getByRole("button", { name: "Voz", exact: true }).click();
-    await page.locator("#generate-scene-audio").click();
+    // Trigger generate all to save and regenerate modified scene
+    await generateBtn.click();
     await expect(page.locator("#scene-audio-status")).toContainText(
-      "1 cena(s) gerada(s), 1 reaproveitada(s)",
-    );
-
-    // Queue final render on the Voz tab
-    await page.locator("#queue-render").click();
-    await expect(page.locator("#render-status")).toContainText(
-      "Render enfileirado com sucesso",
+      "Geração completa! 1 cena(s) processada(s)",
     );
   });
 });
