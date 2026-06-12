@@ -67,7 +67,6 @@ Texto da cena com fallback visual.`;
       console.log("BROWSER EXCEPTION:", err.message, err.stack),
     );
 
-    // Go to edit page
     await page.goto("/projects/mock-project-id/edit");
     await page.getByRole("button", { name: "Mídias", exact: true }).click();
 
