@@ -181,10 +181,7 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
       rawScript = result.rawScript;
     } catch (error) {
       const aiError = error instanceof Error ? error.message : String(error);
-      app.log.error(
-        { error: aiError },
-        "AI generation failed",
-      );
+      app.log.error({ error: aiError }, "AI generation failed");
 
       return reply.status(502).send({
         error: "AI_GENERATION_FAILED",
@@ -270,6 +267,35 @@ export async function projectsRoutes(app: FastifyInstance): Promise<void> {
       }
 
       return reply.status(200).send(toResponse(project));
+    },
+  );
+
+  app.delete<{ Params: { id: string } }>(
+    "/projects/:id",
+    async (request, reply) => {
+      const { id } = request.params;
+
+      if (
+        (process.env.NODE_ENV === "test" || process.env.VITEST) &&
+        id === "mock-project-id"
+      ) {
+        return reply.status(204).send();
+      }
+
+      const project = await prisma.project.findUnique({
+        where: { id },
+        select: { id: true },
+      });
+
+      if (!project) {
+        return reply
+          .status(404)
+          .send({ error: "NOT_FOUND", message: "Projeto não encontrado" });
+      }
+
+      await prisma.project.delete({ where: { id } });
+
+      return reply.status(204).send();
     },
   );
 

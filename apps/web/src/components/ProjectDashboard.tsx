@@ -3,7 +3,15 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { ArrowIcon, FilmIcon, PlusIcon, SearchIcon, SparkIcon } from "./icons";
+import { getClientApiUrl, readApiError } from "../lib/api";
+import {
+  ArrowIcon,
+  FilmIcon,
+  PlusIcon,
+  SearchIcon,
+  SparkIcon,
+  TrashIcon,
+} from "./icons";
 
 export interface ProjectSummary {
   id: string;
@@ -48,11 +56,16 @@ export function ProjectDashboard({
   projects: ProjectSummary[];
   connectionError?: string;
 }) {
+  const [currentProjects, setCurrentProjects] = useState(projects);
+  const [deletingProjectId, setDeletingProjectId] = useState<string | null>(
+    null,
+  );
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
 
   const filtered = useMemo(() => {
-    return projects.filter((project) => {
+    return currentProjects.filter((project) => {
       const matchesQuery = `${project.title} ${project.theme}`
         .toLowerCase()
         .includes(query.toLowerCase());
@@ -65,17 +78,53 @@ export function ProjectDashboard({
           ["approved", "rejected"].includes(project.status));
       return matchesQuery && matchesFilter;
     });
-  }, [filter, projects, query]);
+  }, [currentProjects, filter, query]);
 
-  const activeCount = projects.filter((project) =>
+  const activeCount = currentProjects.filter((project) =>
     ["draft", "scripting", "rendering"].includes(project.status),
   ).length;
-  const reviewCount = projects.filter(
+  const reviewCount = currentProjects.filter(
     (project) => project.status === "ready_for_review",
   ).length;
-  const readyCount = projects.filter(
+  const readyCount = currentProjects.filter(
     (project) => project.latestRender?.status === "succeeded",
   ).length;
+
+  async function deleteProject(project: ProjectSummary) {
+    const confirmed = window.confirm(
+      `Excluir "${project.title}"? Esta ação remove o projeto e seus dados de produção.`,
+    );
+
+    if (!confirmed) return;
+
+    setDeleteError(null);
+    setDeletingProjectId(project.id);
+
+    try {
+      const response = await fetch(
+        `${getClientApiUrl()}/projects/${project.id}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response));
+      }
+
+      setCurrentProjects((items) =>
+        items.filter((item) => item.id !== project.id),
+      );
+    } catch (error) {
+      setDeleteError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível excluir o projeto.",
+      );
+    } finally {
+      setDeletingProjectId(null);
+    }
+  }
 
   return (
     <div className="page">
@@ -84,7 +133,8 @@ export function ProjectDashboard({
           <span className="eyebrow">Seu estúdio de conteúdo</span>
           <h1>Transforme ideias em vídeos prontos para publicar.</h1>
           <p>
-            Organize roteiro, voz, cenas, render e distribuição em um único fluxo.
+            Organize roteiro, voz, cenas, render e distribuição em um único
+            fluxo.
           </p>
           <div className="hero-actions">
             <Link className="button button-primary" href="/projects/new">
@@ -97,7 +147,9 @@ export function ProjectDashboard({
           </div>
         </div>
         <div className="hero-orbit" aria-hidden="true">
-          <span className="orbit-core"><FilmIcon /></span>
+          <span className="orbit-core">
+            <FilmIcon />
+          </span>
           <span className="orbit-node node-one">AI</span>
           <span className="orbit-node node-two">HD</span>
           <span className="orbit-node node-three">9:16</span>
@@ -107,14 +159,16 @@ export function ProjectDashboard({
       {connectionError ? (
         <div className="notice notice-error">
           <strong>API indisponível</strong>
-          <span>{connectionError}. Confirme que `pnpm dev` está executando.</span>
+          <span>
+            {connectionError}. Confirme que `pnpm dev` está executando.
+          </span>
         </div>
       ) : null}
 
       <section className="metric-grid" aria-label="Resumo do workspace">
         <article className="metric-card">
           <span>Projetos totais</span>
-          <strong>{projects.length}</strong>
+          <strong>{currentProjects.length}</strong>
           <small>Conteúdos no workspace</small>
         </article>
         <article className="metric-card accent-cyan">
@@ -140,7 +194,10 @@ export function ProjectDashboard({
             <span className="eyebrow">Produção</span>
             <h2>Projetos recentes</h2>
           </div>
-          <Link className="button button-secondary button-small" href="/projects/new">
+          <Link
+            className="button button-secondary button-small"
+            href="/projects/new"
+          >
             <PlusIcon />
             Novo projeto
           </Link>
@@ -156,12 +213,14 @@ export function ProjectDashboard({
             />
           </label>
           <div className="filter-tabs">
-            {([
-              ["all", "Todos"],
-              ["active", "Em produção"],
-              ["review", "Revisão"],
-              ["done", "Concluídos"],
-            ] as const).map(([value, label]) => (
+            {(
+              [
+                ["all", "Todos"],
+                ["active", "Em produção"],
+                ["review", "Revisão"],
+                ["done", "Concluídos"],
+              ] as const
+            ).map(([value, label]) => (
               <button
                 className={filter === value ? "active" : ""}
                 key={value}
@@ -174,16 +233,29 @@ export function ProjectDashboard({
           </div>
         </div>
 
+        {deleteError ? (
+          <div className="notice notice-error">
+            <strong>Falha ao excluir</strong>
+            <span>{deleteError}</span>
+          </div>
+        ) : null}
+
         {filtered.length === 0 ? (
           <div className="empty-state">
-            <span className="empty-icon"><FilmIcon /></span>
-            <h3>{projects.length === 0 ? "Seu primeiro vídeo começa aqui" : "Nenhum projeto encontrado"}</h3>
+            <span className="empty-icon">
+              <FilmIcon />
+            </span>
+            <h3>
+              {currentProjects.length === 0
+                ? "Seu primeiro vídeo começa aqui"
+                : "Nenhum projeto encontrado"}
+            </h3>
             <p>
-              {projects.length === 0
+              {currentProjects.length === 0
                 ? "Descreva uma ideia e deixe a IA criar o primeiro roteiro."
                 : "Tente outro termo ou remova os filtros ativos."}
             </p>
-            {projects.length === 0 ? (
+            {currentProjects.length === 0 ? (
               <Link className="button button-primary" href="/projects/new">
                 <PlusIcon />
                 Criar primeiro projeto
@@ -196,7 +268,9 @@ export function ProjectDashboard({
               <article className="project-card" key={project.id}>
                 <div className="project-cover">
                   <span className="project-format">9:16</span>
-                  <span className="project-cover-icon"><FilmIcon /></span>
+                  <span className="project-cover-icon">
+                    <FilmIcon />
+                  </span>
                   {project.latestRender?.status === "succeeded" ? (
                     <span className="render-ready">Render pronto</span>
                   ) : null}
@@ -206,19 +280,45 @@ export function ProjectDashboard({
                     <span className={`status status-${project.status}`}>
                       {statusLabels[project.status] ?? project.status}
                     </span>
-                    <time>{new Date(project.updatedAt).toLocaleDateString("pt-BR")}</time>
+                    <time>
+                      {new Date(project.updatedAt).toLocaleDateString("pt-BR")}
+                    </time>
                   </div>
                   <h3>{project.title}</h3>
-                  <p>{project.description || project.theme || "Projeto de vídeo sem descrição."}</p>
+                  <p>
+                    {project.description ||
+                      project.theme ||
+                      "Projeto de vídeo sem descrição."}
+                  </p>
                   <div className="project-details">
                     <span>{project.sceneCount} cenas</span>
                     <span>{formatDuration(project.estimatedDuration)}</span>
                     <span>{project.voiceProfile?.name ?? "Sem voz"}</span>
                   </div>
-                  <Link className="project-link" href={`/projects/${project.id}/edit`}>
-                    Continuar produção
-                    <ArrowIcon />
-                  </Link>
+                  <div className="project-actions">
+                    <Link
+                      className="project-link"
+                      href={`/projects/${project.id}/edit`}
+                    >
+                      Continuar produção
+                      <ArrowIcon />
+                    </Link>
+                    <button
+                      aria-label={`Excluir projeto ${project.title}`}
+                      className="project-delete"
+                      disabled={deletingProjectId === project.id}
+                      onClick={() => void deleteProject(project)}
+                      title="Excluir projeto"
+                      type="button"
+                    >
+                      <TrashIcon />
+                      <span>
+                        {deletingProjectId === project.id
+                          ? "Excluindo"
+                          : "Excluir"}
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </article>
             ))}

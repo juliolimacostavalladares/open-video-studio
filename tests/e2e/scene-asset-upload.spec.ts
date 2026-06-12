@@ -87,6 +87,7 @@ Texto base da primeira cena.`;
 
     // Go to edit page
     await page.goto("/projects/mock-project-id/edit");
+    await page.getByRole("button", { name: "Cenas", exact: true }).click();
 
     // Check header and initial status
     await expect(

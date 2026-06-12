@@ -20,7 +20,11 @@ function IconBase({ children, ...props }: IconProps) {
 export function DashboardIcon(props: IconProps) {
   return (
     <IconBase {...props}>
-      <path d="M4 4h6v6H4zM14 4h6v10h-6zM4 14h6v6H4zM14 18h6v2h-6z" stroke="currentColor" strokeWidth="1.7" />
+      <path
+        d="M4 4h6v6H4zM14 4h6v10h-6zM4 14h6v6H4zM14 18h6v2h-6z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
     </IconBase>
   );
 }
@@ -28,8 +32,20 @@ export function DashboardIcon(props: IconProps) {
 export function FilmIcon(props: IconProps) {
   return (
     <IconBase {...props}>
-      <rect height="16" rx="2" stroke="currentColor" strokeWidth="1.7" width="18" x="3" y="4" />
-      <path d="M8 4v16M16 4v16M3 9h5M16 9h5M3 15h5M16 15h5" stroke="currentColor" strokeWidth="1.7" />
+      <rect
+        height="16"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        width="18"
+        x="3"
+        y="4"
+      />
+      <path
+        d="M8 4v16M16 4v16M3 9h5M16 9h5M3 15h5M16 15h5"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
     </IconBase>
   );
 }
@@ -37,8 +53,21 @@ export function FilmIcon(props: IconProps) {
 export function MicIcon(props: IconProps) {
   return (
     <IconBase {...props}>
-      <rect height="11" rx="4" stroke="currentColor" strokeWidth="1.7" width="7" x="8.5" y="3" />
-      <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M9 21h6" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
+      <rect
+        height="11"
+        rx="4"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        width="7"
+        x="8.5"
+        y="3"
+      />
+      <path
+        d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M9 21h6"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.7"
+      />
     </IconBase>
   );
 }
@@ -46,7 +75,12 @@ export function MicIcon(props: IconProps) {
 export function PlusIcon(props: IconProps) {
   return (
     <IconBase {...props}>
-      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.9" />
+      <path
+        d="M12 5v14M5 12h14"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.9"
+      />
     </IconBase>
   );
 }
@@ -54,7 +88,13 @@ export function PlusIcon(props: IconProps) {
 export function ArrowIcon(props: IconProps) {
   return (
     <IconBase {...props}>
-      <path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+      <path
+        d="M5 12h14M14 7l5 5-5 5"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
     </IconBase>
   );
 }
@@ -62,7 +102,12 @@ export function ArrowIcon(props: IconProps) {
 export function SparkIcon(props: IconProps) {
   return (
     <IconBase {...props}>
-      <path d="M12 3l1.3 4.2L17.5 9l-4.2 1.8L12 15l-1.3-4.2L6.5 9l4.2-1.8L12 3ZM18.5 15l.7 2.3 2.3.7-2.3.7-.7 2.3-.7-2.3-2.3-.7 2.3-.7.7-2.3Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.5" />
+      <path
+        d="M12 3l1.3 4.2L17.5 9l-4.2 1.8L12 15l-1.3-4.2L6.5 9l4.2-1.8L12 3ZM18.5 15l.7 2.3 2.3.7-2.3.7-.7 2.3-.7-2.3-2.3-.7 2.3-.7.7-2.3Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      />
     </IconBase>
   );
 }
@@ -70,8 +115,33 @@ export function SparkIcon(props: IconProps) {
 export function SearchIcon(props: IconProps) {
   return (
     <IconBase {...props}>
-      <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" strokeWidth="1.7" />
-      <path d="m15.5 15.5 4 4" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
+      <circle
+        cx="10.5"
+        cy="10.5"
+        r="6.5"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
+      <path
+        d="m15.5 15.5 4 4"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.7"
+      />
+    </IconBase>
+  );
+}
+
+export function TrashIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path
+        d="M9 4h6M5 7h14M10 11v6M14 11v6M7 7l1 13h8l1-13"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.7"
+      />
     </IconBase>
   );
 }
