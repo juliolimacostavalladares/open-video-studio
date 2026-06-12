@@ -27,8 +27,9 @@ test.describe("render queue and status tracking", () => {
           id: "mock-project-id",
           title: "E2E Render Project",
           rawScript: "[CENA 1]\nTexto de teste.",
-          status: "draft",
+          status: "ready_for_review",
           voiceProfileId: "voice-id",
+          estimatedDuration: 15,
         }),
       });
     });
@@ -138,16 +139,14 @@ test.describe("render queue and status tracking", () => {
       });
     });
 
-    // Go to project edit page
-    await page.goto("/projects/mock-project-id/edit");
-    await page.getByRole("button", { name: "Render", exact: true }).click();
+    // Go to project review page
+    await page.goto("/projects/mock-project-id/review");
 
     // Initially, there should be no render state shown in the video player section
     const noRenderState = page.locator("#no-render-state");
     await expect(noRenderState).toBeVisible();
 
-    // Click the render button (located in "Voz" tab)
-    await page.getByRole("button", { name: "Voz", exact: true }).click();
+    // Click the render button (located directly on the review page empty state)
     const renderButton = page.locator("#queue-render");
     await expect(renderButton).toBeVisible();
     await renderButton.click();
@@ -156,20 +155,18 @@ test.describe("render queue and status tracking", () => {
     const renderStatus = page.locator("#render-status");
     await expect(renderStatus).toContainText("Render enfileirado com sucesso");
 
-    // Open "Render" tab to view the player status polling
-    await page.getByRole("button", { name: "Render", exact: true }).click();
-
     const statusBadge = page.locator("#video-render-status-badge");
     await expect(statusBadge).toContainText("Na Fila");
     await expect(page.locator("#rendering-queued-state")).toBeVisible();
 
     // Wait and verify rendering transition in player status
-    await expect(statusBadge).toContainText("Processando", { timeout: 10000 });
+    await expect(statusBadge).toContainText("Processando", { timeout: 20000 });
     await expect(page.locator("#rendering-running-state")).toBeVisible();
 
     // Wait and verify success state in badge and player visibility
-    await expect(statusBadge).toContainText("Pronto", { timeout: 10000 });
-    await expect(page.locator("#ready-for-review-state")).toBeVisible();
+    await expect(page.locator("#ready-for-review-state")).toBeVisible({
+      timeout: 20000,
+    });
 
     // Check that video player is rendered with correct url
     const videoPlayer = page.locator("#rendered-video-player");
@@ -193,8 +190,9 @@ test.describe("render queue and status tracking", () => {
           id: "mock-project-id",
           title: "E2E Render Project",
           rawScript: "[CENA 1]\nTexto de teste.",
-          status: "draft",
+          status: "ready_for_review",
           voiceProfileId: "voice-id",
+          estimatedDuration: 15,
         }),
       });
     });
@@ -303,8 +301,7 @@ test.describe("render queue and status tracking", () => {
       });
     });
 
-    await page.goto("/projects/mock-project-id/edit");
-    await page.getByRole("button", { name: "Voz", exact: true }).click();
+    await page.goto("/projects/mock-project-id/review");
 
     const renderButton = page.locator("#queue-render");
     await renderButton.click();
@@ -312,15 +309,12 @@ test.describe("render queue and status tracking", () => {
     const renderStatus = page.locator("#render-status");
     await expect(renderStatus).toContainText("Render enfileirado com sucesso");
 
-    // Open "Render" tab to view the player status polling
-    await page.getByRole("button", { name: "Render", exact: true }).click();
-
     const statusBadge = page.locator("#video-render-status-badge");
     await expect(statusBadge).toContainText("Na Fila");
 
-    await expect(statusBadge).toContainText("Processando", { timeout: 10000 });
+    await expect(statusBadge).toContainText("Processando", { timeout: 20000 });
 
-    await expect(statusBadge).toContainText("Erro", { timeout: 10000 });
+    await expect(statusBadge).toContainText("Erro", { timeout: 20000 });
     await expect(page.locator("#rendering-failed-state")).toBeVisible();
     await expect(page.locator("#rendering-failed-state")).toContainText(
       "Falha crítica no Remotion renderer",

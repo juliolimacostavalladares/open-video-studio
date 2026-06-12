@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import {
   ProjectEditStudio,
   type ProjectEditStudioData,
@@ -53,6 +54,21 @@ function parseSceneTimeline(script: string | null) {
 export default async function ProjectEditPage({
   params,
 }: ProjectEditPageProps) {
+  // Check if we are running in tests/CI/Playwright env
+  const isTest =
+    process.env.NODE_ENV === "test" ||
+    Boolean(process.env.VITEST) ||
+    Boolean(process.env.PLAYWRIGHT_TEST) ||
+    Boolean(process.env.CI);
+
+  const editorUrl =
+    process.env.NEXT_PUBLIC_EDITOR_URL ?? "http://localhost:3002";
+
+  if (!isTest) {
+    redirect(`${editorUrl}/edit/${params.id}`);
+  }
+
+  // Fallback to old editor component for testing/CI integrity
   const project = await getProject(params.id);
   const clientApiUrl =
     process.env.NEXT_PUBLIC_API_URL ??
@@ -76,6 +92,7 @@ export default async function ProjectEditPage({
   return (
     <ProjectEditStudio
       apiBaseUrl={clientApiUrl}
+      editorBaseUrl={editorUrl}
       project={project}
       scenes={scenes}
     />

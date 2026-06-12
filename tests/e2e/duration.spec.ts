@@ -18,30 +18,36 @@ test.describe("estimated duration E2E", () => {
           estimatedDuration: 0,
           estimatedDurationMin: 0,
           estimatedDurationMax: 0,
+          voiceProfileId: null,
         }),
       });
     });
 
-    // Intercepta a chamada PATCH de autosave do editor
-    await page.route("**/projects/mock-project-id/script", async (route) => {
+    // Intercepta as cenas do projeto retornando uma cena com roteiro inicial vazio
+    await page.route("**/projects/mock-project-id/scenes", async (route) => {
       await route.fulfill({
         status: 200,
         contentType: "application/json",
         body: JSON.stringify({
-          id: "mock-project-id",
-          title: "E2E Duration Test Project",
-          rawScript: "salvo",
-          status: "scripting",
-          updatedAt: new Date().toISOString(),
-          estimatedDuration: 0,
-          estimatedDurationMin: 0,
-          estimatedDurationMax: 0,
+          projectId: "mock-project-id",
+          scenes: [
+            {
+              id: "scene-1",
+              title: "Cena 1",
+              script: "",
+              orderIndex: 0,
+              status: "draft",
+              hasValidAudio: false,
+              audioPath: null,
+              audioDurationSeconds: null,
+            },
+          ],
         }),
       });
     });
 
     await page.goto("/projects/mock-project-id/edit");
-    await page.getByRole("button", { name: "Roteiro", exact: true }).click();
+    await page.getByRole("button", { name: "Voz", exact: true }).click();
 
     // Duração inicial deve ser 0s
     const durationBadge = page.locator("#estimated-duration");

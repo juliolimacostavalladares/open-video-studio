@@ -15,7 +15,8 @@ const navigation = [
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isFullScreenEditor =
-    pathname.startsWith("/projects/") && pathname.endsWith("/edit");
+    pathname.startsWith("/editor") ||
+    (pathname.startsWith("/projects/") && pathname.endsWith("/edit"));
 
   if (isFullScreenEditor) {
     return <>{children}</>;

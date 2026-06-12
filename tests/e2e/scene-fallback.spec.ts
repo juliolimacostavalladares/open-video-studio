@@ -67,21 +67,20 @@ Texto da cena com fallback visual.`;
       console.log("BROWSER EXCEPTION:", err.message, err.stack),
     );
 
-    // Go to edit page
     await page.goto("/projects/mock-project-id/edit");
-    await page.getByRole("button", { name: "Cenas", exact: true }).click();
+    await page.getByRole("button", { name: "Mídias", exact: true }).click();
 
     // Check header is visible
-    await expect(
-      page.getByText("Gerenciador de Assets por Cena"),
-    ).toBeVisible();
+    await expect(page.locator(".edit-tool-drawer h2")).toContainText("Mídias");
 
     // Verify UI displays that the fallback visual is active
-    await expect(page.locator("#scene-asset-status-scene-1")).toContainText(
-      "⚠️ Fallback Visual Ativo",
-    );
+    await expect(
+      page.getByText("⚠️ Fallback Visual Ativo").first(),
+    ).toBeVisible();
 
-    // Verify manual upload action button is still visible and clickable
-    await expect(page.getByText("Substituir Asset (Upload)")).toBeVisible();
+    // Verify manual upload action section is still visible
+    await expect(
+      page.getByText("Fazer upload de arquivos").first(),
+    ).toBeVisible();
   });
 });
