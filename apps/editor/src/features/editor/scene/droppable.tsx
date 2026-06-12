@@ -6,7 +6,7 @@ import React, { useCallback, useState } from "react";
 enum AcceptedDropTypes {
   IMAGE = "image",
   VIDEO = "video",
-  AUDIO = "audio"
+  AUDIO = "audio",
 }
 
 interface DraggedData {
@@ -58,7 +58,7 @@ const useDragAndDrop = (onDragStateChange?: (isDragging: boolean) => void) => {
         console.error("Error parsing dragged data:", error);
       }
     },
-    [onDragStateChange]
+    [onDragStateChange],
   );
 
   const onDragOver = useCallback(
@@ -69,7 +69,7 @@ const useDragAndDrop = (onDragStateChange?: (isDragging: boolean) => void) => {
         onDragStateChange?.(true);
       }
     },
-    [isPointerInside, onDragStateChange]
+    [isPointerInside, onDragStateChange],
   );
 
   const onDrop = useCallback(
@@ -82,14 +82,14 @@ const useDragAndDrop = (onDragStateChange?: (isDragging: boolean) => void) => {
       try {
         const draggedDataString = e.dataTransfer?.types[0] as string;
         const draggedData = JSON.parse(
-          e.dataTransfer!.getData(draggedDataString)
+          e.dataTransfer!.getData(draggedDataString),
         );
         handleDrop(draggedData);
       } catch (error) {
         console.error("Error parsing dropped data:", error);
       }
     },
-    [isDraggingOver, onDragStateChange, handleDrop]
+    [isDraggingOver, onDragStateChange, handleDrop],
   );
 
   const onDragLeave = useCallback(
@@ -101,7 +101,7 @@ const useDragAndDrop = (onDragStateChange?: (isDragging: boolean) => void) => {
         onDragStateChange?.(false);
       }
     },
-    [onDragStateChange]
+    [onDragStateChange],
   );
 
   return { onDragEnter, onDragOver, onDrop, onDragLeave, isDraggingOver };
@@ -112,7 +112,7 @@ export const DroppableArea: React.FC<DroppableAreaProps> = ({
   className,
   style,
   onDragStateChange,
-  id
+  id,
 }) => {
   const { onDragEnter, onDragOver, onDrop, onDragLeave } =
     useDragAndDrop(onDragStateChange);

@@ -35,7 +35,7 @@ const TextLayer: React.FC<{
   animationTextOutFrames,
   animationTextLoopFrames,
   durationInFrames,
-  animationFonts
+  animationFonts,
 }) => {
   const [data, setData] = useState(content);
   const divRef = useRef<HTMLDivElement>(null);
@@ -105,7 +105,7 @@ const TextLayer: React.FC<{
         display: "flex",
         alignItems: "center",
         flexDirection: "column",
-        justifyContent: "center"
+        justifyContent: "center",
       }}
       suppressContentEditableWarning
       // dangerouslySetInnerHTML={{ __html: content }}

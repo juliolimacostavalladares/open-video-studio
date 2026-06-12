@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 const Speed = ({
   value,
-  onChange
+  onChange,
 }: {
   value: number;
   onChange: (v: number) => void;
@@ -41,7 +41,7 @@ const Speed = ({
         className="w-32"
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 80px"
+          gridTemplateColumns: "1fr 80px",
         }}
       >
         <Input

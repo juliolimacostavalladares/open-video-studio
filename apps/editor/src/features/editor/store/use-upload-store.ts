@@ -25,7 +25,7 @@ interface IUploadStore {
   setUploadsImages: (uploadsImages: any[]) => void;
   files: UploadFile[];
   setFiles: (
-    files: UploadFile[] | ((prev: UploadFile[]) => UploadFile[])
+    files: UploadFile[] | ((prev: UploadFile[]) => UploadFile[]),
   ) => void;
 
   pendingUploads: UploadFile[];
@@ -37,7 +37,7 @@ interface IUploadStore {
   setUploadStatus: (
     id: string,
     status: UploadFile["status"],
-    error?: string
+    error?: string,
   ) => void;
   removeUpload: (id: string) => void;
   uploads: any[];
@@ -66,19 +66,19 @@ const useUploadStore = create<IUploadStore>()(
 
       files: [],
       setFiles: (
-        files: UploadFile[] | ((prev: UploadFile[]) => UploadFile[])
+        files: UploadFile[] | ((prev: UploadFile[]) => UploadFile[]),
       ) =>
         set((state) => ({
           files:
             typeof files === "function"
               ? (files as (prev: UploadFile[]) => UploadFile[])(state.files)
-              : files
+              : files,
         })),
 
       pendingUploads: [],
       addPendingUploads: (uploads: UploadFile[]) => {
         set((state) => ({
-          pendingUploads: [...state.pendingUploads, ...uploads]
+          pendingUploads: [...state.pendingUploads, ...uploads],
         }));
       },
       clearPendingUploads: () => set({ pendingUploads: [] }),
@@ -91,7 +91,7 @@ const useUploadStore = create<IUploadStore>()(
           updateUploadProgress,
           setUploadStatus,
           removeUpload,
-          setUploads
+          setUploads,
         } = get();
 
         // Move pending uploads to active with 'uploading' status
@@ -102,10 +102,10 @@ const useUploadStore = create<IUploadStore>()(
               ...pendingUploads.map((u) => ({
                 ...u,
                 status: "uploading" as const,
-                progress: 0
-              }))
+                progress: 0,
+              })),
             ],
-            pendingUploads: []
+            pendingUploads: [],
           }));
         }
 
@@ -125,18 +125,18 @@ const useUploadStore = create<IUploadStore>()(
               // Remove from active uploads after a delay to show final status
               setTimeout(() => removeUpload(uploadId), 3000);
             }
-          }
+          },
         };
 
         // Process all uploading items
         for (const upload of currentActiveUploads.filter(
-          (upload) => upload.status === "uploading"
+          (upload) => upload.status === "uploading",
         )) {
           console.log("upload", upload);
           processUpload(
             upload.id,
             { file: upload.file, url: upload.url },
-            callbacks
+            callbacks,
           )
             .then((uploadData) => {
               // Add the complete upload data to the uploads array
@@ -158,22 +158,22 @@ const useUploadStore = create<IUploadStore>()(
       updateUploadProgress: (id: string, progress: number) =>
         set((state) => ({
           activeUploads: state.activeUploads.map((u) =>
-            u.id === id ? { ...u, progress } : u
-          )
+            u.id === id ? { ...u, progress } : u,
+          ),
         })),
       setUploadStatus: (
         id: string,
         status: UploadFile["status"],
-        error?: string
+        error?: string,
       ) =>
         set((state) => ({
           activeUploads: state.activeUploads.map((u) =>
-            u.id === id ? { ...u, status, error } : u
-          )
+            u.id === id ? { ...u, status, error } : u,
+          ),
         })),
       removeUpload: (id: string) =>
         set((state) => ({
-          activeUploads: state.activeUploads.filter((u) => u.id !== id)
+          activeUploads: state.activeUploads.filter((u) => u.id !== id),
         })),
       uploads: [],
       setUploads: (uploads: any[] | ((prev: any[]) => any[])) =>
@@ -181,14 +181,14 @@ const useUploadStore = create<IUploadStore>()(
           uploads:
             typeof uploads === "function"
               ? (uploads as (prev: any[]) => any[])(state.uploads)
-              : uploads
-        }))
+              : uploads,
+        })),
     }),
     {
       name: "upload-store",
-      partialize: (state) => ({ uploads: state.uploads })
-    }
-  )
+      partialize: (state) => ({ uploads: state.uploads }),
+    },
+  ),
 );
 
 export type { UploadFile };

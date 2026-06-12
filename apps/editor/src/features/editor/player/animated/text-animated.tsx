@@ -37,7 +37,7 @@ const animationsIn: { [key: string]: React.FC<any> } = {
   madeWithLoveAnimationIn: MadeWithLoveAnimationIn,
   realityIsBrokenAnimationIn: RealityIsBrokenAnimationIn,
   dropAnimationIn: DropAnimationIn,
-  descompressAnimationIn: DescompressAnimationIn
+  descompressAnimationIn: DescompressAnimationIn,
 };
 
 const animationsOut: { [key: string]: React.FC<any> } = {
@@ -49,7 +49,7 @@ const animationsOut: { [key: string]: React.FC<any> } = {
   realityIsBrokenAnimationOut: RealityIsBrokenAnimationOut,
   greatThinkersAnimationOut: GreatThinkersAnimationOut,
   descompressAnimationOut: DescompressAnimationOut,
-  dropAnimationOut: DropAnimationOut
+  dropAnimationOut: DropAnimationOut,
 };
 
 const animationsLoop: { [key: string]: React.FC<any> } = {
@@ -59,13 +59,13 @@ const animationsLoop: { [key: string]: React.FC<any> } = {
   heartbeatAnimationLoop: Heartbeat,
   waveAnimationLoop: Wave,
   shakyLettersTextAnimationLoop: ShakyLettersText,
-  pulseAnimationLoop: PulseText
+  pulseAnimationLoop: PulseText,
 };
 
 const getTextLines = (
   text: string,
   width: number,
-  fontSize: number
+  fontSize: number,
 ): string[] => {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
@@ -74,7 +74,7 @@ const getTextLines = (
 
   context.font = `${fontSize}px Arial`;
   const words = text.split(" ");
-  let lines: string[] = [];
+  const lines: string[] = [];
   let currentLine = "";
 
   words.forEach((word) => {
@@ -117,7 +117,7 @@ export const TextAnimated: React.FC<{
   animationTextOutFrames,
   animationTextLoopFrames,
   durationInFrames,
-  animationFonts
+  animationFonts,
 }) => {
   const frame = useCurrentFrame();
   const animInFrom = animationTextInFrames;
@@ -129,7 +129,7 @@ export const TextAnimated: React.FC<{
       <div
         style={{
           whiteSpace: "pre-line",
-          maxWidth: "100%"
+          maxWidth: "100%",
         }}
       >
         {text}
@@ -153,7 +153,7 @@ export const TextAnimated: React.FC<{
     validAnimOut,
     textAnimationNameIn,
     textAnimationNameOut,
-    textAnimationNameLoop
+    textAnimationNameLoop,
   });
 
   if (fullTextAnimation) {
@@ -162,7 +162,7 @@ export const TextAnimated: React.FC<{
 
   const maxTextLengthInLine = lines.reduce(
     (max, line) => Math.max(max, line.length),
-    0
+    0,
   );
 
   const AnimationComponentIn = animationsIn[textAnimationNameIn];

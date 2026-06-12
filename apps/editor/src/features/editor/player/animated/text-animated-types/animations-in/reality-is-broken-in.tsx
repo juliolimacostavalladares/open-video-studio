@@ -6,7 +6,7 @@ const RealityIsBrokenAnimationIn = ({
   frame,
   fps,
   textLength,
-  animationTextInFrames
+  animationTextInFrames,
 }: {
   char: string;
   index: number;
@@ -24,7 +24,7 @@ const RealityIsBrokenAnimationIn = ({
     fps,
     from: 1.1,
     to: 0,
-    config: { damping: 10 }
+    config: { damping: 10 },
   });
 
   const translateX = spring({
@@ -32,7 +32,7 @@ const RealityIsBrokenAnimationIn = ({
     fps,
     from: 0.55,
     to: 0,
-    config: { damping: 10 }
+    config: { damping: 10 },
   });
 
   const rotateZ = spring({
@@ -40,7 +40,7 @@ const RealityIsBrokenAnimationIn = ({
     fps,
     from: 180,
     to: 0,
-    config: { damping: 10 }
+    config: { damping: 10 },
   });
 
   const opacity = interpolate(
@@ -49,8 +49,8 @@ const RealityIsBrokenAnimationIn = ({
     [0, 1],
     {
       extrapolateRight: "clamp",
-      extrapolateLeft: "clamp"
-    }
+      extrapolateLeft: "clamp",
+    },
   );
 
   return (
@@ -60,7 +60,7 @@ const RealityIsBrokenAnimationIn = ({
         display: "inline-block",
         transformOrigin: "0 100%",
         transform: `translateY(${translateY}em) translateX(${translateX}em) rotateZ(${rotateZ}deg)`,
-        opacity
+        opacity,
       }}
     >
       {char === " " ? " " : char}

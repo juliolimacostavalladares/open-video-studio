@@ -3,7 +3,7 @@ import {
   ResizableProps,
   Pattern,
   util,
-  Control
+  Control,
 } from "@designcombo/timeline";
 import { createResizeControls } from "../controls";
 
@@ -42,7 +42,7 @@ class Image extends Resizable {
       const pattern = new Pattern({
         source: img,
         repeat: "repeat-x",
-        patternTransform: [scaleY, 0, 0, scaleY, 0, 0]
+        patternTransform: [scaleY, 0, 0, scaleY, 0, 0],
       });
       this.set("fill", pattern);
       this.canvas?.requestRenderAll();
@@ -75,7 +75,7 @@ class Image extends Resizable {
       -this.height / 2 + borderWidth,
       this.width - borderWidth * 2,
       this.height - borderWidth * 2,
-      innerRadius
+      innerRadius,
     );
 
     // Use even-odd fill rule to create the border effect

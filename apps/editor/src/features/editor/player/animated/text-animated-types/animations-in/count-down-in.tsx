@@ -7,7 +7,7 @@ const CountDownIn = ({
   text,
   frame,
   animationTextInFrames,
-  details
+  details,
 }: {
   text: string;
   frame: number;
@@ -67,7 +67,7 @@ const CountDownIn = ({
         alignItems: "center",
         transform: `scale(${scale})`,
         filter: `blur(${blur}px)`,
-        fontSize: `${fontSize}px`
+        fontSize: `${fontSize}px`,
       }}
     >
       {displayText}

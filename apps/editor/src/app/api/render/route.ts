@@ -11,17 +11,17 @@ export async function POST(request: Request) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.COMBO_SK}`
+          Authorization: `Bearer ${process.env.COMBO_SK}`,
         },
-        body: JSON.stringify(body)
-      }
+        body: JSON.stringify(body),
+      },
     );
 
     if (!projectResponse.ok) {
       const projectError = await projectResponse.json();
       return NextResponse.json(
         { message: projectError?.message || "Failed to create project" },
-        { status: projectResponse.status }
+        { status: projectResponse.status },
       );
     }
 
@@ -36,16 +36,16 @@ export async function POST(request: Request) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.COMBO_SK}`
-        }
-      }
+          Authorization: `Bearer ${process.env.COMBO_SK}`,
+        },
+      },
     );
 
     if (!exportResponse.ok) {
       const exportError = await exportResponse.json();
       return NextResponse.json(
         { message: exportError?.message || "Failed to initialize export" },
-        { status: exportResponse.status }
+        { status: exportResponse.status },
       );
     }
 
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     console.error(error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -71,26 +71,26 @@ export async function GET(request: Request) {
     if (!id) {
       return NextResponse.json(
         { message: "id parameter is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     if (!type) {
       return NextResponse.json(
         { message: "type parameter is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const response = await fetch(`https://api.combo.sh/v1/render/${id}`, {
       headers: {
-        Authorization: `Bearer ${process.env.COMBO_SH_JWT}` // JWT Token from environment
-      }
+        Authorization: `Bearer ${process.env.COMBO_SH_JWT}`, // JWT Token from environment
+      },
     });
 
     if (!response.ok) {
       return NextResponse.json(
         { message: "Failed to fetch export status" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
@@ -100,7 +100,7 @@ export async function GET(request: Request) {
     console.error(error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

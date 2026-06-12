@@ -3,7 +3,7 @@ const DropAnimationIn = ({
   index,
   frame,
   fps,
-  animationTextInFrames
+  animationTextInFrames,
 }: {
   char: string;
   index: number;
@@ -25,7 +25,7 @@ const DropAnimationIn = ({
       style={{
         display: "inline-block",
         transform: `scale(${scale})`,
-        opacity: opacity
+        opacity: opacity,
       }}
     >
       {char === " " ? " " : char}

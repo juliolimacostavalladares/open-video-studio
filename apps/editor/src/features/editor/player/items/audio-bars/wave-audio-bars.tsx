@@ -5,7 +5,7 @@ import { WaveVisualization } from "./wave-visualization";
 
 export const WaveBars = ({
   item,
-  options
+  options,
 }: {
   item: IWaveAudioBars;
   options: SequenceItemOptions;

@@ -61,7 +61,7 @@ interface PopularVideosCache {
 const popularVideosCache: PopularVideosCache = {
   data: null,
   timestamp: 0,
-  page: 1
+  page: 1,
 };
 
 // Cache duration: 5 minutes
@@ -129,7 +129,7 @@ export function usePexelsVideos(): UsePexelsVideosReturn {
       const url = `/api/pexels-videos?query=${encodeURIComponent(query)}&page=${page}&per_page=15`;
       await fetchVideos(url);
     },
-    [fetchVideos]
+    [fetchVideos],
   );
 
   const searchVideosAppend = useCallback(async (query: string, page = 1) => {
@@ -253,7 +253,7 @@ export function usePexelsVideos(): UsePexelsVideosReturn {
       clearPopularVideosCache();
       await loadPopularVideos(page);
     },
-    [loadPopularVideos]
+    [loadPopularVideos],
   );
 
   return {
@@ -269,6 +269,6 @@ export function usePexelsVideos(): UsePexelsVideosReturn {
     searchVideosAppend,
     loadPopularVideosAppend,
     clearVideos,
-    refreshPopularVideos
+    refreshPopularVideos,
   };
 }

@@ -18,17 +18,17 @@ export const useStateManagerEvents = (stateManager: StateManager) => {
     const filterTrakcItems = Object.values(mergedTrackItemsDeatilsMap).filter(
       (item) => {
         return item.type === "video" || item.type === "audio";
-      }
+      },
     );
     audioDataManager.setItems(
-      filterTrakcItems as (ITrackItem & (IVideo | IAudio))[]
+      filterTrakcItems as (ITrackItem & (IVideo | IAudio))[],
     );
     audioDataManager.validateUpdateItems(
-      filterTrakcItems as (ITrackItem & (IVideo | IAudio))[]
+      filterTrakcItems as (ITrackItem & (IVideo | IAudio))[],
     );
     setState({
       duration: currentState.duration,
-      trackItemsMap: currentState.trackItemsMap
+      trackItemsMap: currentState.trackItemsMap,
     });
   }, [stateManager, setState]);
 
@@ -39,22 +39,22 @@ export const useStateManagerEvents = (stateManager: StateManager) => {
     const filterTrakcItems = Object.values(mergedTrackItemsDeatilsMap).filter(
       (item) => {
         return item.type === "video" || item.type === "audio";
-      }
+      },
     );
     audioDataManager.validateUpdateItems(
-      filterTrakcItems as (ITrackItem & (IVideo | IAudio))[]
+      filterTrakcItems as (ITrackItem & (IVideo | IAudio))[],
     );
     setState({
       trackItemsMap: currentState.trackItemsMap,
       trackItemIds: currentState.trackItemIds,
-      tracks: currentState.tracks
+      tracks: currentState.tracks,
     });
   }, [stateManager, setState]);
 
   const handleUpdateItemDetails = useCallback(() => {
     const currentState = stateManager.getState();
     setState({
-      trackItemsMap: currentState.trackItemsMap
+      trackItemsMap: currentState.trackItemsMap,
     });
   }, [stateManager, setState]);
 
@@ -81,7 +81,7 @@ export const useStateManagerEvents = (stateManager: StateManager) => {
     const resizeDesignSubscription = stateManager.subscribeToUpdateStateDetails(
       (newState) => {
         setState(newState);
-      }
+      },
     );
 
     // Subscribe to scale changes
@@ -98,12 +98,12 @@ export const useStateManagerEvents = (stateManager: StateManager) => {
     const durationSubscription = stateManager.subscribeToDuration(
       (newState) => {
         setState(newState);
-      }
+      },
     );
 
     // Subscribe to track item updates
     const updateTrackItemsMap = stateManager.subscribeToUpdateTrackItem(
-      handleTrackItemUpdate
+      handleTrackItemUpdate,
     );
 
     // Subscribe to add/remove items
@@ -135,6 +135,6 @@ export const useStateManagerEvents = (stateManager: StateManager) => {
     setState,
     handleTrackItemUpdate,
     handleAddRemoveItems,
-    handleUpdateItemDetails
+    handleUpdateItemDetails,
   ]);
 };

@@ -8,7 +8,7 @@ export const springTiming = (
     durationInFrames?: number;
     durationRestThreshold?: number;
     reverse?: boolean;
-  } = {}
+  } = {},
 ): TransitionTiming => {
   return {
     getDurationInFrames: ({ fps }) => {
@@ -19,7 +19,7 @@ export const springTiming = (
       return measureSpring({
         config: options.config,
         threshold: options.durationRestThreshold,
-        fps
+        fps,
       });
     },
     getProgress: ({ fps, frame }) => {
@@ -33,8 +33,8 @@ export const springTiming = (
         config: options.config,
         durationInFrames: options.durationInFrames,
         durationRestThreshold: options.durationRestThreshold,
-        reverse: options.reverse
+        reverse: options.reverse,
       });
-    }
+    },
   };
 };

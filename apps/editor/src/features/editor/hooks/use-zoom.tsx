@@ -16,7 +16,7 @@ function useZoom(containerRef: React.RefObject<HTMLDivElement>, size: ISize) {
 
     const desiredZoom = Math.min(
       containerWidth / width,
-      containerHeight / height
+      containerHeight / height,
     );
     currentZoomRef.current = desiredZoom;
     setZoom(desiredZoom);

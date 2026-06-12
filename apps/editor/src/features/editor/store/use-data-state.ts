@@ -5,7 +5,7 @@ const useDataState = create<IDataState>((set) => ({
   fonts: [],
   compactFonts: [],
   setFonts: (fonts) => set({ fonts }),
-  setCompactFonts: (compactFonts) => set({ compactFonts })
+  setCompactFonts: (compactFonts) => set({ compactFonts }),
 }));
 
 export default useDataState;

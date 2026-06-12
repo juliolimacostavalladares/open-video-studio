@@ -18,14 +18,14 @@ const Composition = () => {
     size,
     transitionsMap,
     structure,
-    activeIds
+    activeIds,
   } = useStore();
   const frame = useCurrentFrame();
 
   const groupedItems = groupTrackItems({
     trackItemIds,
     transitionsMap,
-    trackItemsMap: trackItemsMap
+    trackItemsMap: trackItemsMap,
   });
   const mediaItems = Object.values(trackItemsMap).filter((item) => {
     return item.type === "video" || item.type === "audio";
@@ -47,7 +47,7 @@ const Composition = () => {
       lineHeight,
       textShadow,
       webkitTextStroke,
-      textTransform
+      textTransform,
     } = textDiv.style;
     if (!elRef.innerText) return;
 
@@ -55,7 +55,7 @@ const Composition = () => {
     const words = elRef.innerText.split(/\s+/);
     const longestWord = words.reduce(
       (longest, word) => (word.length > longest.length ? word : longest),
-      ""
+      "",
     );
 
     // Create temporary element to measure longest word width
@@ -91,7 +91,7 @@ const Composition = () => {
       webkitTextStroke,
       width: elRef.style.width,
       id: id,
-      textTransform
+      textTransform,
     });
     const currentHeight = elRef.clientHeight;
     if (newHeight > currentHeight) {
@@ -114,7 +114,7 @@ const Composition = () => {
       lineHeight,
       textShadow,
       webkitTextStroke,
-      textTransform
+      textTransform,
     } = textDiv.style;
     const { width } = elRef.style;
     if (!elRef.innerText) return;
@@ -129,23 +129,23 @@ const Composition = () => {
       webkitTextStroke,
       width,
       id: id,
-      textTransform
+      textTransform,
     });
     dispatch(EDIT_OBJECT, {
       payload: {
         [id]: {
           details: {
-            height: newHeight
-          }
-        }
-      }
+            height: newHeight,
+          },
+        },
+      },
     });
   };
 
   //   handle track and track item events - updates
   useEffect(() => {
     const stateEvents = subject.pipe(
-      filter(({ key }) => key.startsWith(ENTER_EDIT_MODE))
+      filter(({ key }) => key.startsWith(ENTER_EDIT_MODE)),
     );
 
     const subscription = stateEvents.subscribe((obj) => {
@@ -153,7 +153,7 @@ const Composition = () => {
         if (editableTextId) {
           // get element by  data-text-id={id}
           const element = document.querySelector(
-            `[data-text-id="${editableTextId}"]`
+            `[data-text-id="${editableTextId}"]`,
           ) as HTMLDivElement;
 
           let text = "";
@@ -175,10 +175,10 @@ const Composition = () => {
               payload: {
                 [editableTextId]: {
                   details: {
-                    text: text || ""
-                  }
-                }
-              }
+                    text: text || "",
+                  },
+                },
+              },
             });
           }
         }
@@ -200,7 +200,7 @@ const Composition = () => {
             editableTextId,
             frame,
             size,
-            isTransition: false
+            isTransition: false,
           });
         }
         const firstItem = trackItemsMap[group[0].id];
@@ -214,7 +214,7 @@ const Composition = () => {
                   durationInFrames,
                   ...size,
                   id: item.id,
-                  direction: item.direction
+                  direction: item.direction,
                 });
               }
               return SequenceItem[item.type](trackItemsMap[item.id], {
@@ -222,7 +222,7 @@ const Composition = () => {
                 handleTextChange,
                 editableTextId,
                 isTransition: true,
-                size
+                size,
               });
             })}
           </TransitionSeries>

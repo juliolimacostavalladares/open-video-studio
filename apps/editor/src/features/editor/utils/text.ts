@@ -73,7 +73,7 @@ export const calculateTextHeight = (props: TextHeightProps) => {
     webkitTextStroke,
     fontWeight,
     textTransform,
-    text
+    text,
   } = props;
 
   const div = document.createElement("div");
@@ -127,7 +127,7 @@ export const calculateCaptionHeight = (props: TextHeightProps) => {
     webkitTextStroke,
     fontWeight,
     textTransform,
-    text
+    text,
   } = props;
 
   const div = document.createElement("div");
@@ -175,7 +175,7 @@ export const calculateMinWidth = (props: Omit<TextHeightProps, "width">) => {
     webkitTextStroke,
     fontWeight,
     textTransform,
-    text
+    text,
   } = props;
 
   const div = document.createElement("div");

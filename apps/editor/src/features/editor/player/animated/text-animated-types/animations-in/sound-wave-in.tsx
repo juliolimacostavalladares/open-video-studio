@@ -5,7 +5,7 @@ const SoundWaveIn = ({
   text,
   frame,
   animationTextInFrames,
-  details
+  details,
 }: {
   text: string;
   frame: number;
@@ -16,32 +16,32 @@ const SoundWaveIn = ({
   const waveDisappearEnd = animationTextInFrames;
   const trailCount = 8;
   const baseScale = interpolate(frame, [0, waveDisappearStart], [0.5, 1], {
-    extrapolateRight: "clamp"
+    extrapolateRight: "clamp",
   });
   const mainScale = baseScale;
   const mainBlur = 0;
   const mainOpacity = 1;
   const waveScaleX = interpolate(frame, [0, waveDisappearStart], [2, 1], {
-    extrapolateRight: "clamp"
+    extrapolateRight: "clamp",
   });
   const waveBlur =
     frame < waveDisappearStart
       ? interpolate(frame, [0, waveDisappearStart], [20, 0], {
-          extrapolateRight: "clamp"
+          extrapolateRight: "clamp",
         })
       : interpolate(frame, [waveDisappearStart, waveDisappearEnd], [0, 40], {
           extrapolateLeft: "clamp",
-          extrapolateRight: "clamp"
+          extrapolateRight: "clamp",
         });
   // Opacidad: de 0.7 a 1, luego a 0
   const waveOpacity =
     frame < waveDisappearStart
       ? interpolate(frame, [0, waveDisappearStart], [0.7, 1], {
-          extrapolateRight: "clamp"
+          extrapolateRight: "clamp",
         })
       : interpolate(frame, [waveDisappearStart, waveDisappearEnd], [1, 0], {
           extrapolateLeft: "clamp",
-          extrapolateRight: "clamp"
+          extrapolateRight: "clamp",
         });
 
   const trails = [];
@@ -54,7 +54,7 @@ const SoundWaveIn = ({
       trailFrame,
       [0, waveDisappearStart],
       [0.5, 1],
-      { extrapolateRight: "clamp" }
+      { extrapolateRight: "clamp" },
     );
     // const trailScaleX = interpolate(
     //   trailFrame,
@@ -68,7 +68,7 @@ const SoundWaveIn = ({
       trailFrame,
       [0, waveDisappearStart],
       [0.15, 0],
-      { extrapolateRight: "clamp" }
+      { extrapolateRight: "clamp" },
     );
 
     trails.push(
@@ -80,11 +80,11 @@ const SoundWaveIn = ({
           left: 0,
           opacity: trailOpacity,
           transform: `scale(${trailScale * 2})`,
-          pointerEvents: "none"
+          pointerEvents: "none",
         }}
       >
         {text}
-      </span>
+      </span>,
     );
   }
   return (
@@ -94,7 +94,7 @@ const SoundWaveIn = ({
         width: details.width,
         height: details.height,
         transform: `scale(${baseScale})`,
-        position: "relative"
+        position: "relative",
       }}
     >
       {/* Texto wave */}
@@ -104,7 +104,7 @@ const SoundWaveIn = ({
           width: details.width,
           height: details.height,
           background: "transparent",
-          transform: `scale(${mainScale})`
+          transform: `scale(${mainScale})`,
         }}
       >
         {text}
@@ -116,7 +116,7 @@ const SoundWaveIn = ({
           width: details.width,
           height: details.height,
           transform: `scaleX(${waveScaleX})`,
-          filter: `blur(${waveBlur * 3}px)`
+          filter: `blur(${waveBlur * 3}px)`,
         }}
       >
         {text}
@@ -130,14 +130,14 @@ const SoundWaveIn = ({
           fontSize: parseFloat(details.fontSize.toString()),
           position: "absolute",
           width: details.width,
-          height: details.height
+          height: details.height,
         }}
       >
         <div
           style={{
             width: details.width,
             height: details.height,
-            position: "relative"
+            position: "relative",
           }}
         >
           {trails}

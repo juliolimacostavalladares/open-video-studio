@@ -26,7 +26,7 @@ export const Images = () => {
     loadCuratedImages,
     searchImagesAppend,
     loadCuratedImagesAppend,
-    clearImages
+    clearImages,
   } = usePexelsImages();
 
   // Load curated images on component mount
@@ -44,15 +44,15 @@ export const Images = () => {
             type: "image",
             display: {
               from: 0,
-              to: 5000
+              to: 5000,
             },
             details: {
-              src: payload.details?.src
+              src: payload.details?.src,
             },
-            metadata: {}
-          }
-        ]
-      }
+            metadata: {},
+          },
+        ],
+      },
     });
   };
 
@@ -182,7 +182,7 @@ export const Images = () => {
 const ImageItem = ({
   handleAddImage,
   image,
-  shouldDisplayPreview
+  shouldDisplayPreview,
 }: {
   handleAddImage: (payload: Partial<IImage>) => void;
   image: Partial<IImage>;
@@ -193,9 +193,9 @@ const ImageItem = ({
       backgroundImage: `url(${image.preview})`,
       backgroundSize: "cover",
       width: "80px",
-      height: "80px"
+      height: "80px",
     }),
-    [image.preview]
+    [image.preview],
   );
 
   return (
@@ -209,8 +209,8 @@ const ImageItem = ({
           handleAddImage({
             id: generateId(),
             details: {
-              src: image.details?.src
-            }
+              src: image.details?.src,
+            },
           } as IImage)
         }
         className="flex aspect-square w-full items-center justify-center overflow-hidden bg-background pb-2 cursor-pointer"

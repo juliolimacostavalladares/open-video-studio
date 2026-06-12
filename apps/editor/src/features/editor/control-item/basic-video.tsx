@@ -18,7 +18,7 @@ import { Animations } from "./common/animations";
 
 const BasicVideo = ({
   trackItem,
-  type
+  type,
 }: {
   trackItem: ITrackItem & IVideo;
   type?: string;
@@ -31,10 +31,10 @@ const BasicVideo = ({
       payload: {
         [trackItem.id]: {
           details: {
-            volume: v
-          }
-        }
-      }
+            volume: v,
+          },
+        },
+      },
     });
 
     setProperties((prev) => {
@@ -42,8 +42,8 @@ const BasicVideo = ({
         ...prev,
         details: {
           ...prev.details,
-          volume: v
-        }
+          volume: v,
+        },
       };
     });
   };
@@ -53,18 +53,18 @@ const BasicVideo = ({
       payload: {
         [trackItem.id]: {
           details: {
-            borderWidth: v
-          }
-        }
-      }
+            borderWidth: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
         details: {
           ...prev.details,
-          borderWidth: v
-        }
+          borderWidth: v,
+        },
       };
     });
   };
@@ -74,18 +74,18 @@ const BasicVideo = ({
       payload: {
         [trackItem.id]: {
           details: {
-            borderColor: v
-          }
-        }
-      }
+            borderColor: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
         details: {
           ...prev.details,
-          borderColor: v
-        }
+          borderColor: v,
+        },
       };
     });
   };
@@ -95,18 +95,18 @@ const BasicVideo = ({
       payload: {
         [trackItem.id]: {
           details: {
-            opacity: v
-          }
-        }
-      }
+            opacity: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
         details: {
           ...prev.details,
-          opacity: v
-        }
+          opacity: v,
+        },
       };
     });
   };
@@ -116,18 +116,18 @@ const BasicVideo = ({
       payload: {
         [trackItem.id]: {
           details: {
-            borderRadius: v
-          }
-        }
-      }
+            borderRadius: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
         details: {
           ...prev.details,
-          borderRadius: v
-        }
+          borderRadius: v,
+        },
       };
     });
   };
@@ -137,10 +137,10 @@ const BasicVideo = ({
       payload: {
         [trackItem.id]: {
           details: {
-            boxShadow: boxShadow
-          }
-        }
-      }
+            boxShadow: boxShadow,
+          },
+        },
+      },
     });
 
     setProperties((prev) => {
@@ -148,8 +148,8 @@ const BasicVideo = ({
         ...prev,
         details: {
           ...prev.details,
-          boxShadow
-        }
+          boxShadow,
+        },
       };
     });
   };
@@ -161,15 +161,15 @@ const BasicVideo = ({
     dispatch(EDIT_OBJECT, {
       payload: {
         [trackItem.id]: {
-          playbackRate: v
-        }
-      }
+          playbackRate: v,
+        },
+      },
     });
 
     setProperties((prev) => {
       return {
         ...prev,
-        playbackRate: v
+        playbackRate: v,
       };
     });
   };
@@ -192,7 +192,7 @@ const BasicVideo = ({
             </Button>
           </div>
         </div>
-      )
+      ),
     },
     {
       key: "basic",
@@ -217,11 +217,11 @@ const BasicVideo = ({
             value={properties.details.borderRadius as number}
           />
         </div>
-      )
+      ),
     },
     {
       key: "animations",
-      component: <Animations trackItem={trackItem} properties={properties} />
+      component: <Animations trackItem={trackItem} properties={properties} />,
     },
     {
       key: "outline",
@@ -233,7 +233,7 @@ const BasicVideo = ({
           valueBorderColor={properties.details.borderColor as string}
           label="Outline"
         />
-      )
+      ),
     },
     {
       key: "shadow",
@@ -245,13 +245,13 @@ const BasicVideo = ({
               color: "transparent",
               x: 0,
               y: 0,
-              blur: 0
+              blur: 0,
             }
           }
           label="Shadow"
         />
-      )
-    }
+      ),
+    },
   ];
 
   return (

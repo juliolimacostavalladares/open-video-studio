@@ -56,16 +56,16 @@ export const useDownloadState = create<DownloadState>((set, get) => ({
         const response = await fetch(`/api/render`, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             design: payload,
             options: {
               fps: 30,
               size: payload.size,
-              format: "mp4"
-            }
-          })
+              format: "mp4",
+            },
+          }),
         });
 
         if (!response.ok) throw new Error("Failed to submit export request.");
@@ -77,8 +77,8 @@ export const useDownloadState = create<DownloadState>((set, get) => ({
         const checkStatus = async () => {
           const statusResponse = await fetch(`/api/render/${jobId}`, {
             headers: {
-              "Content-Type": "application/json"
-            }
+              "Content-Type": "application/json",
+            },
           });
 
           if (!statusResponse.ok)
@@ -101,6 +101,6 @@ export const useDownloadState = create<DownloadState>((set, get) => ({
         console.error(error);
         set({ exporting: false });
       }
-    }
-  }
+    },
+  },
 }));

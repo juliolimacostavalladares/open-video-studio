@@ -6,7 +6,7 @@ const MadeWithLoveAnimationIn = ({
   frame,
   fps,
   textLength,
-  animationTextInFrames
+  animationTextInFrames,
 }: {
   char: string;
   index: number;
@@ -24,7 +24,7 @@ const MadeWithLoveAnimationIn = ({
     fps,
     from: -100,
     to: 0,
-    config: { damping: 20, stiffness: 120 }
+    config: { damping: 20, stiffness: 120 },
   });
 
   const opacity = interpolate(
@@ -33,8 +33,8 @@ const MadeWithLoveAnimationIn = ({
     [0, 1],
     {
       extrapolateRight: "clamp",
-      extrapolateLeft: "clamp"
-    }
+      extrapolateLeft: "clamp",
+    },
   );
 
   return (
@@ -43,7 +43,7 @@ const MadeWithLoveAnimationIn = ({
       style={{
         display: "inline-block",
         transform: `translateY(${translateY}px)`,
-        opacity
+        opacity,
       }}
     >
       {char === " " ? " " : char}

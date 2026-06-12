@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "./ui/dialog";
 import { FileIcon, UploadIcon, X } from "lucide-react";
 import { Button } from "./ui/button";
@@ -43,7 +43,7 @@ const ModalUpload: React.FC<ModalUploadProps> = ({ type = "all" }) => {
     setFiles,
     files,
     addPendingUploads,
-    processUploads
+    processUploads,
   } = useUploadStore();
   const [videoThumbnails, setVideoThumbnails] = useState<{
     [name: string]: string;
@@ -75,12 +75,12 @@ const ModalUpload: React.FC<ModalUploadProps> = ({ type = "all" }) => {
         .filter((f) => f.file?.type.startsWith("video/"))
         .map(async (f) => ({
           name: f.file?.name ?? "",
-          thumb: f.file ? await extractVideoThumbnail(f.file) : ""
-        }))
+          thumb: f.file ? await extractVideoThumbnail(f.file) : "",
+        })),
     );
     setVideoThumbnails((prev) => ({
       ...prev,
-      ...Object.fromEntries(videoThumbnailsData.map((v) => [v.name, v.thumb]))
+      ...Object.fromEntries(videoThumbnailsData.map((v) => [v.name, v.thumb])),
     }));
   };
 
@@ -110,12 +110,14 @@ const ModalUpload: React.FC<ModalUploadProps> = ({ type = "all" }) => {
           .filter((f) => f.file?.type.startsWith("video/"))
           .map(async (f) => ({
             name: f.file?.name ?? "",
-            thumb: f.file ? await extractVideoThumbnail(f.file) : ""
-          }))
+            thumb: f.file ? await extractVideoThumbnail(f.file) : "",
+          })),
       );
       setVideoThumbnails((prev) => ({
         ...prev,
-        ...Object.fromEntries(videoThumbnailsData.map((v) => [v.name, v.thumb]))
+        ...Object.fromEntries(
+          videoThumbnailsData.map((v) => [v.name, v.thumb]),
+        ),
       }));
     }
   };
@@ -147,9 +149,9 @@ const ModalUpload: React.FC<ModalUploadProps> = ({ type = "all" }) => {
     const response = await fetch("/api/uploads", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(uploadData)
+      body: JSON.stringify(uploadData),
     });
 
     const result = await response.json();
@@ -169,7 +171,7 @@ const ModalUpload: React.FC<ModalUploadProps> = ({ type = "all" }) => {
         file: f.file,
         type: f.file?.type,
         status: "pending" as const,
-        progress: 0
+        progress: 0,
       }));
 
     // Prepare UploadFile object for URL if present
@@ -180,8 +182,8 @@ const ModalUpload: React.FC<ModalUploadProps> = ({ type = "all" }) => {
             url: videoUrl.trim(),
             type: "url",
             status: "pending" as const,
-            progress: 0
-          }
+            progress: 0,
+          },
         ]
       : [];
 
@@ -268,7 +270,7 @@ const ModalUpload: React.FC<ModalUploadProps> = ({ type = "all" }) => {
                           transition={{
                             type: "spring",
                             stiffness: 300,
-                            damping: 30
+                            damping: 30,
                           }}
                           layout
                         >
@@ -304,7 +306,7 @@ const ModalUpload: React.FC<ModalUploadProps> = ({ type = "all" }) => {
                                 </div>
                                 <div
                                   className={clsx(
-                                    "text-[9px] sm:text-[10px] text-gray-400"
+                                    "text-[9px] sm:text-[10px] text-gray-400",
                                   )}
                                 >
                                   {file.file

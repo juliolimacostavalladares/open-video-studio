@@ -596,7 +596,7 @@ export function ProjectReview({ projectId, apiBaseUrl }: ProjectReviewProps) {
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <Link
               id="back-to-edit"
-              href={`/editor/edit/${projectId}`}
+              href={`/projects/${projectId}/edit`}
               style={{
                 color: "#94a3b8",
                 textDecoration: "none",

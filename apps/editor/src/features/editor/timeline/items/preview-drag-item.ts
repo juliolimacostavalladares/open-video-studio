@@ -1,6 +1,6 @@
 import {
   PreviewTrackItem as PreviewTrackItemBase,
-  PreviewTrackItemProps
+  PreviewTrackItemProps,
 } from "@designcombo/timeline";
 
 class PreviewTrackItem extends PreviewTrackItemBase {

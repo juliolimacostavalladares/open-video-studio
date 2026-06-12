@@ -48,7 +48,7 @@ export const NONE_PRESET: ICaptionsControlProps = {
   backgroundColor: "transparent",
   borderColor: "transparent",
   borderWidth: 0,
-  boxShadow: { color: "#000000", x: 15, y: 15, blur: 60 }
+  boxShadow: { color: "#000000", x: 15, y: 15, blur: 60 },
 };
 export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
   {
@@ -65,7 +65,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset1.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset1.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset1.png",
   },
   {
     appearedColor: "#000000",
@@ -78,7 +78,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset2.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset2.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset2.png",
   },
   {
     appearedColor: "#ffffff",
@@ -92,7 +92,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset3.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset3.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset3.png",
   },
   {
     appearedColor: "#ffffff",
@@ -112,7 +112,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset4.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset4.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset4.png",
   },
   {
     appearedColor: "transparent",
@@ -129,7 +129,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset5.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset5.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset5.png",
   },
   {
     appearedColor: "#ffffff",
@@ -142,7 +142,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset6.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset6.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset6.png",
   },
   {
     appearedColor: "#fcbf03",
@@ -159,7 +159,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset7.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset7.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset7.png",
   },
   {
     appearedColor: "#fffd30",
@@ -177,7 +177,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset8.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset8.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset8.png",
   },
   {
     appearedColor: "#ffffff",
@@ -192,7 +192,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset9.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset9.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset9.png",
   },
   {
     appearedColor: "#ffffff",
@@ -207,7 +207,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset10.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset10.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset10.png",
   },
   {
     appearedColor: "#ffffff",
@@ -221,7 +221,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset11.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset11.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset11.png",
   },
   {
     appearedColor: "#ffffff",
@@ -239,7 +239,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset12.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset12.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset12.png",
   },
   {
     appearedColor: "#b5b5b8",
@@ -252,7 +252,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset13.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset13.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset13.png",
   },
   {
     appearedColor: "#827a7f",
@@ -266,7 +266,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset14.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset14.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset14.png",
   },
   {
     appearedColor: "#ec41e2",
@@ -282,7 +282,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset15.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset15.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset15.png",
   },
   {
     appearedColor: "#ffffff",
@@ -298,7 +298,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset16.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset16.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset16.png",
   },
   //new preset
   {
@@ -314,7 +314,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset17.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset17.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset17.png",
   },
   {
     type: "word",
@@ -333,7 +333,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset18.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset18.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset18.png",
   },
   {
     appearedColor: "#b7bb62",
@@ -349,7 +349,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset19.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset19.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset19.png",
   },
   {
     appearedColor: "#ffffff",
@@ -364,7 +364,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset20.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset20.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset20.png",
   },
   {
     appearedColor: "#ffffff",
@@ -378,7 +378,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset21.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset21.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset21.png",
   },
   {
     appearedColor: "#ffffff",
@@ -396,7 +396,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset22.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset22.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset22.png",
   },
   {
     appearedColor: "#d30dbd",
@@ -413,7 +413,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset23.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset23.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset23.png",
   },
   {
     type: "word",
@@ -433,7 +433,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset24.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset24.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset24.png",
   },
   {
     appearedColor: "#000000",
@@ -451,7 +451,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset25.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset25.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset25.png",
   },
   {
     appearedColor: "#ffffff",
@@ -465,7 +465,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset26.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset26.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset26.png",
   },
   {
     appearedColor: "#ffffff",
@@ -483,7 +483,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset27.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset27.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset27.png",
   },
   //modified
   {
@@ -499,7 +499,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset28.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset28.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset28.png",
   },
   {
     appearedColor: "#ffffff",
@@ -513,7 +513,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset29.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset29.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset29.png",
   },
   {
     appearedColor: "#ffffff",
@@ -527,7 +527,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset30.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset30.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset30.png",
   },
   {
     appearedColor: "#ffffff",
@@ -545,7 +545,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset31.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset31.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset31.png",
   },
   {
     appearedColor: "#ffffff",
@@ -561,7 +561,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset32.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset32.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset32.png",
   },
   {
     appearedColor: "#ffffff",
@@ -579,7 +579,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset33.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset33.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset33.png",
   },
   {
     appearedColor: "#ffffff",
@@ -592,7 +592,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset34.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset34.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset34.png",
   },
   {
     appearedColor: "#000000",
@@ -608,7 +608,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset35.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset35.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset35.png",
   },
   {
     appearedColor: "#ffffff",
@@ -624,7 +624,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset36.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset36.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset36.png",
   },
   {
     appearedColor: "#ffffff",
@@ -642,7 +642,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset37.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset37.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset37.png",
   },
   {
     appearedColor: "#000000",
@@ -660,7 +660,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset38.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset38.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset38.png",
   },
   {
     type: "word",
@@ -676,7 +676,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset39.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset39.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset39.png",
   },
   {
     appearedColor: "#ffffff",
@@ -691,7 +691,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset40.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset40.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset40.png",
   },
   {
     appearedColor: "#ffffff",
@@ -709,7 +709,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset41.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset41.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset41.png",
   },
   {
     appearedColor: "#ffffff",
@@ -726,7 +726,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset42.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset42.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset42.png",
   },
   {
     appearedColor: "#ffffff",
@@ -742,7 +742,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset43.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset43.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset43.png",
   },
   {
     appearedColor: "#ffffff",
@@ -761,7 +761,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset44.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset44.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset44.png",
   },
   {
     appearedColor: "#45efba",
@@ -779,7 +779,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset45.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset45.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset45.png",
   },
   {
     appearedColor: "#ffffff",
@@ -798,7 +798,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset46.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset46.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset46.png",
   },
   {
     appearedColor: "#ffffff",
@@ -816,7 +816,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset47.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset47.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset47.png",
   },
   {
     type: "word",
@@ -836,7 +836,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset48.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset48.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset48.png",
   },
   {
     appearedColor: "#ddd257",
@@ -854,7 +854,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset49.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset49.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset49.png",
   },
   {
     appearedColor: "#ffffff",
@@ -868,7 +868,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset50.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset50.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset50.png",
   },
   {
     appearedColor: "#ffffff",
@@ -886,7 +886,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset51.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset51.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset51.png",
   },
   {
     appearedColor: "#ffffff",
@@ -905,7 +905,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset52.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset52.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset52.png",
   },
   {
     type: "word",
@@ -925,7 +925,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset53.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset53.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset53.png",
   },
   {
     type: "word",
@@ -945,7 +945,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset54.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset54.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset54.png",
   },
   {
     type: "word",
@@ -963,7 +963,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset55.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset55.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset55.png",
   },
   {
     type: "word",
@@ -983,7 +983,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset56.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset56.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset56.png",
   },
   {
     type: "word",
@@ -1002,7 +1002,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset57.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset57.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset57.png",
   },
   {
     type: "word",
@@ -1021,7 +1021,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset58.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset58.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset58.png",
   },
   {
     appearedColor: "#ffffff",
@@ -1039,7 +1039,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset59.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset59.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset59.png",
   },
   {
     appearedColor: "#ffffff",
@@ -1055,7 +1055,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset60.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset60.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset60.png",
   },
   {
     appearedColor: "#26ecea",
@@ -1072,7 +1072,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset61.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset61.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset61.png",
   },
   {
     type: "word",
@@ -1089,7 +1089,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset62.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset62.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset62.png",
   },
   {
     appearedColor: "#f7f677",
@@ -1104,7 +1104,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset63.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset63.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset63.png",
   },
   {
     type: "word",
@@ -1122,7 +1122,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset64.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset64.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset64.png",
   },
   {
     type: "word",
@@ -1141,7 +1141,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset65.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset65.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset65.png",
   },
   {
     appearedColor: "#ffffff",
@@ -1158,7 +1158,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset66.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset66.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset66.png",
   },
   {
     appearedColor: "#ffffff",
@@ -1174,7 +1174,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset67.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset67.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset67.png",
   },
   {
     type: "word",
@@ -1189,7 +1189,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset68.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset68.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset68.png",
   },
   {
     appearedColor: "#ffffff",
@@ -1206,7 +1206,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset69.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset69.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset69.png",
   },
   {
     appearedColor: "#ffffff",
@@ -1223,7 +1223,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset70.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset70.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset70.png",
   },
   {
     appearedColor: "#ffffff",
@@ -1241,7 +1241,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset71.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset71.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset71.png",
   },
   {
     type: "word",
@@ -1261,7 +1261,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset72.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset72.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset72.png",
   },
   {
     type: "word",
@@ -1281,7 +1281,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset73.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset73.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset73.png",
   },
   {
     appearedColor: "#ffffff",
@@ -1299,7 +1299,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset74.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset74.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset74.png",
   },
   {
     type: "word",
@@ -1319,7 +1319,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset75.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset75.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset75.png",
   },
   {
     type: "word",
@@ -1338,7 +1338,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset76.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset76.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset76.png",
   },
   //new presets
   {
@@ -1355,7 +1355,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset77.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset77.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset77.png",
   },
   //quintessence
   {
@@ -1374,7 +1374,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset78.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset78.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset78.png",
   },
   //nova : scale keyword
   {
@@ -1394,7 +1394,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 28 },
     textTransform: "lowercase",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset79.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset79.png",
   },
   //performance : yellow scale keyword
   {
@@ -1416,7 +1416,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     animation: "captionAnimationKeyword1",
     preservedColorKeyWord: true,
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset80.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset80.png",
   },
   //chase
 
@@ -1434,7 +1434,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset81.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset81.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset81.png",
   },
 
   //footprint
@@ -1455,7 +1455,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
     animation: "captionAnimationKeyword2",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset82.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset82.png",
   },
 
   //chronicle
@@ -1474,7 +1474,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset83.webm",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset83.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset83.png",
   },
 
   //triangulum
@@ -1492,7 +1492,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset84.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset84.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset84.png",
   },
 
   //glow
@@ -1513,7 +1513,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#ff0089", x: 0, y: 0, blur: 50 },
     animation: "captionAnimation33",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset85.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset85.png",
   },
 
   //impact
@@ -1534,7 +1534,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset86.webm",
     animation: "captionAnimationKeyword3",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset86.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset86.png",
   },
 
   //omega green
@@ -1555,7 +1555,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset87.webm",
     animation: "captionAnimationKeyword4",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset87.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset87.png",
   },
 
   //epsilon
@@ -1576,7 +1576,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset88.webm",
     animation: "captionAnimationKeyword5",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset88.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset88.png",
   },
 
   //nova
@@ -1595,7 +1595,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset89.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset89.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset89.png",
   },
 
   //growth
@@ -1617,7 +1617,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 100 },
     animation: "captionAnimation34",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset90.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset90.png",
   },
 
   //alycone pink
@@ -1639,7 +1639,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 30 },
     animation: "captionAnimation35",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset91.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset91.png",
   },
 
   //impact
@@ -1660,7 +1660,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset92.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 30 },
-    animation: "captionAnimationKeyword6"
+    animation: "captionAnimationKeyword6",
   },
 
   //cartwheel blue
@@ -1681,7 +1681,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset93.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
-    animation: "captionAnimation36"
+    animation: "captionAnimation36",
   },
 
   //runway
@@ -1701,7 +1701,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset94.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
-    animation: "captionAnimation37"
+    animation: "captionAnimation37",
   },
 
   //throwback
@@ -1720,7 +1720,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset95.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset95.png",
-    boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 }
+    boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
   },
 
   //vinyl
@@ -1738,7 +1738,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset96.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset96.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset96.png",
   },
 
   //sky
@@ -1757,7 +1757,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset97.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset97.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset97.png",
   },
 
   //magazine cover
@@ -1778,7 +1778,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset98.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset98.png",
-    animation: "captionAnimationKeyword6"
+    animation: "captionAnimationKeyword6",
   },
 
   //runway
@@ -1798,7 +1798,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset99.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset99.png",
-    animation: "captionAnimation37"
+    animation: "captionAnimation37",
   },
 
   //finlay
@@ -1818,7 +1818,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset100.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset100.png",
-    animation: "captionAnimation38"
+    animation: "captionAnimation38",
   },
 
   //freshly
@@ -1837,7 +1837,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset101.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset101.png",
-    animation: "captionAnimation38"
+    animation: "captionAnimation38",
   },
 
   //hustle v2
@@ -1858,7 +1858,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset102.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset102.png",
-    animation: "captionAnimationKeyword7"
+    animation: "captionAnimationKeyword7",
   },
 
   //blueprint
@@ -1878,7 +1878,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset103.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset103.png",
-    animation: "captionAnimationKeyword8"
+    animation: "captionAnimationKeyword8",
   },
 
   //doodle :implemented 104
@@ -1900,7 +1900,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset104.png",
     boxShadow: { color: "#412424", x: 0, y: 0, blur: 60 },
-    animation: "captionAnimationKeyword9"
+    animation: "captionAnimationKeyword9",
   },
 
   //apex
@@ -1921,7 +1921,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset105.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset105.png",
-    animation: "captionAnimationKeyword10"
+    animation: "captionAnimationKeyword10",
   },
 
   //alycone purple
@@ -1942,7 +1942,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset106.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset106.png",
-    animation: "captionAnimationKeyword11"
+    animation: "captionAnimationKeyword11",
   },
 
   //cove internal
@@ -1962,7 +1962,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset107.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset107.png",
-    animation: "captionAnimationKeyword12/animationScaleDinamicEffect"
+    animation: "captionAnimationKeyword12/animationScaleDinamicEffect",
   },
 
   //leo
@@ -1984,7 +1984,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset108.png",
     animation: "captionAnimationKeyword13",
-    boxShadow: { color: "#f7e848", x: 0, y: 0, blur: 60 }
+    boxShadow: { color: "#f7e848", x: 0, y: 0, blur: 60 },
   },
 
   //scene
@@ -2005,7 +2005,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset109.png",
     animation: "captionAnimationKeyword14/animationScaleDinamicEffect",
-    boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 }
+    boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
   },
 
   //Drive
@@ -2026,7 +2026,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset110.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
-    textTransform: "uppercase"
+    textTransform: "uppercase",
   },
 
   //Neon
@@ -2047,7 +2047,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset111.png",
     boxShadow: { color: "#ff00bb", x: 0, y: 0, blur: 60 },
-    animation: "captionAnimationKeyword20"
+    animation: "captionAnimationKeyword20",
   },
 
   //Contrast
@@ -2066,7 +2066,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset112.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset112.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset112.png",
   },
 
   //Best Performance
@@ -2087,7 +2087,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset113.png",
     textTransform: "uppercase",
-    animation: "captionAnimationKeyword15"
+    animation: "captionAnimationKeyword15",
   },
 
   //Neon 3
@@ -2108,7 +2108,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset114.png",
     boxShadow: { color: "#ff00bb", x: 0, y: 0, blur: 60 },
-    animation: "captionAnimationKeyword20"
+    animation: "captionAnimationKeyword20",
   },
 
   //Orbitar Black
@@ -2129,7 +2129,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset115.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset115.png",
-    animation: "captionAnimationKeyword16"
+    animation: "captionAnimationKeyword16",
   },
 
   //sepia
@@ -2151,7 +2151,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset116.png",
     animation: "captionAnimationKeyword17",
-    textTransform: "lowercase"
+    textTransform: "lowercase",
   },
 
   //fuel
@@ -2172,7 +2172,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset117.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset117.png",
-    animation: "captionAnimationKeyword18"
+    animation: "captionAnimationKeyword18",
   },
 
   //recipe
@@ -2194,7 +2194,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset118.png",
     boxShadow: { color: "#f24b34", x: 4, y: 2, blur: 1 },
-    animation: "captionAnimationKeyword19"
+    animation: "captionAnimationKeyword19",
   },
 
   //Dimidium
@@ -2218,7 +2218,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
     animation: "captionAnimationKeyword21/animationScaleDinamicEffect",
     textAlign: "right",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Drive
@@ -2240,7 +2240,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset120.png",
     boxShadow: { color: "#000000", x: 0, y: 10, blur: 60 },
     animation: "captionAnimationKeyword22",
-    textTransform: "uppercase"
+    textTransform: "uppercase",
   },
 
   //Aries
@@ -2264,7 +2264,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 4, y: 4, blur: 60 },
     animation: "captionAnimationKeyword23",
     textTransform: "uppercase",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Techwave
@@ -2285,7 +2285,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset122.png",
     animation: "captionAnimationKeyword24",
-    textTransform: "uppercase"
+    textTransform: "uppercase",
   },
 
   //Essence
@@ -2308,7 +2308,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset123.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
     animation: "captionAnimationKeyword25",
-    textTransform: "uppercase"
+    textTransform: "uppercase",
   },
 
   //Arion Pink
@@ -2330,7 +2330,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset124.png",
     animation: "captionAnimationKeyword26",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Cartwheel Purple
@@ -2350,7 +2350,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset125.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
     animation: "captionAnimationKeyword27",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Baseline
@@ -2371,7 +2371,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset126.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
-    animation: "captionAnimationKeyword28"
+    animation: "captionAnimationKeyword28",
   },
 
   //Cartwheel Black
@@ -2394,7 +2394,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset127.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
     animation: "captionAnimationKeyword29",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Pulse
@@ -2418,7 +2418,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
     animation: "captionAnimationKeyword30",
     textTransform: "uppercase",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Theta
@@ -2442,7 +2442,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#eb4d3d", x: 4, y: 4, blur: 10 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword31",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Alycone Blue
@@ -2466,7 +2466,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 10 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword32",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Messages
@@ -2487,7 +2487,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset131.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 10 },
-    animation: "captionAnimationKeyword33"
+    animation: "captionAnimationKeyword33",
   },
 
   //Clash
@@ -2508,7 +2508,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset132.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 10 },
-    animation: "captionAnimationKeyword108"
+    animation: "captionAnimationKeyword108",
   },
 
   //Recess
@@ -2529,7 +2529,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset133.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 10 },
-    animation: "captionAnimationKeyword34"
+    animation: "captionAnimationKeyword34",
   },
 
   //Poem
@@ -2549,7 +2549,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset134.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset134.png",
-    boxShadow: { color: "#000000", x: 0, y: 0, blur: 10 }
+    boxShadow: { color: "#000000", x: 0, y: 0, blur: 10 },
   },
 
   //Note
@@ -2571,7 +2571,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset135.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 10 },
     textTransform: "lowercase",
-    animation: "captionAnimationKeyword35"
+    animation: "captionAnimationKeyword35",
   },
 
   //CNN
@@ -2590,7 +2590,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset136.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset136.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset136.png",
   },
 
   //Marigold
@@ -2610,7 +2610,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset137.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset137.png",
-    boxShadow: { color: "#fde400", x: 0, y: 0, blur: 30 }
+    boxShadow: { color: "#fde400", x: 0, y: 0, blur: 30 },
   },
 
   //Omega Red
@@ -2632,7 +2632,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset138.png",
     boxShadow: { color: "#eb4d3d", x: 0, y: 0, blur: 60 },
-    animation: "captionAnimationKeyword36"
+    animation: "captionAnimationKeyword36",
   },
 
   //Lyra
@@ -2653,7 +2653,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset139.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
-    animation: "captionAnimationKeyword37"
+    animation: "captionAnimationKeyword37",
   },
 
   //Courage
@@ -2673,7 +2673,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset140.png",
     boxShadow: { color: "#000000", x: 4, y: 4, blur: 10 },
     animation: "captionAnimationKeyword38",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Suzy
@@ -2694,7 +2694,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset141.png",
     boxShadow: { color: "#fd6000", x: 2, y: 2, blur: 4 },
-    animation: "captionAnimationKeyword107"
+    animation: "captionAnimationKeyword107",
   },
 
   //Eclipse
@@ -2713,7 +2713,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset142.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset142.png",
-    boxShadow: { color: "#000000", x: 0, y: 0, blur: 30 }
+    boxShadow: { color: "#000000", x: 0, y: 0, blur: 30 },
   },
 
   //Daily Mail
@@ -2736,7 +2736,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset143.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 30 },
     textTransform: "uppercase",
-    animation: "captionAnimationKeyword39"
+    animation: "captionAnimationKeyword39",
   },
 
   //Magazine
@@ -2760,7 +2760,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 30 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword40",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Heat
@@ -2783,7 +2783,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset145.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 30 },
     animation: "captionAnimationKeyword41",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Alula Ausralis
@@ -2804,7 +2804,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 30 },
     animation: "captionAnimationKeyword42",
     textAlign: "left",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Citadelle
@@ -2828,7 +2828,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 30 },
     animation: "captionAnimationKeyword43",
     textAlign: "left",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Ingrid
@@ -2852,7 +2852,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 2, y: 2, blur: 30 },
     animation: "captionAnimationKeyword44",
     textAlign: "left",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Grace
@@ -2872,7 +2872,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset149.png",
     boxShadow: { color: "#000000", x: 3, y: 3, blur: 10 },
-    animation: "captionAnimationKeyword45"
+    animation: "captionAnimationKeyword45",
   },
 
   //Pollux B
@@ -2893,7 +2893,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
     animation: "captionAnimationKeyword46",
     textAlign: "left",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Citadelle
@@ -2913,7 +2913,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset151.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 30 },
     animation: "captionAnimationKeyword47",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Aldebaran
@@ -2936,7 +2936,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset152.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
     animation: "captionAnimationKeyword48",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Bette
@@ -2956,7 +2956,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset153.png",
     boxShadow: { color: "#000000", x: 3, y: 3, blur: 10 },
-    animation: "captionAnimationKeyword49"
+    animation: "captionAnimationKeyword49",
   },
 
   //Virgo A
@@ -2976,7 +2976,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset154.png",
     boxShadow: { color: "#000000", x: 4, y: 4, blur: 10 },
     animation: "captionAnimationKeyword50",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Bellatrix
@@ -2996,7 +2996,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset155.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
     animation: "captionAnimationKeyword51",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Claudette
@@ -3020,7 +3020,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#412424", x: 0, y: 0, blur: 60 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword52",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Canopus
@@ -3039,7 +3039,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset157.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset157.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset157.png",
   },
 
   //Capella
@@ -3063,7 +3063,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword53",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Copernicus
@@ -3087,7 +3087,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword54",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Mars
@@ -3107,7 +3107,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset160.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset160.png",
-    animation: "captionAnimationKeyword55"
+    animation: "captionAnimationKeyword55",
   },
 
   //Scorpius
@@ -3128,7 +3128,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 20 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword56",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Scorpius
@@ -3149,7 +3149,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 4, y: 4, blur: 10 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword57",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Draco
@@ -3169,7 +3169,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset163.png",
     textAlign: "left",
     animation: "captionAnimationKeyword58",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Perseus
@@ -3191,7 +3191,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset164.png",
     animation: "captionAnimationKeyword59",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Betelgeuse
@@ -3210,7 +3210,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset165.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset165.png",
-    textTransform: "uppercase"
+    textTransform: "uppercase",
   },
 
   //Acrab
@@ -3230,7 +3230,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset166.png",
     boxShadow: { color: "#000000", x: 2, y: 2, blur: 10 },
-    animation: "captionAnimationKeyword60"
+    animation: "captionAnimationKeyword60",
   },
 
   //Andromeda
@@ -3250,7 +3250,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset167.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset167.png",
-    textTransform: "uppercase"
+    textTransform: "uppercase",
   },
 
   //Cassiopeia
@@ -3272,7 +3272,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset168.png",
     textAlign: "left",
     animation: "captionAnimationKeyword61",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //M81
@@ -3296,7 +3296,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     textAlign: "left",
     textTransform: "uppercase",
     animation: "captionAnimationKeyword62",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Polaris
@@ -3314,7 +3314,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlDynamic:
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset170.webm",
     previewUrlStatic:
-      "https://cdn.designcombo.dev/caption_previews/static-preset170.png"
+      "https://cdn.designcombo.dev/caption_previews/static-preset170.png",
   },
 
   //Kang
@@ -3334,7 +3334,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 4, y: 4, blur: 25 },
     textAlign: "left",
     animation: "captionAnimationKeyword63",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Irena: review
@@ -3353,7 +3353,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset172.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
     animation: "captionAnimationKeyword64",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Helix
@@ -3373,7 +3373,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset173.png",
     boxShadow: { color: "#000000", x: -4, y: 4, blur: 10 },
     animation: "captionAnimationKeyword65",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Electra
@@ -3392,7 +3392,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset174.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 60 },
     animation: "captionAnimationKeyword66",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Owl
@@ -3415,7 +3415,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 40 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword67",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Haedus
@@ -3439,7 +3439,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 20 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword68",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Gienah
@@ -3463,7 +3463,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword69",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Footprint
@@ -3482,7 +3482,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset178.png",
     boxShadow: { color: "#000000", x: 0, y: 1, blur: 5 },
     animation: "captionAnimationKeyword70",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Pop
@@ -3507,7 +3507,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 3, y: 3, blur: 25 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword71",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Shift
@@ -3531,7 +3531,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 25 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword72",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Acamar
@@ -3550,7 +3550,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset181.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 20 },
-    animation: "captionAnimationKeyword73"
+    animation: "captionAnimationKeyword73",
   },
 
   //Castor
@@ -3569,7 +3569,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset182.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 20 },
     animation: "captionAnimationKeyword74",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Alcyone
@@ -3588,7 +3588,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset183.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 20 },
-    animation: "captionAnimationKeyword75"
+    animation: "captionAnimationKeyword75",
   },
 
   //HiLite
@@ -3612,7 +3612,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 20 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword76",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Orion
@@ -3632,7 +3632,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset185.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
     animation: "captionAnimationKeyword77",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Thuban
@@ -3649,7 +3649,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset186.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset186.png",
-    animation: "captionAnimationKeyword78"
+    animation: "captionAnimationKeyword78",
   },
 
   //Comic
@@ -3668,7 +3668,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset187.png",
     textAlign: "left",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
-    animation: "captionAnimationKeyword79"
+    animation: "captionAnimationKeyword79",
   },
 
   //Altair
@@ -3686,7 +3686,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset188.png",
     boxShadow: { color: "#000000", x: -4, y: 4, blur: 20 },
-    animation: "captionAnimationKeyword80"
+    animation: "captionAnimationKeyword80",
   },
 
   //Lines
@@ -3710,7 +3710,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     textTransform: "uppercase",
     textAlign: "left",
     animation: "captionAnimationKeyword81",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Lobster
@@ -3733,7 +3733,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset190.png",
     textAlign: "left",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
-    animation: "captionAnimationKeyword82"
+    animation: "captionAnimationKeyword82",
   },
 
   //Box
@@ -3755,7 +3755,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset191.png",
     animation: "captionAnimationKeyword83",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Sharp
@@ -3778,7 +3778,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset192.png",
     textAlign: "left",
     animation: "captionAnimationKeyword84",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Cygnus A
@@ -3797,7 +3797,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset193.png",
     animation: "captionAnimationKeyword85",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Pacific
@@ -3821,7 +3821,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     textAlign: "left",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
     animation: "captionAnimationKeyword86",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Pacific
@@ -3843,7 +3843,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset195.png",
     boxShadow: { color: "#0e2beb", x: 0, y: 0, blur: 10 },
     textTransform: "uppercase",
-    animation: "captionAnimationKeyword87"
+    animation: "captionAnimationKeyword87",
   },
 
   //Block
@@ -3865,7 +3865,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset196.png",
     animation: "captionAnimationKeyword88",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Bold
@@ -3885,7 +3885,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset197.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
     animation: "captionAnimationKeyword89",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Mizar
@@ -3903,7 +3903,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset198.png",
     boxShadow: { color: "#7e12ff", x: 0, y: 0, blur: 50 },
-    animation: "captionAnimationKeyword90"
+    animation: "captionAnimationKeyword90",
   },
 
   //Pollux
@@ -3924,7 +3924,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
     textAlign: "left",
     animation: "captionAnimationKeyword91",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Pollux
@@ -3945,7 +3945,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
     textAlign: "left",
     animation: "captionAnimationKeyword92",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Classic
@@ -3969,7 +3969,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 30 },
     textAlign: "left",
     animation: "captionAnimationKeyword93",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Capital
@@ -3992,7 +3992,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
     textAlign: "left",
     animation: "captionAnimationKeyword94",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Monster
@@ -4012,7 +4012,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset203.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
     textTransform: "uppercase",
-    animation: "captionAnimationKeyword95"
+    animation: "captionAnimationKeyword95",
   },
 
   //Alhena
@@ -4037,7 +4037,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: -4, y: 4, blur: 20 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword96",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Play
@@ -4060,7 +4060,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 50 },
     textTransform: "uppercase",
     textAlign: "left",
-    animation: "captionAnimationKeyword97"
+    animation: "captionAnimationKeyword97",
   },
 
   //Milky Way
@@ -4084,7 +4084,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 20 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword98",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Buzz
@@ -4108,7 +4108,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#474747", x: 0, y: 0, blur: 100 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword99",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Buzz
@@ -4130,7 +4130,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset208.png",
     boxShadow: { color: "#474747", x: 0, y: 0, blur: 10 },
     textTransform: "uppercase",
-    animation: "captionAnimationKeyword100"
+    animation: "captionAnimationKeyword100",
   },
 
   //Medusa
@@ -4150,7 +4150,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset209.png",
     boxShadow: { color: "#000000", x: -4, y: -4, blur: 25 },
     animation: "captionAnimationKeyword101",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Energy
@@ -4171,7 +4171,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset210.png",
     boxShadow: { color: "#474747", x: 0, y: 0, blur: 100 },
-    animation: "captionAnimationKeyword102"
+    animation: "captionAnimationKeyword102",
   },
 
   //Hustle
@@ -4195,7 +4195,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 15 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword103",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Focus
@@ -4219,7 +4219,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 8 },
     textTransform: "uppercase",
     animation: "captionAnimationKeyword104",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //Million
@@ -4242,7 +4242,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/static-preset213.png",
     boxShadow: { color: "#474747", x: 0, y: 0, blur: 10 },
     animation: "captionAnimationKeyword105",
-    preservedColorKeyWord: true
+    preservedColorKeyWord: true,
   },
 
   //cove
@@ -4260,7 +4260,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset214.png",
     boxShadow: { color: "#000000", x: 0, y: 0, blur: 10 },
-    animation: "captionAnimationKeyword106"
+    animation: "captionAnimationKeyword106",
   },
   {
     appearedColor: "#14edf8",
@@ -4277,7 +4277,7 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset215.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset215.png",
-    animation: "customAnimation1"
+    animation: "customAnimation1",
   },
   {
     appearedColor: "##fbfe3c",
@@ -4295,8 +4295,8 @@ export const STYLE_CAPTION_PRESETS: ICaptionsControlProps[] = [
       "https://cdn.designcombo.dev/caption_previews/dynamic-preset216.webm",
     previewUrlStatic:
       "https://cdn.designcombo.dev/caption_previews/static-preset216.png",
-    animation: "customAnimation1"
-  }
+    animation: "customAnimation1",
+  },
 ];
 
 export const getTextShadow = (boxShadow?: IBoxShadow): string | undefined => {
@@ -4308,7 +4308,7 @@ export const getTextShadow = (boxShadow?: IBoxShadow): string | undefined => {
 export const applyPreset = async (
   preset: any,
   captionItemIds: string[],
-  captionsData: any[]
+  captionsData: any[],
 ) => {
   if (preset.boxShadow === undefined) {
     preset.boxShadow = { color: "transparent", x: 0, y: 0, blur: 0 };
@@ -4337,24 +4337,24 @@ export const applyPreset = async (
     preset.preservedColorKeyWord = false;
   }
 
-  let newData = transformCaptions(
+  const newData = transformCaptions(
     captionsData,
-    preset.type === "word" ? "singleWord" : "time"
+    preset.type === "word" ? "singleWord" : "time",
   );
 
   await loadFonts([
     {
       name: preset.fontFamily,
-      url: preset.fontUrl
-    }
+      url: preset.fontUrl,
+    },
   ]);
 
   const { previewUrlDynamic, previewUrlStatic, type, ...sanitizedPreset } =
     preset;
   dispatch(LAYER_DELETE, {
     payload: {
-      trackItemIds: captionsData.map((item) => item.id)
-    }
+      trackItemIds: captionsData.map((item) => item.id),
+    },
   });
 
   dispatch(ADD_ITEMS, {
@@ -4363,28 +4363,28 @@ export const applyPreset = async (
         ...item,
         details: {
           ...item.details,
-          ...sanitizedPreset
-        }
+          ...sanitizedPreset,
+        },
       })),
       tracks: [
         {
           id: generateId(),
           items: newData.map((item) => item.id),
-          type: "caption"
-        }
-      ]
-    }
+          type: "caption",
+        },
+      ],
+    },
   });
 };
 
 export const groupCaptionItems = (trackItemsMap: ITrackItemsMap) => {
   const captionTrackItems = Object.values(trackItemsMap).filter(
-    ({ type }: ITrackItem) => type === "caption"
+    ({ type }: ITrackItem) => type === "caption",
   );
   return groupBy(captionTrackItems, "metadata.sourceUrl");
 };
 export default function CaptionPresetPicker({
-  trackItem
+  trackItem,
 }: {
   trackItem: ITrackItem & any;
 }) {
@@ -4394,7 +4394,7 @@ export default function CaptionPresetPicker({
   const { setFloatingControl } = useLayoutStore();
   const floatingRef = useRef<HTMLDivElement>(null);
   useClickOutside(floatingRef as React.RefObject<HTMLElement>, () =>
-    setFloatingControl("")
+    setFloatingControl(""),
   );
   useEffect(() => {
     const groupedCaptions = groupCaptionItems(trackItemsMap);
@@ -4408,7 +4408,7 @@ export default function CaptionPresetPicker({
   const handlePresetClick = (
     preset: any,
     captionItemIds: string[],
-    captionsData: any[]
+    captionsData: any[],
   ) => {
     applyPreset(preset, captionItemIds, captionsData);
   };

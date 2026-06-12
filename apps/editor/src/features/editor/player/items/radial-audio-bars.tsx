@@ -4,7 +4,7 @@ import { RadialBars } from "./audio-bars/radial-audio-bars";
 
 export default function RadialAudioBars({
   item,
-  options
+  options,
 }: {
   item: IRadialAudioBars;
   options: SequenceItemOptions;

@@ -23,16 +23,16 @@ export async function POST(request: NextRequest) {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
           // Add your API token here when you have one
           // "Authorization": `Bearer ${process.env.VOICE_API_TOKEN}`,
         },
         body: JSON.stringify({
           limit,
           page,
-          query: formattedQuery
-        })
-      }
+          query: formattedQuery,
+        }),
+      },
     );
 
     if (!response.ok) {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     console.error("Error fetching voices:", error);
     return NextResponse.json(
       { error: "Failed to fetch voices" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

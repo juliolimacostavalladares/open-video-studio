@@ -1,7 +1,7 @@
 import Editor from "@/features/editor";
 
 export default async function Page({
-  params
+  params,
 }: {
   params: Promise<{ id: string[] }>;
 }) {

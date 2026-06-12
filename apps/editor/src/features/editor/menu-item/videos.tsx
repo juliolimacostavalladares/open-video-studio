@@ -26,7 +26,7 @@ export const Videos = () => {
     loadPopularVideos,
     searchVideosAppend,
     loadPopularVideosAppend,
-    clearVideos
+    clearVideos,
   } = usePexelsVideos();
 
   // Load popular videos on component mount
@@ -39,8 +39,8 @@ export const Videos = () => {
       payload,
       options: {
         resourceId: "main",
-        scaleMode: "fit"
-      }
+        scaleMode: "fit",
+      },
     });
   };
 
@@ -170,7 +170,7 @@ export const Videos = () => {
 const VideoItem = ({
   handleAddImage,
   video,
-  shouldDisplayPreview
+  shouldDisplayPreview,
 }: {
   handleAddImage: (payload: Partial<IVideo>) => void;
   video: Partial<IVideo>;
@@ -181,9 +181,9 @@ const VideoItem = ({
       backgroundImage: `url(${video.preview})`,
       backgroundSize: "cover",
       width: "80px",
-      height: "80px"
+      height: "80px",
     }),
-    [video.preview]
+    [video.preview],
   );
 
   return (
@@ -191,8 +191,8 @@ const VideoItem = ({
       data={{
         ...video,
         metadata: {
-          previewUrl: video.preview
-        }
+          previewUrl: video.preview,
+        },
       }}
       renderCustomPreview={<div style={style} className="draggable" />}
       shouldDisplayPreview={shouldDisplayPreview}
@@ -202,11 +202,11 @@ const VideoItem = ({
           handleAddImage({
             id: generateId(),
             details: {
-              src: video.details?.src
+              src: video.details?.src,
             },
             metadata: {
-              previewUrl: video.preview
-            }
+              previewUrl: video.preview,
+            },
           } as any)
         }
         className="relative aspect-square flex w-full items-center justify-center overflow-hidden bg-background pb-2 group cursor-pointer"

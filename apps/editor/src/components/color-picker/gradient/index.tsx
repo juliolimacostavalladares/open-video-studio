@@ -9,7 +9,7 @@ import {
   useDebounce,
   getGradient,
   rgbaToArray,
-  rgbaToHex
+  rgbaToHex,
 } from "../utils";
 
 import { IPropsComp, TPropsChange, IActiveColor } from "../types";
@@ -26,7 +26,7 @@ const Gradient: FC<IPropsComp> = ({
   showGradientAngle = true,
   showGradientPosition = true,
   allowAddGradientStops = true,
-  colorBoardHeight = 120
+  colorBoardHeight = 120,
 }) => {
   const parsedColors = useCallback(() => {
     return parseGradient(value);
@@ -46,7 +46,7 @@ const Gradient: FC<IPropsComp> = ({
     hex: activeStop,
     alpha: Number(Math.round(lastStop[3] * 100)),
     loc: lastStopLoc,
-    index: activeIdx
+    index: activeIdx,
   });
 
   const [color, setColor] = useState(initColor);
@@ -74,7 +74,7 @@ const Gradient: FC<IPropsComp> = ({
     setColor(initColor);
 
     const findActive = initColor.stops.find(
-      (stop: any) => stop[2] === activeColor.index
+      (stop: any) => stop[2] === activeColor.index,
     );
 
     // Update active color
@@ -84,7 +84,7 @@ const Gradient: FC<IPropsComp> = ({
         setActiveColor({
           ...activeColor,
           hex: `#${tinycolor.toHex()}`,
-          alpha: tinycolor.getAlpha() * 100
+          alpha: tinycolor.getAlpha() * 100,
         });
       }
     }
@@ -98,7 +98,7 @@ const Gradient: FC<IPropsComp> = ({
       setActiveColor({
         ...activeColor,
         hex: value.hex,
-        alpha: Number(Math.round(value.alpha))
+        alpha: Number(Math.round(value.alpha)),
       });
 
       const { stops, type, modifier } = color;
@@ -114,11 +114,11 @@ const Gradient: FC<IPropsComp> = ({
       setColor({
         ...color,
         gradient: `${getGradient(type, newStops, modifier, format)}`,
-        stops: newStops
+        stops: newStops,
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeColor, color]
+    [activeColor, color],
   );
 
   const onSubmitChange = (rgba: string) => {
@@ -142,7 +142,7 @@ const Gradient: FC<IPropsComp> = ({
           setActiveColor((prev) => ({
             ...prev,
             hex: value.hex,
-            alpha: value.alpha
+            alpha: value.alpha,
           }))
         }
         onSubmitChange={onSubmitChange}

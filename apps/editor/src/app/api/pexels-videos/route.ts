@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
   if (!apiKey) {
     return NextResponse.json(
       { error: "Pexels API key not configured" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -75,8 +75,8 @@ export async function GET(request: NextRequest) {
 
     const response = await fetch(url, {
       headers: {
-        Authorization: apiKey
-      }
+        Authorization: apiKey,
+      },
     });
 
     if (!response.ok) {
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
       // Find the best quality video file (prefer HD or SD)
       const videoFile =
         video.video_files.find(
-          (file) => file.quality === "hd" || file.quality === "sd"
+          (file) => file.quality === "hd" || file.quality === "sd",
         ) || video.video_files[0];
 
       // Get the first video picture as preview
@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
           width: video.width,
           height: video.height,
           duration: video.duration,
-          fps: videoFile?.fps || 30
+          fps: videoFile?.fps || 30,
         },
         preview: previewPicture,
         type: "video" as const,
@@ -112,8 +112,8 @@ export async function GET(request: NextRequest) {
           pexels_id: video.id,
           user: video.user,
           video_files: video.video_files,
-          video_pictures: video.video_pictures
-        }
+          video_pictures: video.video_pictures,
+        },
       };
     });
 
@@ -123,13 +123,13 @@ export async function GET(request: NextRequest) {
       page: data.page,
       per_page: data.per_page,
       next_page: data.next_page,
-      prev_page: data.prev_page
+      prev_page: data.prev_page,
     });
   } catch (error) {
     console.error("Pexels Video API error:", error);
     return NextResponse.json(
       { error: "Failed to fetch videos from Pexels" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

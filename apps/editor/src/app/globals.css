@@ -261,7 +261,11 @@
   body {
     @apply bg-background text-foreground;
     background:
-      radial-gradient(circle at 70% -10%, rgba(118, 87, 255, 0.12), transparent 30%),
+      radial-gradient(
+        circle at 70% -10%,
+        rgba(118, 87, 255, 0.12),
+        transparent 30%
+      ),
       var(--background);
     letter-spacing: 0;
   }

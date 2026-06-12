@@ -13,7 +13,7 @@ import { ITrackItem } from "@designcombo/types";
 
 export const onChangeFontFamily = async (
   font: ICompactFont,
-  trackItem: ITrackItem
+  trackItem: ITrackItem,
 ) => {
   const fontName = font.default.postScriptName;
   const fontUrl = font.default.url;
@@ -21,8 +21,8 @@ export const onChangeFontFamily = async (
   await loadFonts([
     {
       name: fontName,
-      url: fontUrl
-    }
+      url: fontUrl,
+    },
   ]);
 
   dispatch(EDIT_OBJECT, {
@@ -30,10 +30,10 @@ export const onChangeFontFamily = async (
       [trackItem?.id as string]: {
         details: {
           fontFamily: fontName,
-          fontUrl: fontUrl
-        }
-      }
-    }
+          fontUrl: fontUrl,
+        },
+      },
+    },
   });
 };
 export default function FontFamilyPicker() {
@@ -42,12 +42,12 @@ export default function FontFamilyPicker() {
   const { setFloatingControl, trackItem } = useLayoutStore();
 
   const filteredFonts = compactFonts.filter((font) =>
-    font.family.toLowerCase().includes(search.toLowerCase())
+    font.family.toLowerCase().includes(search.toLowerCase()),
   );
 
   const floatingRef = useRef<HTMLDivElement>(null);
   useClickOutside(floatingRef as React.RefObject<HTMLElement>, () =>
-    setFloatingControl("")
+    setFloatingControl(""),
   );
 
   return (

@@ -22,7 +22,7 @@ export const DEFAULT_COLORS = [
   "linear-gradient(270deg, rgb(255, 126, 179) 0%, rgb(255, 117, 140) 100%)",
   "linear-gradient(90deg, rgb(120, 115, 245) 0%, rgb(236, 119, 171) 100%)",
   "linear-gradient(45deg, #2e266f 0.00%, #9664dd38 100.00%)",
-  "radial-gradient(circle at center, yellow 0%, #009966 50%, purple 100%)"
+  "radial-gradient(circle at center, yellow 0%, #009966 50%, purple 100%)",
 ];
 
 export const RADIALS_POS = [
@@ -36,5 +36,5 @@ export const RADIALS_POS = [
 
   { pos: "bl", css: "circle at left bottom", active: false },
   { pos: "bm", css: "circle at center bottom", active: false },
-  { pos: "br", css: "circle at right bottom", active: false }
+  { pos: "br", css: "circle at right bottom", active: false },
 ];

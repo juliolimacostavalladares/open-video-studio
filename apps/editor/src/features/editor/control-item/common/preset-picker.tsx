@@ -6,7 +6,7 @@ import {
   ICaptionsControlProps,
   NONE_PRESET,
   STYLE_CAPTION_PRESETS,
-  getTextShadow
+  getTextShadow,
 } from "../floating-controls/caption-preset-picker";
 
 interface PresetItemProps {
@@ -61,7 +61,7 @@ const PresetItem = ({ preset, onClick }: PresetItemProps) => {
             paintOrder: "stroke fill",
             fontWeight: "bold",
             textShadow: getTextShadow(preset.boxShadow),
-            WebkitTextStroke: `1px ${preset.borderColor}`
+            WebkitTextStroke: `1px ${preset.borderColor}`,
           }}
           className="h-6 place-content-center rounded-lg px-2"
         >
@@ -79,7 +79,7 @@ interface PresetGridProps {
   onPresetClick: (
     preset: ICaptionsControlProps,
     captionItemIds: string[],
-    captionsData: any[]
+    captionsData: any[],
   ) => void;
 }
 
@@ -87,7 +87,7 @@ const PresetGrid = ({
   presets,
   captionItemIds,
   captionsData,
-  onPresetClick
+  onPresetClick,
 }: PresetGridProps) => (
   <div className="grid gap-4 p-4">
     <div
@@ -113,7 +113,7 @@ interface PresetPickerProps {
   onPresetClick: (
     preset: ICaptionsControlProps,
     captionItemIds: string[],
-    captionsData: any[]
+    captionsData: any[],
   ) => void;
   className?: string;
 }
@@ -122,13 +122,13 @@ export const PresetPicker = ({
   captionItemIds,
   captionsData,
   onPresetClick,
-  className = ""
+  className = "",
 }: PresetPickerProps) => {
   const wordPresets = STYLE_CAPTION_PRESETS.filter(
-    (preset) => preset.type === "word"
+    (preset) => preset.type === "word",
   );
   const linePresets = STYLE_CAPTION_PRESETS.filter(
-    (preset) => preset.type !== "word"
+    (preset) => preset.type !== "word",
   );
 
   return (

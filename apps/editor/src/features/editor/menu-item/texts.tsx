@@ -13,7 +13,7 @@ export const Texts = () => {
   const handleAddText = () => {
     dispatch(ADD_TEXT, {
       payload: { ...TEXT_ADD_PAYLOAD, id: nanoid() },
-      options: {}
+      options: {},
     });
   };
 
@@ -22,10 +22,10 @@ export const Texts = () => {
       payload: {
         id: nanoid(),
         details: {
-          src: "https://cdn.designcombo.dev/preset76.mp3"
-        }
+          src: "https://cdn.designcombo.dev/preset76.mp3",
+        },
       },
-      options: {}
+      options: {},
     });
   };
   // https://cdn.designcombo.dev/rect-gray.png
@@ -35,10 +35,10 @@ export const Texts = () => {
       payload: {
         id: nanoid(),
         details: {
-          src: "https://cdn.designcombo.dev/rect-gray.png"
-        }
+          src: "https://cdn.designcombo.dev/rect-gray.png",
+        },
       },
-      options: {}
+      options: {},
     });
   };
 
@@ -58,7 +58,7 @@ export const Texts = () => {
             onClick={handleAddText}
             className={cn(
               buttonVariants({ variant: "default" }),
-              "cursor-pointer"
+              "cursor-pointer",
             )}
           >
             Add text

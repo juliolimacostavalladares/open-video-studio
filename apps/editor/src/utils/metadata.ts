@@ -9,7 +9,7 @@ export function createMetadata(override: Metadata): Metadata {
       url: "https://openvideostudio.local",
       images: "/icon.svg",
       siteName: "Open Video Studio",
-      ...override.openGraph
+      ...override.openGraph,
     },
     twitter: {
       card: "summary_large_image",
@@ -17,11 +17,11 @@ export function createMetadata(override: Metadata): Metadata {
       title: override.title ?? undefined,
       description: override.description ?? undefined,
       images: "/icon.svg",
-      ...override.twitter
+      ...override.twitter,
     },
     icons: {
-      icon: "/icon.svg"
-    }
+      icon: "/icon.svg",
+    },
   };
 }
 

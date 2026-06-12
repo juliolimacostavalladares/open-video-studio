@@ -16,7 +16,7 @@ class ThumbnailCache {
   }
 
   public getThumbnail(
-    timestamp: number | string
+    timestamp: number | string,
   ): HTMLImageElement | undefined {
     const img = this.cache[timestamp];
     if (img) {

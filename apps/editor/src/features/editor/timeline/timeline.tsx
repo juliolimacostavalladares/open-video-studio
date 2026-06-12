@@ -18,12 +18,12 @@ import {
   LinealAudioBars,
   RadialAudioBars,
   WaveAudioBars,
-  HillAudioBars
+  HillAudioBars,
 } from "./items";
 import StateManager from "@designcombo/state";
 import {
   TIMELINE_OFFSET_CANVAS_LEFT,
-  TIMELINE_OFFSET_CANVAS_RIGHT
+  TIMELINE_OFFSET_CANVAS_RIGHT,
 } from "../constants/constants";
 import PreviewTrackItem from "./items/preview-drag-item";
 import { useTimelineOffsetX } from "../hooks/use-timeline-offset";
@@ -42,7 +42,7 @@ CanvasTimeline.registerItems({
   LinealAudioBars,
   RadialAudioBars,
   WaveAudioBars,
-  HillAudioBars
+  HillAudioBars,
 });
 
 const EMPTY_SIZE = { width: 0, height: 0 };
@@ -63,7 +63,7 @@ const Timeline = ({ stateManager }: { stateManager: StateManager }) => {
     timelineHeight,
     onMouseDown,
     onMouseMove,
-    onMouseOut
+    onMouseOut,
   } = useResizbleTimeline();
   const { theme } = useTheme();
 
@@ -105,11 +105,11 @@ const Timeline = ({ stateManager }: { stateManager: StateManager }) => {
       if (scaleScroll >= 0) {
         if (scaleScroll > 1)
           horizontalScrollbar.scrollTo({
-            left: currentPosScroll + scrollDivWidth
+            left: currentPosScroll + scrollDivWidth,
           });
         else
           horizontalScrollbar.scrollTo({
-            left: totalScrollWidth - scrollDivWidth
+            left: totalScrollWidth - scrollDivWidth,
           });
       }
     }
@@ -118,7 +118,7 @@ const Timeline = ({ stateManager }: { stateManager: StateManager }) => {
   const onResizeCanvas = (payload: { width: number; height: number }) => {
     setCanvasSize({
       width: payload.width,
-      height: payload.height
+      height: payload.height,
     });
   };
 
@@ -139,7 +139,7 @@ const Timeline = ({ stateManager }: { stateManager: StateManager }) => {
       height: containerHeight,
       bounding: {
         width: containerWidth,
-        height: 0
+        height: 0,
       },
       selectionColor: "rgba(0, 216, 214,0.1)",
       selectionBorderColor: "rgba(0, 216, 214,1.0)",
@@ -149,7 +149,7 @@ const Timeline = ({ stateManager }: { stateManager: StateManager }) => {
       duration,
       spacing: {
         left: TIMELINE_OFFSET_CANVAS_LEFT,
-        right: TIMELINE_OFFSET_CANVAS_RIGHT
+        right: TIMELINE_OFFSET_CANVAS_RIGHT,
       },
       sizesMap: {
         caption: 32,
@@ -160,7 +160,7 @@ const Timeline = ({ stateManager }: { stateManager: StateManager }) => {
         linealAudioBars: 40,
         radialAudioBars: 40,
         waveAudioBars: 40,
-        hillAudioBars: 40
+        hillAudioBars: 40,
       },
       itemTypes: [
         "text",
@@ -177,7 +177,7 @@ const Timeline = ({ stateManager }: { stateManager: StateManager }) => {
         "progressFrame",
         "progressBar",
         "waveAudioBars",
-        "hillAudioBars"
+        "hillAudioBars",
       ],
       acceptsMap: {
         text: ["text", "caption"],
@@ -192,9 +192,9 @@ const Timeline = ({ stateManager }: { stateManager: StateManager }) => {
         linealAudioBars: ["audio", "linealAudioBars"],
         radialAudioBars: ["audio", "radialAudioBars"],
         waveAudioBars: ["audio", "waveAudioBars"],
-        hillAudioBars: ["audio", "hillAudioBars"]
+        hillAudioBars: ["audio", "hillAudioBars"],
       },
-      guideLineColor: "#ffffff"
+      guideLineColor: "#ffffff",
     });
 
     canvas.initScrollbars({
@@ -203,7 +203,7 @@ const Timeline = ({ stateManager }: { stateManager: StateManager }) => {
       extraMarginX: 50,
       extraMarginY: 0,
       scrollbarWidth: 8,
-      scrollbarColor: "rgba(255, 255, 255, 1)"
+      scrollbarColor: "rgba(255, 255, 255, 1)",
     });
 
     canvas.onViewportChange((left: number) => {
@@ -262,7 +262,7 @@ const Timeline = ({ stateManager }: { stateManager: StateManager }) => {
         height: `${timelineHeight}px`,
         borderTopWidth: "1px",
         borderTopStyle: "solid",
-        borderTopColor: "transparent"
+        borderTopColor: "transparent",
       }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
@@ -278,7 +278,7 @@ const Timeline = ({ stateManager }: { stateManager: StateManager }) => {
       <div className="flex">
         <div
           style={{
-            width: timelineOffsetX
+            width: timelineOffsetX,
           }}
           className="relative flex-none"
         />

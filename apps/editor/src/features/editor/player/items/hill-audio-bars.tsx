@@ -4,7 +4,7 @@ import { HillBars } from "./audio-bars/hill-audio-bars";
 
 export default function HillAudioBars({
   item,
-  options
+  options,
 }: {
   item: IHillAudioBars;
   options: SequenceItemOptions;

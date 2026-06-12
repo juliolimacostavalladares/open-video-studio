@@ -26,7 +26,7 @@ export const Transitions = () => {
 
 const TransitionsMenuItem = ({
   transition,
-  shouldDisplayPreview
+  shouldDisplayPreview,
 }: {
   transition: Partial<any>;
   shouldDisplayPreview: boolean;
@@ -36,9 +36,9 @@ const TransitionsMenuItem = ({
       backgroundImage: `url(${transition.preview})`,
       backgroundSize: "cover",
       width: "70px",
-      height: "70px"
+      height: "70px",
     }),
-    [transition.preview]
+    [transition.preview],
   );
 
   return (

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 
 const BasicAudio = ({
   trackItem,
-  type
+  type,
 }: {
   trackItem: ITrackItem & IAudio;
   type?: string;
@@ -22,10 +22,10 @@ const BasicAudio = ({
       payload: {
         [trackItem.id]: {
           details: {
-            volume: v
-          }
-        }
-      }
+            volume: v,
+          },
+        },
+      },
     });
 
     setProperties((prev) => {
@@ -33,8 +33,8 @@ const BasicAudio = ({
         ...prev,
         details: {
           ...prev.details,
-          volume: v
-        }
+          volume: v,
+        },
       };
     });
   };
@@ -43,15 +43,15 @@ const BasicAudio = ({
     dispatch(EDIT_OBJECT, {
       payload: {
         [trackItem.id]: {
-          playbackRate: v
-        }
-      }
+          playbackRate: v,
+        },
+      },
     });
 
     setProperties((prev) => {
       return {
         ...prev,
-        playbackRate: v
+        playbackRate: v,
       };
     });
   };
@@ -64,7 +64,7 @@ const BasicAudio = ({
           value={properties.playbackRate ?? 1}
           onChange={handleChangeSpeed}
         />
-      )
+      ),
     },
     {
       key: "volume",
@@ -73,8 +73,8 @@ const BasicAudio = ({
           onChange={(v: number) => handleChangeVolume(v)}
           value={properties.details.volume ?? 100}
         />
-      )
-    }
+      ),
+    },
   ];
 
   return (

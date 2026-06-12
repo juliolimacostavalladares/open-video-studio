@@ -25,15 +25,15 @@ interface IGradientReg {
 
 const combineRegExp = (
   regexpList: ReadonlyArray<string | RegExp>,
-  flags: string
+  flags: string,
 ): RegExp => {
   return new RegExp(
     regexpList.reduce<string>(
       (result, item) =>
         result + (typeof item === "string" ? item : item.source),
-      ""
+      "",
     ),
-    flags
+    flags,
   );
 };
 
@@ -61,25 +61,25 @@ const generateRegExp = () => {
       rDigits4,
       "|",
       rKeyword,
-      ")"
+      ")",
     ],
-    ""
+    "",
   );
   const rColorStop = combineRegExp(
     [rColor, "(?:\\s+", rValue, "(?:\\s+", rValue, ")?)?"],
-    ""
+    "",
   );
   const rColorStopList = combineRegExp(
     ["(?:", rColorStop, rComma, ")*", rColorStop],
-    ""
+    "",
   );
   const rLineCapture = combineRegExp(
     ["(?:(", rAngle, ")|", rSideCornerCapture, "|", rRadial, ")"],
-    ""
+    "",
   );
   const rGradientSearch = combineRegExp(
     ["(?:(", rLineCapture, ")", rComma, ")?(", rColorStopList, ")"],
-    searchFlags
+    searchFlags,
   );
   const rColorStopSearch = combineRegExp(
     [
@@ -92,14 +92,14 @@ const generateRegExp = () => {
       "))?",
       "(?:",
       rComma,
-      "\\s*)?"
+      "\\s*)?",
     ],
-    searchFlags
+    searchFlags,
   );
 
   return {
     gradientSearch: rGradientSearch,
-    colorStopSearch: rColorStopSearch
+    colorStopSearch: rColorStopSearch,
   };
 };
 
@@ -108,7 +108,7 @@ const parseGradient = (regExpLib: IGradientReg, input: string) => {
     stops: [],
     angle: "",
     line: "",
-    original: ""
+    original: "",
   };
   let matchGradient, matchColorStop, stopResult: IGradientStop;
 
@@ -118,7 +118,7 @@ const parseGradient = (regExpLib: IGradientReg, input: string) => {
   if (matchGradient !== null) {
     result = {
       ...result,
-      original: matchGradient[0]
+      original: matchGradient[0],
     };
 
     if (matchGradient[1]) {
@@ -139,12 +139,12 @@ const parseGradient = (regExpLib: IGradientReg, input: string) => {
     while (matchColorStop !== null) {
       const tinyColor = tinycolor(matchColorStop[1]);
       stopResult = {
-        color: tinyColor.toRgbString()
+        color: tinyColor.toRgbString(),
       };
 
       if (matchColorStop[2]) {
         stopResult.position = Number(
-          (parseInt(matchColorStop[2], 10) / 100).toFixed(2)
+          (parseInt(matchColorStop[2], 10) / 100).toFixed(2),
         );
       }
       result.stops.push(stopResult);

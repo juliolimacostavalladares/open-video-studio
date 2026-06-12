@@ -2,19 +2,19 @@ import { IImage, IText, ITrackItem } from "@designcombo/types";
 
 export const calculateCropStyles = (
   details: IImage["details"],
-  crop: IImage["details"]["crop"]
+  crop: IImage["details"]["crop"],
 ) => ({
   width: details.width || "100%",
   height: details.height || "auto",
   top: -crop.y || 0,
   left: -crop.x || 0,
   position: "absolute",
-  borderRadius: `${Math.min(crop.width, crop.height) * ((details.borderRadius || 0) / 100)}px`
+  borderRadius: `${Math.min(crop.width, crop.height) * ((details.borderRadius || 0) / 100)}px`,
 });
 
 export const calculateMediaStyles = (
   details: ITrackItem["details"],
-  crop: ITrackItem["details"]["crop"]
+  crop: ITrackItem["details"]["crop"],
 ) => {
   return {
     pointerEvents: "none",
@@ -22,17 +22,17 @@ export const calculateMediaStyles = (
       `0 0 0 ${details.borderWidth}px ${details.borderColor}`,
       details.boxShadow
         ? `${details.boxShadow.x}px ${details.boxShadow.y}px ${details.boxShadow.blur}px ${details.boxShadow.color}`
-        : ""
+        : "",
     ]
       .filter(Boolean)
       .join(", "),
     ...calculateCropStyles(details, crop),
-    overflow: "hidden"
+    overflow: "hidden",
   } as React.CSSProperties;
 };
 
 export const calculateTextStyles = (
-  details: IText["details"]
+  details: IText["details"],
 ): React.CSSProperties => ({
   position: "relative",
   textDecoration: details.textDecoration || "none",
@@ -53,14 +53,14 @@ export const calculateTextStyles = (
   textAlign: details.textAlign || "left",
   color: details.color || "#000000",
   backgroundColor: details.backgroundColor || "transparent",
-  borderRadius: `${Math.min(details.width, details.height) * ((details.borderRadius || 0) / 100)}px`
+  borderRadius: `${Math.min(details.width, details.height) * ((details.borderRadius || 0) / 100)}px`,
 });
 
 export const calculateContainerStyles = (
   details: ITrackItem["details"],
   crop: ITrackItem["details"]["crop"] = {},
   overrides: React.CSSProperties = {},
-  type?: string
+  type?: string,
 ): React.CSSProperties => {
   return {
     pointerEvents: "auto",
@@ -76,6 +76,6 @@ export const calculateContainerStyles = (
     transformOrigin: details.transformOrigin || "center center",
     filter: `brightness(${details.brightness}%) blur(${details.blur}px)`,
     rotate: details.rotate || "0deg",
-    ...overrides // Merge overrides into the calculated styles
+    ...overrides, // Merge overrides into the calculated styles
   };
 };

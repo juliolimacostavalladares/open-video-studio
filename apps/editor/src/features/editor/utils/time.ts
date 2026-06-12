@@ -1,6 +1,6 @@
 export const frameToTimeString = (
   { frame }: { frame: number },
-  { fps }: { fps: number }
+  { fps }: { fps: number },
 ): string => {
   // Calculate the total time in seconds
   const totalSeconds = frame / fps;
@@ -47,7 +47,7 @@ export const getCurrentTime = () => {
   const currentTimeElement = document.getElementById("video-current-time");
   const currentTimeSeconds = currentTimeElement
     ? Number.parseFloat(
-        currentTimeElement.getAttribute("data-current-time") ?? "0"
+        currentTimeElement.getAttribute("data-current-time") ?? "0",
       )
     : 0;
   const currentTimeMiliseconds = currentTimeSeconds * 1000;

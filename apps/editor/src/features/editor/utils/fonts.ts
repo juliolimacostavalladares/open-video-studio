@@ -23,7 +23,7 @@ export const loadFonts = (fonts: { name: string; url: string }[]) => {
 
 const findDefaultFont = (fonts: IFont[]): IFont => {
   const regularFont = fonts.find((font) =>
-    font.fullName.toLowerCase().includes("regular")
+    font.fullName.toLowerCase().includes("regular"),
   );
 
   return regularFont ? regularFont : fonts[0];
@@ -40,7 +40,7 @@ export const getCompactFontData = (fonts: IFont[]): ICompactFont[] => {
     const compactFont: ICompactFont = {
       family: family,
       styles: fontsInFamily,
-      default: defaultFont
+      default: defaultFont,
     };
     compactFontsMap[family] = compactFont;
   });

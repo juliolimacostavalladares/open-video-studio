@@ -6,7 +6,7 @@ const SunnyMorningsAnimationIn = ({
   frame,
   fps,
   textLength,
-  animationTextInFrames
+  animationTextInFrames,
 }: {
   char: string;
   index: number;
@@ -24,14 +24,14 @@ const SunnyMorningsAnimationIn = ({
     fps,
     from: 4,
     to: 1,
-    config: { mass: 1, damping: 10 }
+    config: { mass: 1, damping: 10 },
   });
 
   const opacity = interpolate(
     frame - delay,
     [0, totalDuration / 2], // Ensure opacity fades in within half the duration
     [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
 
   return (
@@ -40,7 +40,7 @@ const SunnyMorningsAnimationIn = ({
       style={{
         display: "inline-block",
         transform: `scale(${scale})`,
-        opacity: opacity
+        opacity: opacity,
       }}
     >
       {char === " " ? " " : char}

@@ -4,7 +4,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { generateCaptions } from "../utils/captions";
@@ -45,7 +45,7 @@ export const Captions = () => {
     for (const key of Object.keys(groupedCaptions)) {
       const captions = groupedCaptions[key];
       const orderedCaptionByDisplayFrom = captions.sort(
-        (a, b) => a.display.from - b.display.from
+        (a, b) => a.display.from - b.display.from,
       );
       console.log({ orderedCaptionByDisplayFrom });
       groupedCaptions[key] = orderedCaptionByDisplayFrom as ITrackItem[];
@@ -61,7 +61,7 @@ export const Captions = () => {
     setIsGenerating(true);
     try {
       const trackItem = mediaTrackItems.find(
-        (m) => m.details.src === selectedMedia
+        (m) => m.details.src === selectedMedia,
       );
 
       if (!trackItem) {
@@ -73,20 +73,20 @@ export const Captions = () => {
       const fontInfo = {
         fontFamily: "theboldfont",
         fontUrl: "https://cdn.designcombo.dev/fonts/the-bold-font.ttf",
-        fontSize: 64
+        fontSize: 64,
       };
       const options = {
         containerWidth: 800,
         linesPerCaption: 1,
         parentId: trackItem.id,
-        displayFrom: trackItem.display.from
+        displayFrom: trackItem.display.from,
       };
 
       await loadFonts([{ name: fontInfo.fontFamily, url: fontInfo.fontUrl }]);
       const captions = generateCaptions(
         { ...jsonData, sourceUrl: selectedMedia },
         fontInfo,
-        options
+        options,
       );
 
       console.log({ captions });
@@ -99,10 +99,10 @@ export const Captions = () => {
               id: generateId(),
               items: captions.map((item) => item.id),
               type: "caption",
-              name: "Captions"
-            }
-          ]
-        }
+              name: "Captions",
+            },
+          ],
+        },
       });
     } catch (error) {
       console.error("Error generating captions:", error);
@@ -135,7 +135,7 @@ const MediaSection = ({
   onSelectChange,
   captionTrackItemsMap,
   createCaptions,
-  isGenerating
+  isGenerating,
 }: {
   selectMediaItems: { label: string; value: string }[];
   selectedMedia: string | undefined;
@@ -193,7 +193,7 @@ const EmptyMediaTrackItems = () => (
 
 const MediaWithNoCaptions = ({
   createCaptions,
-  isGenerating
+  isGenerating,
 }: {
   createCaptions: () => void;
   isGenerating: boolean;
@@ -222,7 +222,7 @@ const MediaWithNoCaptions = ({
 );
 
 const MediaWithCaptions = ({
-  captionTrackItems
+  captionTrackItems,
 }: {
   captionTrackItems: ITrackItem[];
 }) => {
@@ -246,7 +246,7 @@ const MediaWithCaptions = ({
 };
 const CaptionItem = ({
   item,
-  isActive
+  isActive,
 }: {
   item: ITrackItem;
   isActive?: boolean;
@@ -293,37 +293,37 @@ const CaptionItem = ({
 // Helper functions
 const fetchMediaTrackItems = (trackItemsMap: ITrackItemsMap) => {
   return Object.values(trackItemsMap).filter(
-    ({ type }: ITrackItem) => type === "audio" || type === "video"
+    ({ type }: ITrackItem) => type === "audio" || type === "video",
   );
 };
 
 const createSelectMediaOptions = (mediaTrackItems: ITrackItem[]) => {
   return mediaTrackItems.map(({ name, details }) => ({
     label: name,
-    value: details.src
+    value: details.src,
   }));
 };
 
 const groupCaptionItems = (trackItemsMap: ITrackItemsMap) => {
   const captionTrackItems = Object.values(trackItemsMap).filter(
-    ({ type }: ITrackItem) => type === "caption"
+    ({ type }: ITrackItem) => type === "caption",
   );
   return groupBy(captionTrackItems, "metadata.sourceUrl");
 };
 
 async function transcribeMedia(
   mediaUrl: string,
-  targetLanguage: string
+  targetLanguage: string,
 ): Promise<{ url: string }> {
   const transcribeResponse = await fetch("/api/transcribe", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       url: mediaUrl,
-      targetLanguage
-    })
+      targetLanguage,
+    }),
   });
 
   if (!transcribeResponse.ok) {

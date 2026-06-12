@@ -6,14 +6,14 @@ import { Icons } from "@/components/shared/icons";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import {
   ChevronDown,
   Keyboard,
   ProportionsIcon,
   Loader2,
-  Save
+  Save,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 
@@ -27,7 +27,7 @@ import { debounce } from "lodash";
 import {
   useIsLargeScreen,
   useIsMediumScreen,
-  useIsSmallScreen
+  useIsSmallScreen,
 } from "@/hooks/use-media-query";
 
 import { LogoIcons } from "@/components/shared/logos";
@@ -39,7 +39,7 @@ export default function Navbar({
   user,
   stateManager,
   setProjectName,
-  projectName
+  projectName,
 }: {
   user: any | null;
   stateManager: StateManager;
@@ -55,7 +55,10 @@ export default function Navbar({
   const { projectId } = useStore();
 
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-  const homeUrl = typeof window !== "undefined" ? window.location.origin.replace("3001", "3000") : "http://localhost:3000";
+  const homeUrl =
+    typeof window !== "undefined"
+      ? window.location.origin.replace(/300[12]/, "3000")
+      : "http://localhost:3000";
 
   const handleUndo = () => {
     dispatch(HISTORY_UNDO);
@@ -83,7 +86,9 @@ export default function Navbar({
       }
 
       // 2. Find all caption items and save script updates
-      const captionItems = Object.values(trackItemsMap).filter((item: any) => item.type === "caption");
+      const captionItems = Object.values(trackItemsMap).filter(
+        (item: any) => item.type === "caption",
+      );
       for (const item of captionItems) {
         const sceneId = item.id.replace("caption-", "");
         if (sceneId && item.details?.text) {
@@ -96,29 +101,36 @@ export default function Navbar({
       }
 
       // 3. Find all visual items and save asset associations
-      const visualItems = Object.values(trackItemsMap).filter((item: any) => item.type === "video" || item.type === "image");
+      const visualItems = Object.values(trackItemsMap).filter(
+        (item: any) => item.type === "video" || item.type === "image",
+      );
       for (const item of visualItems) {
         const sceneId = item.id.replace("visual-", "");
         if (sceneId && item.details?.src) {
           const srcUrl = item.details.src;
           let assetPath = srcUrl;
-          
+
           if (srcUrl.includes("/assets/")) {
             assetPath = "assets/" + srcUrl.split("/assets/")[1];
           } else if (srcUrl.startsWith(apiBaseUrl)) {
             assetPath = srcUrl.replace(`${apiBaseUrl}/`, "");
           }
 
-          const assetsRes = await fetch(`${apiBaseUrl}/projects/${projectId}/assets`);
+          const assetsRes = await fetch(
+            `${apiBaseUrl}/projects/${projectId}/assets`,
+          );
           if (assetsRes.ok) {
             const { assets } = await assetsRes.json();
             const matchedAsset = assets.find((a: any) => a.path === assetPath);
             if (matchedAsset) {
-              await fetch(`${apiBaseUrl}/projects/${projectId}/scenes/${sceneId}/asset`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ assetId: matchedAsset.id }),
-              });
+              await fetch(
+                `${apiBaseUrl}/projects/${projectId}/scenes/${sceneId}/asset`,
+                {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ assetId: matchedAsset.id }),
+                },
+              );
             }
           }
         }
@@ -139,7 +151,7 @@ export default function Navbar({
       console.log("Debounced setProjectName:", name);
       setProjectName(name);
     }, 2000), // 2 seconds delay
-    []
+    [],
   );
 
   // Update the debounced function whenever the title changes
@@ -155,7 +167,7 @@ export default function Navbar({
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: isLargeScreen ? "320px 1fr 320px" : "1fr 1fr 1fr"
+        gridTemplateColumns: isLargeScreen ? "320px 1fr 320px" : "1fr 1fr 1fr",
       }}
       className="bg-card pointer-events-none flex h-13 items-center border-b border-border/80 px-2"
     >
@@ -255,7 +267,7 @@ const DownloadPopover = ({ stateManager }: { stateManager: StateManager }) => {
   const handleExport = () => {
     const data: IDesign = {
       id: generateId(),
-      ...stateManager.toJSON()
+      ...stateManager.toJSON(),
     };
 
     console.log({ data });
@@ -341,8 +353,8 @@ const RESIZE_OPTIONS: ResizeOptionProps[] = [
     value: {
       width: 1920,
       height: 1080,
-      name: "16:9"
-    }
+      name: "16:9",
+    },
   },
   {
     label: "9:16",
@@ -351,8 +363,8 @@ const RESIZE_OPTIONS: ResizeOptionProps[] = [
     value: {
       width: 1080,
       height: 1920,
-      name: "9:16"
-    }
+      name: "9:16",
+    },
   },
   {
     label: "1:1",
@@ -361,17 +373,17 @@ const RESIZE_OPTIONS: ResizeOptionProps[] = [
     value: {
       width: 1080,
       height: 1080,
-      name: "1:1"
-    }
-  }
+      name: "1:1",
+    },
+  },
 ];
 
 const ResizeVideo = () => {
   const handleResize = (options: ResizeValue) => {
     dispatch(DESIGN_RESIZE, {
       payload: {
-        ...options
-      }
+        ...options,
+      },
     });
   };
   return (
@@ -405,7 +417,7 @@ const ResizeOption = ({
   icon,
   value,
   description,
-  handleResize
+  handleResize,
 }: ResizeOptionProps & { handleResize: (payload: ResizeValue) => void }) => {
   const Icon = Icons[icon as "text"];
   return (

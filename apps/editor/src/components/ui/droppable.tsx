@@ -1,7 +1,7 @@
 import * as React from "react";
 import Dropzone, {
   type DropzoneProps,
-  type FileRejection
+  type FileRejection,
 } from "react-dropzone";
 import { cn } from "@/lib/utils";
 import { PlusIcon } from "lucide-react";
@@ -20,7 +20,7 @@ export function Droppable(props: DroppableProps) {
   const {
     onValueChange,
     accept = {
-      "image/*": []
+      "image/*": [],
     },
     maxSize = 1024 * 1024 * 2,
     maxFileCount = 1,
@@ -41,7 +41,7 @@ export function Droppable(props: DroppableProps) {
       onValueChange?.(acceptedFiles);
     },
 
-    [maxFileCount, multiple]
+    [maxFileCount, multiple],
   );
 
   return (
@@ -60,7 +60,7 @@ export function Droppable(props: DroppableProps) {
           className={cn(
             "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
             disabled && "pointer-events-none opacity-60",
-            className
+            className,
           )}
           {...dropzoneProps}
         >

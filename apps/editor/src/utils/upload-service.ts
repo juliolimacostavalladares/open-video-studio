@@ -2,13 +2,13 @@ import axios from "axios";
 
 export type UploadProgressCallback = (
   uploadId: string,
-  progress: number
+  progress: number,
 ) => void;
 
 export type UploadStatusCallback = (
   uploadId: string,
   status: "uploaded" | "failed",
-  error?: string
+  error?: string,
 ) => void;
 
 export interface UploadCallbacks {
@@ -19,21 +19,21 @@ export interface UploadCallbacks {
 export async function processFileUpload(
   uploadId: string,
   file: File,
-  callbacks: UploadCallbacks
+  callbacks: UploadCallbacks,
 ): Promise<any> {
   try {
     // Get presigned URL
     const {
-      data: { uploads }
+      data: { uploads },
     } = await axios.post(
       "/api/uploads/presign",
       {
         userId: "PJ1nkaufw0hZPyhN7bWCP",
-        fileNames: [file.name]
+        fileNames: [file.name],
       },
       {
-        headers: { "Content-Type": "application/json" }
-      }
+        headers: { "Content-Type": "application/json" },
+      },
     );
 
     const uploadInfo = uploads[0];
@@ -43,11 +43,11 @@ export async function processFileUpload(
       headers: { "Content-Type": uploadInfo.contentType },
       onUploadProgress: (progressEvent) => {
         const percent = Math.round(
-          (progressEvent.loaded * 100) / (progressEvent.total || 1)
+          (progressEvent.loaded * 100) / (progressEvent.total || 1),
         );
         callbacks.onProgress(uploadId, percent);
       },
-      validateStatus: () => true
+      validateStatus: () => true,
     });
 
     // Construct upload data from uploadInfo
@@ -62,7 +62,7 @@ export async function processFileUpload(
       method: "direct",
       origin: "user",
       status: "uploaded",
-      isPreview: false
+      isPreview: false,
     };
 
     callbacks.onStatus(uploadId, "uploaded");
@@ -76,7 +76,7 @@ export async function processFileUpload(
 export async function processUrlUpload(
   uploadId: string,
   url: string,
-  callbacks: UploadCallbacks
+  callbacks: UploadCallbacks,
 ): Promise<any[]> {
   try {
     // Start with 10% progress
@@ -87,11 +87,11 @@ export async function processUrlUpload(
       "/api/uploads/url",
       {
         userId: "PJ1nkaufw0hZPyhN7bWCP",
-        urls: [url]
+        urls: [url],
       },
       {
-        headers: { "Content-Type": "application/json" }
-      }
+        headers: { "Content-Type": "application/json" },
+      },
     );
 
     // Update to 50% progress
@@ -109,7 +109,7 @@ export async function processUrlUpload(
       method: "url",
       origin: "user",
       status: "uploaded",
-      isPreview: false
+      isPreview: false,
     }));
 
     // Complete
@@ -125,7 +125,7 @@ export async function processUrlUpload(
 export async function processUpload(
   uploadId: string,
   upload: { file?: File; url?: string },
-  callbacks: UploadCallbacks
+  callbacks: UploadCallbacks,
 ): Promise<any> {
   if (upload.file) {
     return await processFileUpload(uploadId, upload.file, callbacks);

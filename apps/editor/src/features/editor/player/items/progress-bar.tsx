@@ -4,7 +4,7 @@ import { BaseSequence, SequenceItemOptions } from "../base-sequence";
 
 export default function ProgressBar({
   item,
-  options
+  options,
 }: {
   item: IProgressBar;
   options: SequenceItemOptions;
@@ -15,9 +15,9 @@ export default function ProgressBar({
   const { from, durationInFrames } = calculateFrames(
     {
       from: item.display.from / playbackRate,
-      to: item.display.to / playbackRate
+      to: item.display.to / playbackRate,
     },
-    fps
+    fps,
   );
   let progress: number;
   if (details.inverted) {
@@ -38,7 +38,7 @@ export default function ProgressBar({
           WebkitMaskPosition: "center",
           WebkitMaskRepeat: "no-repeat",
           backgroundColor:
-            details.backgroundColors[0] || "rgba(128, 128, 128,0.5)"
+            details.backgroundColors[0] || "rgba(128, 128, 128,0.5)",
         }}
       />
       <div
@@ -47,7 +47,7 @@ export default function ProgressBar({
           width: `${progress}%`,
           height: "100%",
           backgroundColor:
-            details.backgroundColors[1] || "rgba(128, 128, 128,1)"
+            details.backgroundColors[1] || "rgba(128, 128, 128,1)",
         }}
       />
     </>

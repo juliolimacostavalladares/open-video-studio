@@ -6,6 +6,6 @@ export const API_ENDPOINTS = {
   SCHEME: {
     BASE: "https://scheme.combo.sh",
     CREATE: "https://scheme.combo.sh/schemes",
-    RUN: (id: string) => `https://scheme.combo.sh/run/${id}`
-  }
+    RUN: (id: string) => `https://scheme.combo.sh/run/${id}`,
+  },
 } as const;

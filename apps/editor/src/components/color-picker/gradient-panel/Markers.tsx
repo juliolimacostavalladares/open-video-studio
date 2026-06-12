@@ -65,7 +65,7 @@ const Markers: FC<IPropsPanel> = ({
   setActiveColor,
   setInit,
   format = "rgb",
-  allowAddGradientStops = true
+  allowAddGradientStops = true,
 }) => {
   const node = useRef<HTMLDivElement>(null);
 
@@ -89,7 +89,7 @@ const Markers: FC<IPropsPanel> = ({
 
       const newStops = [
         ...color.stops,
-        [rgba.toRgbString(), loc, color.stops.length]
+        [rgba.toRgbString(), loc, color.stops.length],
       ]
         .sort((a: [string, number], b: [string, number]) => a[1] - b[1])
         .map((item, index) => {
@@ -100,13 +100,13 @@ const Markers: FC<IPropsPanel> = ({
       setColor({
         ...color,
         gradient: `${getGradient(type, newStops, modifier, format)}`,
-        stops: newStops
+        stops: newStops,
       });
 
       setActiveColor({
         ...activeColor,
         loc: loc,
-        index: newStops.find((item) => item[1] === loc)[2]
+        index: newStops.find((item) => item[1] === loc)[2],
       });
     }
   };
@@ -139,7 +139,7 @@ const Markers: FC<IPropsPanel> = ({
       hex: `#${newColor.toHex()}`,
       alpha: newColor.getAlpha() * 100,
       loc: color[1],
-      index: color[2]
+      index: color[2],
     });
 
     const x = e.clientX;
@@ -147,7 +147,7 @@ const Markers: FC<IPropsPanel> = ({
 
     pointMoveTo({
       x,
-      y
+      y,
     });
 
     window.addEventListener("mousemove", onDrag);
@@ -169,7 +169,7 @@ const Markers: FC<IPropsPanel> = ({
 
     pointMoveTo({
       x,
-      y
+      y,
     });
   };
 
@@ -186,7 +186,7 @@ const Markers: FC<IPropsPanel> = ({
 
     pointMoveTo({
       x,
-      y
+      y,
     });
 
     removeListeners();
@@ -210,7 +210,7 @@ const Markers: FC<IPropsPanel> = ({
       hex: `#${newColor.toHex()}`,
       alpha: newColor.getAlpha() * 100,
       loc: color[1],
-      index: color[2]
+      index: color[2],
     });
 
     const x = e.targetTouches[0].clientX;
@@ -241,7 +241,7 @@ const Markers: FC<IPropsPanel> = ({
 
     pointMoveTo({
       x,
-      y
+      y,
     });
   };
 
@@ -260,7 +260,7 @@ const Markers: FC<IPropsPanel> = ({
     const location = Number(((100 / rect.width) * pos).toFixed(0)) / 100;
     setActiveColor((prev) => ({
       ...prev,
-      loc: location
+      loc: location,
     }));
   };
 
@@ -284,12 +284,12 @@ const Markers: FC<IPropsPanel> = ({
       hex: activeStop,
       alpha: Number(Math.round(lastStop[3] * 100)),
       loc: lastStopLoc,
-      index: activeIdx
+      index: activeIdx,
     });
     return setColor({
       ...color,
       gradient: `${getGradient(type, newStops, modifier, format)}`,
-      stops: newStops
+      stops: newStops,
     });
   };
 
@@ -308,7 +308,7 @@ const Markers: FC<IPropsPanel> = ({
     setColor({
       ...color,
       gradient: `${getGradient(type, newStops, modifier, format)}`,
-      stops: newStops
+      stops: newStops,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeColor.loc, needDeleteActive]);
@@ -343,7 +343,7 @@ const Markers: FC<IPropsPanel> = ({
                 opacity: isHide ? 0 : 1,
                 borderWidth: isActive ? 3 : 2,
                 borderStyle: "solid",
-                borderColor: "#ffffff"
+                borderColor: "#ffffff",
               }}
               onTouchStart={(e) => onTouchStart(e, color)}
               onMouseDown={(e) => onMouseDown(e, color)}

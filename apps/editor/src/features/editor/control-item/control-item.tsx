@@ -6,7 +6,7 @@ import {
   IText,
   ITrackItem,
   ITrackItemAndDetails,
-  IVideo
+  IVideo,
 } from "@designcombo/types";
 import BasicText from "./basic-text";
 import BasicImage from "./basic-image";
@@ -18,7 +18,7 @@ import useStore from "../store/use-store";
 import useLayoutStore from "../store/use-layout-store";
 
 const ActiveControlItem = ({
-  trackItem
+  trackItem,
 }: {
   trackItem?: ITrackItemAndDetails;
 }) => {
@@ -35,7 +35,7 @@ const ActiveControlItem = ({
           ),
           image: <BasicImage trackItem={trackItem as ITrackItem & IImage} />,
           video: <BasicVideo trackItem={trackItem as ITrackItem & IVideo} />,
-          audio: <BasicAudio trackItem={trackItem as ITrackItem & IAudio} />
+          audio: <BasicAudio trackItem={trackItem as ITrackItem & IAudio} />,
         }[trackItem.type as "text"]
       }
     </>

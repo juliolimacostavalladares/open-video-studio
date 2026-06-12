@@ -7,7 +7,7 @@ const AnimatedTextOut = ({
   fps,
   textLength,
   animationTextOutFrames,
-  durationInFrames
+  durationInFrames,
 }: {
   char: string;
   index: number;
@@ -25,7 +25,7 @@ const AnimatedTextOut = ({
     fps,
     from: 1,
     to: 0,
-    config: { mass: 0.5, damping: 10 }
+    config: { mass: 0.5, damping: 10 },
   });
 
   const y = spring({
@@ -33,7 +33,7 @@ const AnimatedTextOut = ({
     fps,
     from: 0,
     to: 50,
-    config: { mass: 0.5, damping: 10 }
+    config: { mass: 0.5, damping: 10 },
   });
 
   const rotate = spring({
@@ -41,7 +41,7 @@ const AnimatedTextOut = ({
     fps,
     from: 0,
     to: 180,
-    config: { mass: 0.5, damping: 12 }
+    config: { mass: 0.5, damping: 12 },
   });
   return (
     <span
@@ -49,7 +49,7 @@ const AnimatedTextOut = ({
       style={{
         display: "inline-block",
         opacity,
-        transform: `translateY(${y}px) rotate(${rotate}deg)`
+        transform: `translateY(${y}px) rotate(${rotate}deg)`,
       }}
     >
       {char === " " ? " " : char}

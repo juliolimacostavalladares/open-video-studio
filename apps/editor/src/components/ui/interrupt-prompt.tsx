@@ -19,8 +19,8 @@ export function InterruptPrompt({ isOpen, close }: InterruptPromptProps) {
             filter: "blur(0px)",
             transition: {
               type: "spring",
-              filter: { type: "tween" }
-            }
+              filter: { type: "tween" },
+            },
           }}
           exit={{ top: 0, filter: "blur(5px)" }}
           className="absolute left-1/2 flex -translate-x-1/2 overflow-hidden whitespace-nowrap rounded-full border bg-background py-1 text-center text-sm text-muted-foreground"

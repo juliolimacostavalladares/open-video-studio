@@ -31,26 +31,26 @@ export function SFX() {
       const response = await fetch("/api/audio/sfx", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           limit: 30,
           page: pageNumber,
-          query: query ? { keys: [query] } : {}
-        })
+          query: query ? { keys: [query] } : {},
+        }),
       });
       const data = await response.json();
       if (data.soundEffects) {
         const mappedSFX = data.soundEffects.map((sfx: any) => ({
           id: sfx.id,
           details: {
-            src: sfx.src
+            src: sfx.src,
           },
           name: sfx.name,
           type: sfx.type,
           metadata: {
-            author: sfx.description || ""
-          }
+            author: sfx.description || "",
+          },
         }));
         if (pageNumber === 1) {
           setSearchResults(mappedSFX);
@@ -77,7 +77,7 @@ export function SFX() {
       setPage(1);
       fetchSFX(query, 1);
     }, 500),
-    []
+    [],
   );
   useEffect(() => {
     fetchSFX("");
@@ -88,7 +88,7 @@ export function SFX() {
     console.log(payload);
     dispatch(ADD_AUDIO, {
       payload,
-      options: {}
+      options: {},
     });
   };
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,7 +104,7 @@ export function SFX() {
   };
 
   const uniqueResults = Array.from(
-    new Map(searchResults.map((item: IAudio) => [item.id, item])).values()
+    new Map(searchResults.map((item: IAudio) => [item.id, item])).values(),
   );
 
   return (

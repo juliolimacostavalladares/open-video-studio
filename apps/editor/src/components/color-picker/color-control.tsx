@@ -23,11 +23,11 @@ const InputRgba: FC<TProps> = ({
   alpha,
   format = "rgb",
   onChange,
-  onSubmitChange
+  onSubmitChange,
 }) => {
   const [color, setColor] = useState({
     alpha,
-    hex
+    hex,
   });
 
   const onChangeAlpha = (alpha: string) => {
@@ -35,14 +35,14 @@ const InputRgba: FC<TProps> = ({
 
     setColor({
       ...color,
-      alpha: Number(validAlpha)
+      alpha: Number(validAlpha),
     });
   };
 
   const onChangeHex = (hex: string) => {
     setColor({
       ...color,
-      hex
+      hex,
     });
   };
 
@@ -53,7 +53,7 @@ const InputRgba: FC<TProps> = ({
     if (rgba && (color.alpha !== alpha || color.hex !== hex)) {
       onChange({
         hex: color.hex[0] === "#" ? color.hex : `#${color.hex}`,
-        alpha: Number(color.alpha)
+        alpha: Number(color.alpha),
       });
       if (onSubmitChange) {
         onSubmitChange(checkFormat(rgba.toRgbString(), format, color.alpha));
@@ -61,11 +61,11 @@ const InputRgba: FC<TProps> = ({
     } else {
       setColor({
         hex,
-        alpha
+        alpha,
       });
       onChange({
         hex,
-        alpha
+        alpha,
       });
     }
   };
@@ -73,14 +73,14 @@ const InputRgba: FC<TProps> = ({
   useEffect(() => {
     setColor({
       hex,
-      alpha
+      alpha,
     });
   }, [hex, alpha]);
 
   return (
     <div
       style={{
-        gridTemplateColumns: "5fr 2fr"
+        gridTemplateColumns: "5fr 2fr",
       }}
       className="grid gap-2"
     >

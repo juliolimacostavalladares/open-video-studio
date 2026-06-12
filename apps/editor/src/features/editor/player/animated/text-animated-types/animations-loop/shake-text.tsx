@@ -12,7 +12,7 @@ const ShakeText = ({ text, frame }: { text: string; frame: number }) => {
     <span
       style={{
         display: "inline-block",
-        transform: `translate(${offsetX}px, ${offsetY}px) rotate(${rotate}deg)`
+        transform: `translate(${offsetX}px, ${offsetY}px) rotate(${rotate}deg)`,
       }}
     >
       {text}

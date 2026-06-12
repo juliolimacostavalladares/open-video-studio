@@ -26,14 +26,14 @@ export async function POST(request: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { error: "userId is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!urls || !Array.isArray(urls) || urls.length === 0) {
       return NextResponse.json(
         { error: "urls array is required and must not be empty" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -43,13 +43,13 @@ export async function POST(request: NextRequest) {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId,
-          urls
-        })
-      }
+          urls,
+        }),
+      },
     );
 
     if (!externalResponse.ok) {
@@ -57,9 +57,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: "External upload service failed",
-          details: errorData
+          details: errorData,
         },
-        { status: externalResponse.status }
+        { status: externalResponse.status },
       );
     }
 
@@ -68,16 +68,16 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      uploads: uploads
+      uploads: uploads,
     });
   } catch (error) {
     console.error("Error in upload URL route:", error);
     return NextResponse.json(
       {
         error: "Internal server error",
-        details: error instanceof Error ? error.message : String(error)
+        details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

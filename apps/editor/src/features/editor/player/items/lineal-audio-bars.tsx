@@ -4,7 +4,7 @@ import { LinealBars } from "./audio-bars/lineal-audio-bars";
 
 export default function LinealAudioBars({
   item,
-  options
+  options,
 }: {
   item: ILinealAudioBars;
   options: SequenceItemOptions;

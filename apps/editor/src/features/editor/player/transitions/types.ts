@@ -8,7 +8,7 @@ export type TransitionTiming = {
 };
 
 export type TransitionSeriesTransitionProps<
-  PresentationProps extends Record<string, unknown>
+  PresentationProps extends Record<string, unknown>,
 > = {
   timing: TransitionTiming;
   presentation?: TransitionPresentation<PresentationProps>;
@@ -17,7 +17,7 @@ export type TransitionSeriesTransitionProps<
 type LooseComponentType<T> = ComponentType<T> | ((props: T) => React.ReactNode);
 
 export type TransitionPresentation<
-  PresentationProps extends Record<string, unknown>
+  PresentationProps extends Record<string, unknown>,
 > = {
   component: LooseComponentType<
     TransitionPresentationComponentProps<PresentationProps>
@@ -26,7 +26,7 @@ export type TransitionPresentation<
 };
 
 export type TransitionPresentationComponentProps<
-  PresentationProps extends Record<string, unknown>
+  PresentationProps extends Record<string, unknown>,
 > = {
   presentationProgress: number;
   children: React.ReactNode;

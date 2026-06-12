@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import useDataState from "../../store/use-data-state";
@@ -47,7 +47,7 @@ export const TextControls = ({
   handleBackgroundChange,
   onChangeTextAlign,
   onChangeTextDecoration,
-  handleChangeOpacity
+  handleChangeOpacity,
 }: TextControlsProps) => {
   return (
     <div className="flex flex-col gap-2 py-4">
@@ -87,7 +87,7 @@ export const TextControls = ({
 
 const FontBackground = ({
   value,
-  handleColorChange
+  handleColorChange,
 }: {
   value: string;
   handleColorChange: (color: string) => void;
@@ -184,7 +184,7 @@ const FontBackground = ({
 };
 const FontColor = ({
   value,
-  handleColorChange
+  handleColorChange,
 }: {
   value: string;
   handleColorChange: (color: string) => void;
@@ -281,7 +281,7 @@ const FontColor = ({
 
 const FontSize = ({
   value,
-  onChange
+  onChange,
 }: {
   value: number;
   onChange: (v: number) => void;
@@ -336,7 +336,7 @@ const FontSize = ({
 
 const FontFamily = ({
   handleChangeFont,
-  fontFamilyDisplay
+  fontFamilyDisplay,
 }: {
   handleChangeFont: (font: ICompactFont) => void;
   fontFamilyDisplay: string;
@@ -348,7 +348,7 @@ const FontFamily = ({
   const [fonts, setFonts] = useState<ICompactFont[]>(compactFonts);
   useEffect(() => {
     const filteredFonts = compactFonts.filter((font) =>
-      font.family.toLowerCase().includes(value.toLowerCase())
+      font.family.toLowerCase().includes(value.toLowerCase()),
     );
     setFonts(filteredFonts);
   }, [value]);
@@ -431,7 +431,7 @@ const FontFamily = ({
 };
 const FontStyle = ({
   selectedFont,
-  handleChangeFontStyle
+  handleChangeFontStyle,
 }: {
   selectedFont: ICompactFont;
   handleChangeFontStyle: (font: IFont) => void;
@@ -480,7 +480,7 @@ const FontStyle = ({
 
 const TextDecoration = ({
   value,
-  onChange
+  onChange,
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -543,12 +543,12 @@ const TextDecoration = ({
 const fontAlignmentOptions = [
   { value: "left", label: "Left" },
   { value: "center", label: "Center" },
-  { value: "right", label: "Right" }
+  { value: "right", label: "Right" },
 ];
 
 const Alignment = ({
   value,
-  onChange
+  onChange,
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -605,7 +605,7 @@ const Alignment = ({
 const fontCaseOptions = [
   { value: "none", label: "As typed" },
   { value: "uppercase", label: "Uppercase" },
-  { value: "lowercase", label: "Lowercase" }
+  { value: "lowercase", label: "Lowercase" },
 ];
 
 const FontCase = ({ id }: { id: string }) => {
@@ -616,10 +616,10 @@ const FontCase = ({ id }: { id: string }) => {
       payload: {
         [id]: {
           details: {
-            textTransform: value
-          }
-        }
-      }
+            textTransform: value,
+          },
+        },
+      },
     });
   };
   return (

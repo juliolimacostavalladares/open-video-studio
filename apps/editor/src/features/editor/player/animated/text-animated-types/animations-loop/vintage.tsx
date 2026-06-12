@@ -6,7 +6,7 @@ const Vintage = ({
   text,
   frame,
   details,
-  fps
+  fps,
 }: {
   text: string;
   frame: number;
@@ -21,7 +21,7 @@ const Vintage = ({
   const layerCount = Math.round(
     frame % fps <= half
       ? interpolate(frame % fps, [0, half], [1, TOTAL_LAYERS])
-      : interpolate(frame % fps, [half, duration], [TOTAL_LAYERS, 1])
+      : interpolate(frame % fps, [half, duration], [TOTAL_LAYERS, 1]),
   );
 
   return (
@@ -29,7 +29,7 @@ const Vintage = ({
       style={{
         width: "100%",
         height: "100%",
-        position: "relative"
+        position: "relative",
       }}
     >
       {Array.from({ length: layerCount }).map((_, i) => {
@@ -48,7 +48,7 @@ const Vintage = ({
               zIndex: i,
               color: layerCount !== i + 1 ? "red" : details.color,
               background: "transparent",
-              opacity
+              opacity,
             }}
           >
             {text}

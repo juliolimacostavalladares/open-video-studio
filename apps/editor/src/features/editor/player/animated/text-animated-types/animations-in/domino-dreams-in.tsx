@@ -6,7 +6,7 @@ const DominoDreamsIn = ({
   frame,
   fps,
   textLength,
-  animationTextInFrames
+  animationTextInFrames,
 }: {
   char: string;
   index: number;
@@ -24,7 +24,7 @@ const DominoDreamsIn = ({
     fps,
     from: -90,
     to: 0,
-    config: { mass: 1, damping: 12 }
+    config: { mass: 1, damping: 12 },
   });
 
   return (
@@ -32,7 +32,7 @@ const DominoDreamsIn = ({
       key={index}
       style={{
         display: "inline-block",
-        transform: `rotateY(${rotateY}deg)`
+        transform: `rotateY(${rotateY}deg)`,
       }}
     >
       {char === " " ? " " : char}

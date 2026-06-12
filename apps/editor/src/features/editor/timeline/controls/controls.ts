@@ -2,7 +2,7 @@ import { controlsUtils, Control, resize } from "@designcombo/timeline";
 import {
   drawVerticalLeftIcon,
   drawVerticalLine,
-  drawVerticalRightIcon
+  drawVerticalRightIcon,
 } from "./draw";
 
 const { scaleSkewCursorStyleHandler } = controlsUtils;
@@ -17,7 +17,7 @@ export const createResizeControls = () => ({
     actionName: "resizing",
     sizeX: 20,
     sizeY: 32,
-    offsetX: 10
+    offsetX: 10,
   }),
   ml: new Control({
     x: -0.5,
@@ -28,8 +28,8 @@ export const createResizeControls = () => ({
     render: drawVerticalLeftIcon,
     sizeX: 20,
     sizeY: 32,
-    offsetX: -10
-  })
+    offsetX: -10,
+  }),
 });
 
 export const createAudioControls = () => ({
@@ -42,7 +42,7 @@ export const createAudioControls = () => ({
     actionName: "resizing",
     sizeX: 20,
     sizeY: 32,
-    offsetX: 10
+    offsetX: 10,
   }),
   ml: new Control({
     x: -0.5,
@@ -53,8 +53,8 @@ export const createAudioControls = () => ({
     actionName: "resizing",
     sizeX: 20,
     sizeY: 32,
-    offsetX: -10
-  })
+    offsetX: -10,
+  }),
 });
 
 export const createMediaControls = () => ({
@@ -67,7 +67,7 @@ export const createMediaControls = () => ({
     actionName: "resizing",
     sizeX: 20,
     sizeY: 32,
-    offsetX: 10
+    offsetX: 10,
   }),
   ml: new Control({
     x: -0.5,
@@ -79,8 +79,8 @@ export const createMediaControls = () => ({
     actionName: "resizing",
     sizeX: 20,
     sizeY: 32,
-    offsetX: -10
-  })
+    offsetX: -10,
+  }),
 });
 
 export const createTransitionControls = () => ({
@@ -90,7 +90,7 @@ export const createTransitionControls = () => ({
     actionHandler: resize.transition,
     cursorStyleHandler: scaleSkewCursorStyleHandler,
     actionName: "resizing",
-    render: drawVerticalLine
+    render: drawVerticalLine,
   }),
   ml: new Control({
     x: -0.5,
@@ -98,6 +98,6 @@ export const createTransitionControls = () => ({
     actionHandler: resize.transition,
     cursorStyleHandler: scaleSkewCursorStyleHandler,
     actionName: "resizing",
-    render: drawVerticalLine
-  })
+    render: drawVerticalLine,
+  }),
 });

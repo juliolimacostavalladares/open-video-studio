@@ -8,7 +8,7 @@ import {
   createAnimationFunctions,
   ANIMATION_CONFIGS,
   ANIMATION_FUNCTIONS,
-  WordAnimationState
+  WordAnimationState,
 } from "./caption-word-animations";
 
 const scalePulse = keyframes`
@@ -130,7 +130,7 @@ export const CaptionWord: React.FC<CaptionWordProps> = ({
   animationNoneCaption,
   showObject,
   lineIndex,
-  currentLine
+  currentLine,
 }) => {
   const fps = 30;
   const { playerRef } = useStore();
@@ -154,7 +154,11 @@ export const CaptionWord: React.FC<CaptionWordProps> = ({
 
   // Word color logic
   const getWordColor = () => {
-    let baseColor = isActive ? activeColor : isAppeared ? appearedColor : color;
+    const baseColor = isActive
+      ? activeColor
+      : isAppeared
+        ? appearedColor
+        : color;
 
     if (word.is_keyword && isKeywordColor !== "transparent") {
       if (isActive || (preservedColorKeyWord && isAppeared)) {
@@ -174,7 +178,7 @@ export const CaptionWord: React.FC<CaptionWordProps> = ({
     endAtFrame,
     animation,
     word,
-    globalOpacity
+    globalOpacity,
   );
 
   // Display text logic
@@ -185,8 +189,8 @@ export const CaptionWord: React.FC<CaptionWordProps> = ({
       const lettersToShow = Math.min(
         totalLetters,
         Math.floor(
-          ((currentFrame - startAtFrame) / animationDuration) * totalLetters
-        )
+          ((currentFrame - startAtFrame) / animationDuration) * totalLetters,
+        ),
       );
       return word.word.slice(0, lettersToShow);
     }
@@ -200,7 +204,7 @@ export const CaptionWord: React.FC<CaptionWordProps> = ({
     const transforms = [];
     if (animationState.translateX !== 0 || animationState.translateY !== 0) {
       transforms.push(
-        `translate(${animationState.translateX}px, ${animationState.translateY}px)`
+        `translate(${animationState.translateX}px, ${animationState.translateY}px)`,
       );
     }
     return transforms.length > 0 ? transforms.join(" ") : undefined;
@@ -216,7 +220,7 @@ export const CaptionWord: React.FC<CaptionWordProps> = ({
       animationNoneCaption={animationNoneCaption}
       style={{
         opacity: animationState.opacity,
-        ...(getTransformStyle() && { transform: getTransformStyle() })
+        ...(getTransformStyle() && { transform: getTransformStyle() }),
       }}
       isAppeared={isAppeared}
       scaleFactor={scaleFactor}
@@ -233,27 +237,27 @@ function calculateAnimationState(
   endAtFrame: number,
   animation: string,
   word: any,
-  globalOpacity?: number
+  globalOpacity?: number,
 ): WordAnimationState {
   const initialState: WordAnimationState = {
     opacity: 1,
     scale: 1,
     translateX: 0,
-    translateY: 0
+    translateY: 0,
   };
 
   // Apply basic animation effects
   const basicEffects = {
     scaleAnimationLetterEffect: () => ({
       scale:
-        currentFrame > startAtFrame && currentFrame < endAtFrame ? 1.4 : 0.9
+        currentFrame > startAtFrame && currentFrame < endAtFrame ? 1.4 : 0.9,
     }),
     animationScaleMinEffect: () => ({ scale: 0.8 }),
     animationScaleDinamicEffect: () => ({ scale: word.is_keyword ? 1.4 : 0.9 }),
     captionAnimation26: () => ({
       opacity:
-        currentFrame > startAtFrame && currentFrame < endAtFrame ? 1 : 0.6
-    })
+        currentFrame > startAtFrame && currentFrame < endAtFrame ? 1 : 0.6,
+    }),
   };
 
   // Apply basic effects
@@ -267,7 +271,7 @@ function calculateAnimationState(
   const animationHelpers = createAnimationFunctions(
     currentFrame,
     startAtFrame,
-    endAtFrame
+    endAtFrame,
   );
 
   // Apply animation configurations

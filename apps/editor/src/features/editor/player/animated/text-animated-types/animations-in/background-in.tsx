@@ -5,7 +5,7 @@ const BackgroundIn = ({
   text,
   frame,
   details,
-  animationTextInFrames
+  animationTextInFrames,
 }: {
   text: string;
   frame: number;
@@ -13,7 +13,7 @@ const BackgroundIn = ({
   animationTextInFrames: number;
 }) => {
   const progress = interpolate(frame, [0, animationTextInFrames], [0, 1], {
-    extrapolateRight: "clamp"
+    extrapolateRight: "clamp",
   });
   const fullWidth = details.width;
   const fullHeight = details.height;
@@ -30,7 +30,7 @@ const BackgroundIn = ({
         alignItems: "center",
         display: "flex",
         width: details.width,
-        height: details.height
+        height: details.height,
       }}
     >
       <div
@@ -42,7 +42,7 @@ const BackgroundIn = ({
           position: "relative",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "white"
+          backgroundColor: "white",
         }}
       >
         <div
@@ -58,7 +58,7 @@ const BackgroundIn = ({
               details.color === "white" || details.color.includes("fff")
                 ? "black"
                 : details.color,
-            transform: `translateX(${textTranslateX * 2}px)`
+            transform: `translateX(${textTranslateX * 2}px)`,
           }}
         >
           {text}

@@ -27,7 +27,7 @@ export class AudioDataManager {
       const data = await getAudioData(src);
       this.audioDatas[id] = {
         data,
-        lastAccessed: Date.now()
+        lastAccessed: Date.now(),
       };
       this.cleanupCache();
     } catch (error) {
@@ -71,7 +71,7 @@ export class AudioDataManager {
     const currentItemIds = this.items.map((item) => item.id);
     const addItemIds = newItemIds.filter((id) => !currentItemIds.includes(id));
     const removeItemIds = currentItemIds.filter(
-      (id) => !newItemIds.includes(id)
+      (id) => !newItemIds.includes(id),
     );
 
     // Remove items
@@ -86,7 +86,7 @@ export class AudioDataManager {
         if (item?.details.src) {
           await this.loadAudioData(item.details.src, id);
         }
-      })
+      }),
     );
 
     this.items = items;
@@ -94,7 +94,7 @@ export class AudioDataManager {
   }
 
   public validateUpdateItems(
-    validateItems: (ITrackItem & (IVideo | IAudio))[]
+    validateItems: (ITrackItem & (IVideo | IAudio))[],
   ) {
     for (const item of validateItems) {
       for (const audioDataItem of this.items) {
@@ -125,7 +125,7 @@ export class AudioDataManager {
 
   private combineValues = (
     length: number,
-    sources: Array<number[]>
+    sources: Array<number[]>,
   ): number[] => {
     return Array.from({ length }).map((_, i) => {
       return sources.reduce((acc, source) => Math.max(acc, source[i]), 0);
@@ -159,7 +159,7 @@ export class AudioDataManager {
         audioData: cache.data,
         frame: frameTime,
         fps: this.fps,
-        numberOfSamples: this.numberOfSamples
+        numberOfSamples: this.numberOfSamples,
       });
 
       // Update last accessed time
@@ -169,7 +169,7 @@ export class AudioDataManager {
 
     const result = this.combineValues(
       this.numberOfSamples,
-      visualizationValues
+      visualizationValues,
     );
 
     // Cache the result

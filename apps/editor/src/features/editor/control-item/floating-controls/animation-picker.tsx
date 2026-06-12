@@ -17,7 +17,7 @@ export const createPresetButtons = (
   type: "in" | "out" | "loop",
   activeIds: string[],
   animationType: "text" | "media",
-  trackItemsMap: any
+  trackItemsMap: any,
 ) =>
   Object.keys(presets)
     .filter(filter)
@@ -30,9 +30,9 @@ export const createPresetButtons = (
           backgroundSize: "cover",
           width: "60px",
           height: "60px",
-          borderRadius: "8px"
+          borderRadius: "8px",
         }),
-        [preset.previewUrl]
+        [preset.previewUrl],
       );
       if (
         animationType === "media" &&
@@ -45,7 +45,7 @@ export const createPresetButtons = (
         const animations = currentItem?.animations;
 
         const isSelected = ["in", "out", "loop"].some(
-          (type) => animations?.[type]?.name === presetKey
+          (type) => animations?.[type]?.name === presetKey,
         );
 
         if (isSelected) {
@@ -62,7 +62,7 @@ export const createPresetButtons = (
               presetKey as PresetName,
               type,
               activeIds,
-              trackItemsMap
+              trackItemsMap,
             )
           }
         >
@@ -76,7 +76,7 @@ const applyAnimation = (
   presetName: PresetName,
   type: "in" | "out" | "loop",
   activeIds: string[],
-  trackItemsMap: any
+  trackItemsMap: any,
 ) => {
   if (!activeIds.length) {
     console.warn("No active ID to apply the animation to.");
@@ -102,7 +102,7 @@ const applyAnimation = (
       durationInFrames: 30,
       ease: Easing.ease,
       previewUrl: "https://cdn.designcombo.dev/animations/ScaleIn.webp",
-      name: "Scale"
+      name: "Scale",
     });
   } else if (presetName.includes("shake") && presetName.includes("Out")) {
     const shakeMovX = trackItemsMap[activeIds[0]].details.width / 6;
@@ -120,7 +120,7 @@ const applyAnimation = (
       durationInFrames: 30,
       ease: Easing.ease,
       previewUrl: "https://cdn.designcombo.dev/animations/ScaleOut.webp",
-      name: "Scale"
+      name: "Scale",
     });
   }
   dispatch(ADD_ANIMATION, {
@@ -129,14 +129,14 @@ const applyAnimation = (
       animations: {
         [type]: {
           name: presetName,
-          composition
-        }
-      }
-    }
+          composition,
+        },
+      },
+    },
   });
 };
 export default function AnimationPicker({
-  animationType = "media"
+  animationType = "media",
 }: {
   animationType?: "text" | "media";
 }) {
@@ -147,27 +147,27 @@ export default function AnimationPicker({
     "in",
     activeIds,
     animationType,
-    trackItemsMap
+    trackItemsMap,
   );
   const presetOutButtons = createPresetButtons(
     (key) => key.includes("Out"),
     "out",
     activeIds,
     animationType,
-    trackItemsMap
+    trackItemsMap,
   );
   const presetLoopButtons = createPresetButtons(
     (key) => key.includes("Loop"),
     "loop",
     activeIds,
     animationType,
-    trackItemsMap
+    trackItemsMap,
   );
   const { setFloatingControl } = useLayoutStore();
   const floatingRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(floatingRef as React.RefObject<HTMLElement>, () =>
-    setFloatingControl("")
+    setFloatingControl(""),
   );
   return (
     <div

@@ -6,7 +6,7 @@ const BeatifulQuestionAnimationIn = ({
   frame,
   fps,
   textLength,
-  animationTextInFrames
+  animationTextInFrames,
 }: {
   char: string;
   index: number;
@@ -24,12 +24,12 @@ const BeatifulQuestionAnimationIn = ({
     fps,
     from: 1.1,
     to: 0,
-    config: { damping: 10 }
+    config: { damping: 10 },
   });
 
   const opacity = interpolate(frame - delay, [0, totalDuration / 2], [0, 1], {
     extrapolateRight: "clamp",
-    extrapolateLeft: "clamp"
+    extrapolateLeft: "clamp",
   });
 
   return (
@@ -38,7 +38,7 @@ const BeatifulQuestionAnimationIn = ({
       style={{
         display: "inline-block",
         transform: `translateY(${translateY}em)`,
-        opacity
+        opacity,
       }}
     >
       {char === " " ? " " : char}

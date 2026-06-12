@@ -6,7 +6,7 @@ const AnimatedTextIn = ({
   frame,
   fps,
   textLength,
-  animationTextInFrames
+  animationTextInFrames,
 }: {
   char: string;
   index: number;
@@ -25,7 +25,7 @@ const AnimatedTextIn = ({
     fps,
     from: 0,
     to: 1,
-    config: { mass: 0.5, damping: 10 }
+    config: { mass: 0.5, damping: 10 },
   });
 
   const y = spring({
@@ -33,7 +33,7 @@ const AnimatedTextIn = ({
     fps,
     from: -50,
     to: 0,
-    config: { mass: 0.5, damping: 10 }
+    config: { mass: 0.5, damping: 10 },
   });
 
   const rotate = spring({
@@ -41,7 +41,7 @@ const AnimatedTextIn = ({
     fps,
     from: -180,
     to: 0,
-    config: { mass: 0.5, damping: 12 }
+    config: { mass: 0.5, damping: 12 },
   });
 
   return (
@@ -51,7 +51,7 @@ const AnimatedTextIn = ({
         display: "inline-block",
         opacity,
         transform: `translateY(${y}px) rotate(${rotate}deg)`,
-        transition: "all 0.05s ease-out"
+        transition: "all 0.05s ease-out",
       }}
     >
       {char === " " ? " " : char}

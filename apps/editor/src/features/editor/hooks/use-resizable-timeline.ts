@@ -31,7 +31,7 @@ export const useResizbleTimeline = () => {
         (document.getElementById("playhead")?.clientHeight || 0) -
         (document.getElementById("playhead-handle")?.clientHeight || 0);
       timeline?.resize({
-        height: containerHeight
+        height: containerHeight,
       });
       setTimelineHeight(currentHeight);
     };
@@ -76,6 +76,6 @@ export const useResizbleTimeline = () => {
     onMouseDown,
     onMouseMove,
     onMouseOut,
-    timelineHeight
+    timelineHeight,
   };
 };

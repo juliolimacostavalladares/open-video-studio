@@ -6,7 +6,7 @@ const GetThinkersAnimationIn = ({
   frame,
   fps,
   textLength,
-  animationTextInFrames
+  animationTextInFrames,
 }: {
   char: string;
   index: number;
@@ -24,7 +24,7 @@ const GetThinkersAnimationIn = ({
     fps,
     from: 0,
     to: 1,
-    config: { stiffness: 60, damping: 10 }
+    config: { stiffness: 60, damping: 10 },
   });
 
   return (
@@ -32,7 +32,7 @@ const GetThinkersAnimationIn = ({
       key={index}
       style={{
         display: "inline-block",
-        opacity
+        opacity,
       }}
     >
       {char === " " ? " " : char}

@@ -42,7 +42,7 @@ class HillAudioBars extends Resizable {
       -this.height / 2 + borderWidth,
       this.width - borderWidth * 2,
       this.height - borderWidth * 2,
-      innerRadius
+      innerRadius,
     );
 
     // Use even-odd fill rule to create the border effect

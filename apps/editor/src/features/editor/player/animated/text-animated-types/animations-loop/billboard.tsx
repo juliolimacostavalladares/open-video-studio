@@ -1,7 +1,7 @@
 const BillboardText = ({
   frame,
   fps,
-  char
+  char,
 }: {
   char: string;
   frame: number;
@@ -13,7 +13,7 @@ const BillboardText = ({
     <span
       style={{
         display: "inline-block",
-        transform: `scale(${scale})`
+        transform: `scale(${scale})`,
       }}
     >
       {char}

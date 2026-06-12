@@ -7,7 +7,7 @@ import { calculateFrames } from "../../utils/frames";
 
 export const Illustration = ({
   item,
-  options
+  options,
 }: {
   item: IIllustration;
   options: SequenceItemOptions;
@@ -18,7 +18,7 @@ export const Illustration = ({
     animations!,
     item,
     frame,
-    fps
+    fps,
   );
   const { durationInFrames } = calculateFrames(item.display, fps);
   const currentFrame = (frame || 0) - (item.display.from * fps) / 1000;

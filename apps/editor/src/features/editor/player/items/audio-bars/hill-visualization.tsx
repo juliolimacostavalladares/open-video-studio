@@ -13,7 +13,7 @@ const getHills = ({
   numberOfBumps = 8,
   frequencyData,
   maxDb = -30,
-  minDb = -80
+  minDb = -80,
 }: {
   numberOfBumps?: number;
   frequencyData: number[];
@@ -29,7 +29,7 @@ const getHills = ({
   const amplitudes = Array.from({ length: nPoints }).map((_, i) => {
     const processed = processAudioFftValue(
       samples[(i * sampleStep) % samples.length],
-      { maxDb, minDb }
+      { maxDb, minDb },
     );
 
     return processed;
@@ -59,7 +59,7 @@ export const Hills: React.FC<HillsProps> = ({
   strokeColor = "none",
   placement = "middle",
   copies = 1,
-  blendMode = "normal"
+  blendMode = "normal",
 }) => {
   const w = width;
   const h = height;
@@ -72,16 +72,16 @@ export const Hills: React.FC<HillsProps> = ({
     placement === "over"
       ? {
           viewBoxVerticalShift: -h,
-          scaling: 1
+          scaling: 1,
         }
       : placement === "under"
         ? {
             viewBoxVerticalShift: 0,
-            scaling: 1
+            scaling: 1,
           }
         : {
             viewBoxVerticalShift: -0.5 * h,
-            scaling: 0.5
+            scaling: 0.5,
           };
 
   const pad = 0.15;
@@ -92,7 +92,7 @@ export const Hills: React.FC<HillsProps> = ({
     const lineValues = rotate(values, shift);
     return lineValues.map((v, i) => ({
       x: padWidth + i * stepSize,
-      y: scaling * h * v * (1.2 - 0.5 * random(lineIndex * values.length + i))
+      y: scaling * h * v * (1.2 - 0.5 * random(lineIndex * values.length + i)),
     }));
   });
 
@@ -115,8 +115,8 @@ export const Hills: React.FC<HillsProps> = ({
             strokeWidth,
             fill: _fillColor,
             style: {
-              mixBlendMode: blendMode
-            }
+              mixBlendMode: blendMode,
+            },
           };
           return (
             <React.Fragment key={lineIndex}>
@@ -184,7 +184,7 @@ export const HillsVisualization: React.FC<
   blendMode,
   strokeWidth,
   maxDb,
-  minDb
+  minDb,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const frame = useCurrentFrame();
@@ -193,7 +193,7 @@ export const HillsVisualization: React.FC<
   useEffect(() => {
     setSize((sz) => ({
       width: containerRef.current?.offsetWidth ?? sz.width,
-      height: containerRef.current?.offsetHeight ?? sz.height
+      height: containerRef.current?.offsetHeight ?? sz.height,
     }));
   }, [frame, setSize]);
 

@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { AbsoluteFill } from "remotion";
 import type {
   TransitionPresentation,
-  TransitionPresentationComponentProps
+  TransitionPresentationComponentProps,
 } from "../types";
 
 export type SlideDirection =
@@ -25,7 +25,7 @@ const SlidePresentation: React.FC<
   children,
   presentationProgress,
   presentationDirection,
-  passedProps: { direction = "from-left", enterStyle, exitStyle }
+  passedProps: { direction = "from-left", enterStyle, exitStyle },
 }) => {
   const directionStyle = useMemo((): React.CSSProperties => {
     // Overlay the two slides barely to avoid a white line between them
@@ -39,19 +39,19 @@ const SlidePresentation: React.FC<
       switch (direction) {
         case "from-left":
           return {
-            transform: `translateX(${presentationProgressWithEpsilonCorrection}%)`
+            transform: `translateX(${presentationProgressWithEpsilonCorrection}%)`,
           };
         case "from-right":
           return {
-            transform: `translateX(${-presentationProgress * 100}%)`
+            transform: `translateX(${-presentationProgress * 100}%)`,
           };
         case "from-top":
           return {
-            transform: `translateY(${presentationProgressWithEpsilonCorrection}%)`
+            transform: `translateY(${presentationProgressWithEpsilonCorrection}%)`,
           };
         case "from-bottom":
           return {
-            transform: `translateY(${-presentationProgress * 100}%)`
+            transform: `translateY(${-presentationProgress * 100}%)`,
           };
         default:
           throw new Error(`Invalid direction: ${direction}`);
@@ -61,23 +61,23 @@ const SlidePresentation: React.FC<
     switch (direction) {
       case "from-left":
         return {
-          transform: `translateX(${-100 + presentationProgress * 100}%)`
+          transform: `translateX(${-100 + presentationProgress * 100}%)`,
         };
       case "from-right":
         return {
           transform: `translateX(${
             100 - presentationProgressWithEpsilonCorrection
-          }%)`
+          }%)`,
         };
       case "from-top":
         return {
-          transform: `translateY(${-100 + presentationProgress * 100}%)`
+          transform: `translateY(${-100 + presentationProgress * 100}%)`,
         };
       case "from-bottom":
         return {
           transform: `translateY(${
             100 - presentationProgressWithEpsilonCorrection
-          }%)`
+          }%)`,
         };
       default:
         throw new Error(`Invalid direction: ${direction}`);
@@ -91,7 +91,7 @@ const SlidePresentation: React.FC<
       justifyContent: "center",
       alignItems: "center",
       ...directionStyle,
-      ...(presentationDirection === "entering" ? enterStyle : exitStyle)
+      ...(presentationDirection === "entering" ? enterStyle : exitStyle),
     };
   }, [directionStyle, enterStyle, exitStyle, presentationDirection]);
 
@@ -105,10 +105,10 @@ const SlidePresentation: React.FC<
  * @returns {TransitionPresentation<SlideProps>} Returns a transition configuration object including the component and its props.
  */
 export const slide = (
-  props?: SlideProps
+  props?: SlideProps,
 ): TransitionPresentation<SlideProps> => {
   return {
     component: SlidePresentation,
-    props: props ?? {}
+    props: props ?? {},
   };
 };

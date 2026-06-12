@@ -4,7 +4,7 @@ export default (
   type: string,
   stops: Array<any>,
   modifier: string | number | undefined,
-  format: "rgb" | "hsl" | "hex" = "rgb"
+  format: "rgb" | "hsl" | "hex" = "rgb",
 ) => {
   let str = "";
 
@@ -14,18 +14,18 @@ export default (
         str = `linear-gradient(${modifier}deg, ${stops.map(
           (color: [string, number]) => {
             return `${checkFormat(color[0], format)} ${Math.round(
-              color[1] * 100
+              color[1] * 100,
             ).toFixed(2)}%`;
-          }
+          },
         )})`;
       }
       if (typeof modifier === "string") {
         str = `linear-gradient(${modifier}, ${stops.map(
           (color: [string, number]) => {
             return `${checkFormat(color[0], format)} ${Math.round(
-              color[1] * 100
+              color[1] * 100,
             ).toFixed(2)}%`;
-          }
+          },
         )})`;
       }
       break;
@@ -33,9 +33,9 @@ export default (
       str = `radial-gradient(${modifier}, ${stops.map(
         (color: [string, number]) => {
           return `${checkFormat(color[0], format)} ${Math.round(
-            color[1] * 100
+            color[1] * 100,
           ).toFixed(2)}%`;
-        }
+        },
       )})`;
       break;
     default:

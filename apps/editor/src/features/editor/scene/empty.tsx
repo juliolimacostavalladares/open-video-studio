@@ -20,11 +20,11 @@ const SceneEmpty = () => {
 
     const desiredZoom = Math.min(
       containerWidth / width,
-      containerHeight / height
+      containerHeight / height,
     );
     setDesiredSize({
       width: width * desiredZoom,
-      height: height * desiredZoom
+      height: height * desiredZoom,
     });
     setIsLoading(false);
   }, [size]);

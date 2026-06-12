@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import ColorPicker from "@/components/color-picker";
 import { X } from "lucide-react";
@@ -15,7 +15,7 @@ import useLayoutStore from "../../store/use-layout-store";
 function Shadow({
   label,
   value,
-  onChange
+  onChange,
 }: {
   label: string;
   value: IBoxShadow;
@@ -91,7 +91,7 @@ function Shadow({
                     setLocalValue({ ...localValue, color: v });
                     onChange({
                       ...localValue,
-                      color: v
+                      color: v,
                     });
                   }}
                   allowAddGradientStops={true}
@@ -137,14 +137,14 @@ function Shadow({
                   ...prev,
                   x: (newValue === ""
                     ? ""
-                    : Number(newValue)) as unknown as number
+                    : Number(newValue)) as unknown as number,
                 })); // Update local state
 
                 // Only propagate if it's a valid number and not empty
                 if (newValue !== "") {
                   onChange({
                     ...localValue,
-                    x: Number(newValue)
+                    x: Number(newValue),
                   }); // Propagate as a number
                 }
               }
@@ -173,14 +173,14 @@ function Shadow({
                   ...prev,
                   y: (newValue === ""
                     ? ""
-                    : Number(newValue)) as unknown as number
+                    : Number(newValue)) as unknown as number,
                 })); // Update local state
 
                 // Only propagate if it's a valid number and not empty
                 if (newValue !== "") {
                   onChange({
                     ...localValue,
-                    y: Number(newValue)
+                    y: Number(newValue),
                   }); // Propagate as a number
                 }
               }
@@ -209,14 +209,14 @@ function Shadow({
                   ...prev,
                   blur: (newValue === ""
                     ? ""
-                    : Number(newValue)) as unknown as number
+                    : Number(newValue)) as unknown as number,
                 })); // Update local state
 
                 // Only propagate if it's a valid number and not empty
                 if (newValue !== "") {
                   onChange({
                     ...localValue,
-                    blur: Number(newValue)
+                    blur: Number(newValue),
                   }); // Propagate as a number
                 }
               }

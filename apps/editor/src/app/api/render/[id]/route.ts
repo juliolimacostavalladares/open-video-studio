@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
     if (!id) {
       return NextResponse.json(
         { message: "id parameter is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -19,17 +19,17 @@ export async function GET(
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.COMBO_SK}`
+          Authorization: `Bearer ${process.env.COMBO_SK}`,
         },
-        cache: "no-store"
-      }
+        cache: "no-store",
+      },
     );
 
     const statusData = await response.json();
 
     if (!response.ok) {
       const error = new Error(
-        statusData?.message || "Failed to get export status"
+        statusData?.message || "Failed to get export status",
       );
       (error as any).status = response.status;
       throw error;
@@ -41,7 +41,7 @@ export async function GET(
 
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

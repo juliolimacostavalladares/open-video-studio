@@ -2,7 +2,7 @@ const VogueLetterByLetter = ({
   char,
   frame,
   fps,
-  index
+  index,
 }: {
   char: string;
   frame: number;
@@ -20,7 +20,7 @@ const VogueLetterByLetter = ({
     <span
       style={{
         display: "inline-block",
-        transform: `scale(${scale}) rotateY(${rotateY}deg)`
+        transform: `scale(${scale}) rotateY(${rotateY}deg)`,
       }}
     >
       {char}

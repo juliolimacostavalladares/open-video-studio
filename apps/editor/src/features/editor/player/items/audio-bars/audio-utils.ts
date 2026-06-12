@@ -33,7 +33,7 @@ export const processAudioFftValue: (
   options: {
     minDb?: number;
     maxDb?: number;
-  }
+  },
 ) => number = (v, options = {}) => {
   const { minDb = DEFAULT_MIN_DB, maxDb = DEFAULT_MAX_DB } = options;
 

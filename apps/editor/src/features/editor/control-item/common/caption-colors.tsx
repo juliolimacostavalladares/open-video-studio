@@ -1,7 +1,7 @@
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import ColorPicker from "@/components/color-picker";
 import { Input } from "@/components/ui/input";
@@ -31,7 +31,7 @@ const CaptionColors = ({
   activeColor,
   activeFillColor,
   isKeywordColor,
-  preservedColorKeyWord
+  preservedColorKeyWord,
 }: ICaptionColorsProps) => {
   const [localAppearedColor, setLocalAppearedColor] =
     useState<string>(appearedColor);
@@ -43,7 +43,7 @@ const CaptionColors = ({
     useState<string>(isKeywordColor);
 
   const [localPreservedColor, setLocalPreservedColor] = useState<boolean>(
-    preservedColorKeyWord
+    preservedColorKeyWord,
   );
   const isLargeScreen = useIsLargeScreen();
   const { setControItemDrawerOpen, setTypeControlItem, setLabelControlItem } =
@@ -55,10 +55,10 @@ const CaptionColors = ({
       payload: {
         [id]: {
           details: {
-            appearedColor: v
-          }
-        }
-      }
+            appearedColor: v,
+          },
+        },
+      },
     });
   };
 
@@ -68,10 +68,10 @@ const CaptionColors = ({
       payload: {
         [id]: {
           details: {
-            activeColor: v
-          }
-        }
-      }
+            activeColor: v,
+          },
+        },
+      },
     });
   };
 
@@ -81,10 +81,10 @@ const CaptionColors = ({
       payload: {
         [id]: {
           details: {
-            activeFillColor: v
-          }
-        }
-      }
+            activeFillColor: v,
+          },
+        },
+      },
     });
   };
   const onChangeEmphasizeColor = (v: string) => {
@@ -93,10 +93,10 @@ const CaptionColors = ({
       payload: {
         [id]: {
           details: {
-            isKeywordColor: v
-          }
-        }
-      }
+            isKeywordColor: v,
+          },
+        },
+      },
     });
   };
 
@@ -106,10 +106,10 @@ const CaptionColors = ({
       payload: {
         [id]: {
           details: {
-            preservedColorKeyWord: v
-          }
-        }
-      }
+            preservedColorKeyWord: v,
+          },
+        },
+      },
     });
   };
 
@@ -124,7 +124,7 @@ const CaptionColors = ({
     activeColor,
     activeFillColor,
     isKeywordColor,
-    preservedColorKeyWord
+    preservedColorKeyWord,
   ]);
 
   const handleAppearedColorClick = () => {
@@ -172,7 +172,7 @@ const CaptionColors = ({
                 <div className="relative">
                   <div
                     style={{
-                      backgroundColor: localAppearedColor
+                      backgroundColor: localAppearedColor,
                     }}
                     className="absolute left-0.5 top-0.5 h-7 w-7 flex-none cursor-pointer rounded-md border border-border"
                   />
@@ -212,7 +212,7 @@ const CaptionColors = ({
             >
               <div
                 style={{
-                  backgroundColor: localAppearedColor
+                  backgroundColor: localAppearedColor,
                 }}
                 className="absolute left-0.5 top-0.5 h-7 w-7 flex-none rounded-md border border-border"
               />
@@ -237,7 +237,7 @@ const CaptionColors = ({
                 <div className="relative">
                   <div
                     style={{
-                      backgroundColor: localActiveColor
+                      backgroundColor: localActiveColor,
                     }}
                     className="absolute left-0.5 top-0.5 h-7 w-7 flex-none cursor-pointer rounded-md border border-border"
                   />
@@ -277,7 +277,7 @@ const CaptionColors = ({
             >
               <div
                 style={{
-                  backgroundColor: localActiveColor
+                  backgroundColor: localActiveColor,
                 }}
                 className="absolute left-0.5 top-0.5 h-7 w-7 flex-none rounded-md border border-border"
               />
@@ -302,7 +302,7 @@ const CaptionColors = ({
                 <div className="relative">
                   <div
                     style={{
-                      backgroundColor: localActiveFillColor
+                      backgroundColor: localActiveFillColor,
                     }}
                     className="absolute left-0.5 top-0.5 h-7 w-7 flex-none cursor-pointer rounded-md border border-border"
                   />
@@ -342,7 +342,7 @@ const CaptionColors = ({
             >
               <div
                 style={{
-                  backgroundColor: localActiveFillColor
+                  backgroundColor: localActiveFillColor,
                 }}
                 className="absolute left-0.5 top-0.5 h-7 w-7 flex-none rounded-md border border-border"
               />
@@ -368,7 +368,7 @@ const CaptionColors = ({
                 <div className="relative">
                   <div
                     style={{
-                      backgroundColor: localEmphasizeColor
+                      backgroundColor: localEmphasizeColor,
                     }}
                     className="absolute left-0.5 top-0.5 h-7 w-7 flex-none cursor-pointer rounded-md border border-border"
                   />
@@ -408,7 +408,7 @@ const CaptionColors = ({
             >
               <div
                 style={{
-                  backgroundColor: localEmphasizeColor
+                  backgroundColor: localEmphasizeColor,
                 }}
                 className="absolute left-0.5 top-0.5 h-7 w-7 flex-none rounded-md border border-border"
               />

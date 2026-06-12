@@ -8,7 +8,7 @@ const MediaBackground = ({ background }: { background: string }) => {
         top: -2500,
         left: -2500,
         position: "fixed",
-        pointerEvents: "none"
+        pointerEvents: "none",
       }}
     />
   );

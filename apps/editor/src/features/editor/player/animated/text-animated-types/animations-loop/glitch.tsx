@@ -7,7 +7,7 @@ const GlitchText = ({ text, frame }: { text: string; frame: number }) => {
       style={{
         display: "inline-block",
         position: "relative",
-        opacity: 0.8
+        opacity: 0.8,
       }}
     >
       <div
@@ -15,7 +15,7 @@ const GlitchText = ({ text, frame }: { text: string; frame: number }) => {
           position: "absolute",
           color: "cyan",
           transform: `translate(${rgbOffset}px, ${glitchIntensity}px)`,
-          mixBlendMode: "screen"
+          mixBlendMode: "screen",
         }}
       >
         {text}
@@ -25,7 +25,7 @@ const GlitchText = ({ text, frame }: { text: string; frame: number }) => {
           position: "absolute",
           color: "magenta",
           transform: `translate(${-rgbOffset}px, ${-glitchIntensity}px)`,
-          mixBlendMode: "screen"
+          mixBlendMode: "screen",
         }}
       >
         {text}

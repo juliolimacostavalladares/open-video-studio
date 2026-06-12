@@ -6,13 +6,13 @@ import { IImage, ITrackItem, IVideo } from "@designcombo/types";
 import { useState } from "react";
 
 export default function Flip({
-  trackItem
+  trackItem,
 }: {
   trackItem: ITrackItem & (IImage | IVideo);
 }) {
   const [flip, setFlip] = useState({
     flipX: trackItem.details.flipX,
-    flipY: trackItem.details.flipY
+    flipY: trackItem.details.flipY,
   });
 
   const handleFlip = (value: string) => {
@@ -21,10 +21,10 @@ export default function Flip({
         payload: {
           [trackItem.id]: {
             details: {
-              flipX: !flip.flipX
-            }
-          }
-        }
+              flipX: !flip.flipX,
+            },
+          },
+        },
       });
       setFlip({ ...flip, flipX: !flip.flipX });
     } else if (value === "y") {
@@ -32,10 +32,10 @@ export default function Flip({
         payload: {
           [trackItem.id]: {
             details: {
-              flipY: !flip.flipY
-            }
-          }
-        }
+              flipY: !flip.flipY,
+            },
+          },
+        },
       });
       setFlip({ ...flip, flipY: !flip.flipY });
     }

@@ -54,5 +54,5 @@ export type CreateStaggeredAnimations = (
   count: number,
   stagger: StaggerConfig,
   durationInFrames: number,
-  isOut: boolean
+  isOut: boolean,
 ) => Animation[];

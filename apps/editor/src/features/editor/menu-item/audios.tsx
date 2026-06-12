@@ -31,13 +31,13 @@ export const Audios = () => {
       const response = await fetch("/api/audio/music", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           limit: 30,
           page: pageNumber,
-          query: query ? { keys: [query] } : {}
-        })
+          query: query ? { keys: [query] } : {},
+        }),
       });
 
       const data = await response.json();
@@ -46,13 +46,13 @@ export const Audios = () => {
         const mappedMusics = data.musics.map((music: any) => ({
           id: music.id,
           details: {
-            src: music.src
+            src: music.src,
           },
           name: music.name,
           type: music.type,
           metadata: {
-            author: music.description || ""
-          }
+            author: music.description || "",
+          },
         }));
 
         if (pageNumber === 1) {
@@ -81,7 +81,7 @@ export const Audios = () => {
       setPage(1);
       fetchMusic(query, 1);
     }, 500),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export const Audios = () => {
     console.log(payload);
     dispatch(ADD_AUDIO, {
       payload,
-      options: {}
+      options: {},
     });
   };
 
@@ -109,7 +109,7 @@ export const Audios = () => {
   };
 
   const uniqueResults = Array.from(
-    new Map(searchResults.map((item: IAudio) => [item.id, item])).values()
+    new Map(searchResults.map((item: IAudio) => [item.id, item])).values(),
   );
 
   // Main view

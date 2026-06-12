@@ -23,7 +23,7 @@ export const ElementCrop: React.FC<ElementCropProps> = ({
   element,
   size,
   targetDetails,
-  aspectRatio
+  aspectRatio,
 }) => {
   const { area, setArea, scale } = useCropStore();
   const canvasPreviewRef = useRef<HTMLCanvasElement>(null);
@@ -45,29 +45,29 @@ export const ElementCrop: React.FC<ElementCropProps> = ({
       const rect = canvasPreviewRef.current?.getBoundingClientRect();
       if (!rect) return;
 
-      let newArea: Area = [...area];
+      const newArea: Area = [...area];
 
       if (dirX === 0 && dirY === 0) {
         newArea[0] = clamp(
           area[0] + deltaX / (rect.width / (size.width * scale)),
           0,
-          size.width * scale - area[2]
+          size.width * scale - area[2],
         );
         newArea[1] = clamp(
           area[1] + deltaY / (rect.height / (size.height * scale)),
           0,
-          size.height * scale - area[3]
+          size.height * scale - area[3],
         );
       } else {
         const relativeX = clamp(
           (x - rect.left) / (rect.width / (size.width * scale)),
           0,
-          size.width * scale
+          size.width * scale,
         );
         const relativeY = clamp(
           (y - rect.top) / (rect.height / (size.height * scale)),
           0,
-          size.height * scale
+          size.height * scale,
         );
 
         const endX = area[0] + area[2];
@@ -184,7 +184,7 @@ export const ElementCrop: React.FC<ElementCropProps> = ({
       }
 
       setArea(newArea);
-    }
+    },
   });
   useEffect(() => {
     let updating = true;
@@ -233,7 +233,7 @@ export const ElementCrop: React.FC<ElementCropProps> = ({
             x,
             y,
             w,
-            h
+            h,
           );
         }
       }
@@ -302,7 +302,7 @@ export const ElementCrop: React.FC<ElementCropProps> = ({
     const clampedX = Math.max(0, Math.min(newX, size.width * scale - newWidth));
     const clampedY = Math.max(
       0,
-      Math.min(newY, size.height * scale - newHeight)
+      Math.min(newY, size.height * scale - newHeight),
     );
 
     setArea([clampedX, clampedY, newWidth, newHeight]);
@@ -323,7 +323,7 @@ export const ElementCrop: React.FC<ElementCropProps> = ({
             left: `${(area[0] / (size.width * scale)) * 100}%`,
             top: `${(area[1] / (size.height * scale)) * 100}%`,
             width: `${(area[2] / (size.width * scale)) * 100}%`,
-            height: `${(area[3] / (size.height * scale)) * 100}%`
+            height: `${(area[3] / (size.height * scale)) * 100}%`,
           }}
         >
           <svg
@@ -339,7 +339,7 @@ export const ElementCrop: React.FC<ElementCropProps> = ({
               y2="90"
               vectorEffect="non-scaling-stroke"
               style={{
-                opacity: isDragging ? 0.5 : 0
+                opacity: isDragging ? 0.5 : 0,
               }}
             />
             <line
@@ -349,7 +349,7 @@ export const ElementCrop: React.FC<ElementCropProps> = ({
               y2="90"
               vectorEffect="non-scaling-stroke"
               style={{
-                opacity: isDragging ? 0.5 : 0
+                opacity: isDragging ? 0.5 : 0,
               }}
             />
             <line
@@ -359,7 +359,7 @@ export const ElementCrop: React.FC<ElementCropProps> = ({
               y2="30"
               vectorEffect="non-scaling-stroke"
               style={{
-                opacity: isDragging ? 0.5 : 0
+                opacity: isDragging ? 0.5 : 0,
               }}
             />
           </svg>
@@ -380,7 +380,7 @@ export const ElementCrop: React.FC<ElementCropProps> = ({
                     : direction.includes("n")
                       ? -1
                       : 0,
-                  area
+                  area,
                 })}
               />
             ))}

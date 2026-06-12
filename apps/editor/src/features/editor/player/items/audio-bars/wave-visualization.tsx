@@ -11,7 +11,7 @@ const makePoints: (options: {
   numberOfPoints,
   amplitude,
   offsetPixels,
-  width
+  width,
 }) => {
   const step = 1 / numberOfPoints;
   const stepOffset = offsetPixels / width;
@@ -79,7 +79,7 @@ export const Wave: React.FC<WaveProps> = ({
   lineColor = ["darkblue", "lightblue"],
   lineThickness = 2,
   topRoundness = 0.4,
-  bottomRoundness = 0.4
+  bottomRoundness = 0.4,
 }) => {
   const w = width;
   const h = height;
@@ -92,7 +92,7 @@ export const Wave: React.FC<WaveProps> = ({
       width: w,
       numberOfPoints: nPoints,
       offsetPixels: lineShift + off,
-      amplitude: 0.5 * amplitude
+      amplitude: 0.5 * amplitude,
     });
   });
 
@@ -102,7 +102,7 @@ export const Wave: React.FC<WaveProps> = ({
 
   const calcPt = (
     p: { x: number; y: number },
-    prevP: { x: number; y: number }
+    prevP: { x: number; y: number },
   ) => {
     const isBottomPoint = p.y <= 0;
 

@@ -16,7 +16,7 @@ const Transform = () => {
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 40px 24px",
-            gap: "4px"
+            gap: "4px",
           }}
         >
           <Slider
@@ -45,7 +45,7 @@ const Transform = () => {
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr 24px",
-            gap: "4px"
+            gap: "4px",
           }}
         >
           <div className="relative">
@@ -79,7 +79,7 @@ const Transform = () => {
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr 24px",
-            gap: "4px"
+            gap: "4px",
           }}
         >
           <Input className="px-2 text-sm" defaultValue={100} />

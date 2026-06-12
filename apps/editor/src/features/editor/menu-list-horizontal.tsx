@@ -6,7 +6,7 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-  DrawerDescription
+  DrawerDescription,
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
@@ -26,33 +26,33 @@ const menuItems: MenuItemData[] = [
   {
     id: "texts",
     label: "Textos",
-    icon: Icons.type
+    icon: Icons.type,
   },
   {
     id: "videos",
     label: "Vídeos",
-    icon: Icons.video
+    icon: Icons.video,
   },
   {
     id: "captions",
     label: "Legendas",
-    icon: Icons.captions
+    icon: Icons.captions,
   },
   {
     id: "images",
     label: "Imagens",
-    icon: Icons.image
+    icon: Icons.image,
   },
   {
     id: "audios",
     label: "Áudio",
-    icon: Icons.audio
+    icon: Icons.audio,
   },
   {
     id: "transitions",
     label: "Transições",
-    icon: Icons.transition
-  }
+    icon: Icons.transition,
+  },
 ];
 
 // Reusable MenuButton component
@@ -82,7 +82,7 @@ export default function MenuListHorizontal() {
     activeMenuItem,
     showMenuItem,
     drawerOpen,
-    setDrawerOpen
+    setDrawerOpen,
   } = useLayoutStore();
 
   const isLargeScreen = useIsLargeScreen();
@@ -129,7 +129,7 @@ export default function MenuListHorizontal() {
               <DrawerHeader>
                 <DrawerTitle>Menu Options</DrawerTitle>
                 <DrawerDescription>
-                Selecione as ferramentas disponíveis
+                  Selecione as ferramentas disponíveis
                 </DrawerDescription>
               </DrawerHeader>
             </VisuallyHidden>

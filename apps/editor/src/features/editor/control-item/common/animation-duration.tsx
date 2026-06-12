@@ -46,16 +46,16 @@ export const AnimationDuration = () => {
                 composition: [
                   {
                     ...item.animations?.[type]?.composition?.[0],
-                    durationInFrames: (duration * 30) / 1000
-                  }
-                ]
-              }
-            }
-          }
-        }
+                    durationInFrames: (duration * 30) / 1000,
+                  },
+                ],
+              },
+            },
+          },
+        },
       });
     },
-    [activeIds, item]
+    [activeIds, item],
   );
 
   const handleInChange = useCallback(
@@ -63,7 +63,7 @@ export const AnimationDuration = () => {
       setInDuration(value[0]);
       dispatchAnimationUpdate("in", value[0]);
     },
-    [dispatchAnimationUpdate]
+    [dispatchAnimationUpdate],
   );
 
   const handleOutChange = useCallback(
@@ -71,7 +71,7 @@ export const AnimationDuration = () => {
       setOutDuration(value[0]);
       dispatchAnimationUpdate("out", value[0]);
     },
-    [dispatchAnimationUpdate]
+    [dispatchAnimationUpdate],
   );
 
   const handleLoopChange = useCallback(
@@ -79,23 +79,23 @@ export const AnimationDuration = () => {
       setLoopDuration(value[0]);
       dispatchAnimationUpdate("loop", value[0]);
     },
-    [dispatchAnimationUpdate]
+    [dispatchAnimationUpdate],
   );
 
   const maxValues = useMemo(
     () => ({
       in: itemDuration - outDuration - loopDuration,
       out: itemDuration - inDuration - loopDuration,
-      loop: itemDuration - inDuration - outDuration
+      loop: itemDuration - inDuration - outDuration,
     }),
-    [itemDuration, inDuration, outDuration, loopDuration]
+    [itemDuration, inDuration, outDuration, loopDuration],
   );
 
   const renderSliderSection = (
     label: string,
     value: number,
     max: number,
-    onChange: (val: number[]) => void
+    onChange: (val: number[]) => void,
   ) => (
     <div className="flex flex-col items-center gap-2">
       <p className="text-sm text-muted-foreground">{label}</p>
@@ -120,21 +120,21 @@ export const AnimationDuration = () => {
           "Animation In Duration",
           inDuration,
           maxValues.in,
-          handleInChange
+          handleInChange,
         )}
       {item?.animations?.out &&
         renderSliderSection(
           "Animation Out Duration",
           outDuration,
           maxValues.out,
-          handleOutChange
+          handleOutChange,
         )}
       {item?.animations?.loop &&
         renderSliderSection(
           "Animation Loop Duration",
           loopDuration,
           maxValues.loop,
-          handleLoopChange
+          handleLoopChange,
         )}
     </div>
   );

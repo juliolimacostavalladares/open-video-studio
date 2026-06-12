@@ -10,7 +10,7 @@ import {
   applyPreset,
   getTextShadow,
   NONE_PRESET,
-  TEXT_PRESETS
+  TEXT_PRESETS,
 } from "../floating-controls/text-preset-picker";
 
 interface PresetTextProps {
@@ -74,7 +74,7 @@ const SelectPreset = ({ trackItem }: { trackItem: ITrackItem & IText }) => {
                       WebkitTextStroke: `2px ${preset.borderColor}`,
                       paintOrder: "stroke fill",
                       fontWeight: "bold",
-                      textShadow: getTextShadow(preset.boxShadow)
+                      textShadow: getTextShadow(preset.boxShadow),
                     }}
                     className="h-6 place-content-center px-2"
                   >

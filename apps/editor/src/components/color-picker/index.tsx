@@ -21,7 +21,7 @@ const ColorPicker: FC<IPropsMain> = ({
   allowAddGradientStops = true,
   colorBoardHeight = 140,
 
-  onChange = () => ({})
+  onChange = () => ({}),
 }) => {
   const onChangeSolid = (value: string) => {
     onChange(value);

@@ -16,8 +16,8 @@ const useFolderStore = create<IFolderStore>((set) => ({
       videos:
         typeof videosOrUpdater === "function"
           ? videosOrUpdater(state.videos)
-          : videosOrUpdater
-    }))
+          : videosOrUpdater,
+    })),
 }));
 
 export default useFolderStore;

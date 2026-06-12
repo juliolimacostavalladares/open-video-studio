@@ -6,7 +6,7 @@ import {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from "react";
 import { timeMsToUnits, unitsToTimeMs } from "../utils/timeline";
 import { TIMELINE_OFFSET_CANVAS_LEFT } from "../constants/constants";
@@ -43,7 +43,7 @@ const Playhead = ({ scrollLeft }: { scrollLeft: number }) => {
   const handleMouseDown = (
     e:
       | MouseEvent<HTMLDivElement, globalThis.MouseEvent>
-      | TouchEvent<HTMLDivElement>
+      | TouchEvent<HTMLDivElement>,
   ) => {
     e.preventDefault(); // Prevent default drag behavior
     setIsDragging(true);
@@ -53,7 +53,7 @@ const Playhead = ({ scrollLeft }: { scrollLeft: number }) => {
   };
 
   const handleMouseMove = (
-    e: globalThis.MouseEvent | globalThis.TouchEvent
+    e: globalThis.MouseEvent | globalThis.TouchEvent,
   ) => {
     if (isDragging) {
       e.preventDefault(); // Prevent default drag behavior
@@ -110,14 +110,14 @@ const Playhead = ({ scrollLeft }: { scrollLeft: number }) => {
         height: "calc(100% - 40px)",
         zIndex: 10,
         cursor: "pointer",
-        touchAction: "none" // Prevent default touch actions
+        touchAction: "none", // Prevent default touch actions
       }}
     >
       <div
         id="playhead-handle"
         style={{
           borderRadius: "0 0 4px 4px",
-          backgroundColor: color
+          backgroundColor: color,
         }}
         className="absolute top-0 h-4 w-2 -translate-x-1/2 transform text-xs font-semibold text-zinc-800"
       />

@@ -4,7 +4,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Kbd } from "@/components/ui/kbd";
 import { cn } from "@/lib/utils";
@@ -33,7 +33,7 @@ const SHORTCUTS: ShortcutCategory[] = [
       { label: "Select all", keys: ["⌘", "A"] },
       {
         label: "Select multiple clips",
-        keys: ["⇧", "Left-Click"]
+        keys: ["⇧", "Left-Click"],
       },
       { label: "Copy", keys: ["⌘", "C"] },
       { label: "Cut", keys: ["⌘", "X"] },
@@ -43,8 +43,8 @@ const SHORTCUTS: ShortcutCategory[] = [
       { label: "Redo", keys: ["⇧", "⌘", "Z"] },
       { label: "Play or pause", keys: ["Space"] },
       { label: "Text wrap", keys: ["⌘", "Enter"], disabled: true },
-      { label: "Split sentence", keys: ["Enter"], disabled: true }
-    ]
+      { label: "Split sentence", keys: ["Enter"], disabled: true },
+    ],
   },
   {
     title: "Timeline",
@@ -61,10 +61,10 @@ const SHORTCUTS: ShortcutCategory[] = [
       {
         label: "Separate or restore audio",
         keys: ["⇧", "⌘", "S"],
-        disabled: true
+        disabled: true,
       },
-      { label: "Add or remove beats", keys: ["M"], disabled: true }
-    ]
+      { label: "Add or remove beats", keys: ["M"], disabled: true },
+    ],
   },
   {
     title: "Canvas",
@@ -82,9 +82,9 @@ const SHORTCUTS: ShortcutCategory[] = [
       { label: "Move down 1 px", keys: ["↓"] },
       { label: "Move left 1 px", keys: ["←"] },
       { label: "Move right 1 px", keys: ["→"] },
-      { label: "Move 5 px", keys: ["⇧", "Arrow Keys"] }
-    ]
-  }
+      { label: "Move 5 px", keys: ["⇧", "Arrow Keys"] },
+    ],
+  },
 ];
 
 export function ShortcutsModal({ open, onOpenChange }: ShortcutsModalProps) {
@@ -108,7 +108,7 @@ export function ShortcutsModal({ open, onOpenChange }: ShortcutsModalProps) {
                       key={item.label}
                       className={cn(
                         "flex items-center justify-between text-sm",
-                        item.disabled ? "opacity-40" : ""
+                        item.disabled ? "opacity-40" : "",
                       )}
                     >
                       <span className="text-zinc-300">{item.label}</span>

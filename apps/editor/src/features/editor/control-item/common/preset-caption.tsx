@@ -7,7 +7,7 @@ import useLayoutStore from "../../store/use-layout-store";
 import { useIsLargeScreen } from "@/hooks/use-media-query";
 import {
   applyPreset,
-  groupCaptionItems
+  groupCaptionItems,
 } from "../floating-controls/caption-preset-picker";
 import useStore from "../../store/use-store";
 import { PresetPicker } from "./preset-picker";
@@ -27,7 +27,7 @@ export const PresetCaption = ({ properties, trackItem }: PresetTextProps) => {
 };
 
 const PresetCaptionContent = ({
-  trackItem
+  trackItem,
 }: {
   trackItem: ITrackItem & IText;
 }) => {
@@ -49,7 +49,7 @@ const PresetCaptionContent = ({
   const handlePresetClick = (
     preset: any,
     captionItemIds: string[],
-    captionsData: any[]
+    captionsData: any[],
   ) => {
     applyPreset(preset, captionItemIds, captionsData);
   };

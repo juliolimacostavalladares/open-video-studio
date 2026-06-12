@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 const Opacity = ({
   value,
-  onChange
+  onChange,
 }: {
   value: number;
   onChange: (v: number) => void;
@@ -26,7 +26,7 @@ const Opacity = ({
         className="w-32"
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 80px"
+          gridTemplateColumns: "1fr 80px",
         }}
       >
         <Input

@@ -26,16 +26,16 @@ const Animations = () => {
         animations: {
           [type]: {
             name: presetName,
-            composition
-          }
-        }
-      }
+            composition,
+          },
+        },
+      },
     });
   };
 
   const createPresetButtons = (
     filter: (key: string) => boolean,
-    type: "in" | "out"
+    type: "in" | "out",
   ) =>
     Object.keys(presets)
       .filter(filter)
@@ -48,9 +48,9 @@ const Animations = () => {
             backgroundSize: "cover",
             width: "70px",
             height: "70px",
-            borderRadius: "8px"
+            borderRadius: "8px",
           }),
-          [preset.previewUrl]
+          [preset.previewUrl],
         );
 
         return (
@@ -67,11 +67,11 @@ const Animations = () => {
 
   const presetInButtons = createPresetButtons(
     (key) => key.includes("In"),
-    "in"
+    "in",
   );
   const presetOutButtons = createPresetButtons(
     (key) => key.includes("Out"),
-    "out"
+    "out",
   );
 
   return (

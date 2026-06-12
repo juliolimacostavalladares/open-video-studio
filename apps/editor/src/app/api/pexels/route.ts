@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
   if (!apiKey) {
     return NextResponse.json(
       { error: "Pexels API key not configured" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -70,8 +70,8 @@ export async function GET(request: NextRequest) {
 
     const response = await fetch(url, {
       headers: {
-        Authorization: apiKey
-      }
+        Authorization: apiKey,
+      },
     });
 
     if (!response.ok) {
@@ -90,15 +90,15 @@ export async function GET(request: NextRequest) {
         height: photo.height,
         photographer: photo.photographer,
         photographer_url: photo.photographer_url,
-        alt: photo.alt
+        alt: photo.alt,
       },
       preview: photo.src.medium, // Use medium for preview
       type: "image" as const,
       metadata: {
         pexels_id: photo.id,
         avg_color: photo.avg_color,
-        original_url: photo.src.original
-      }
+        original_url: photo.src.original,
+      },
     }));
 
     return NextResponse.json({
@@ -107,13 +107,13 @@ export async function GET(request: NextRequest) {
       page: data.page,
       per_page: data.per_page,
       next_page: data.next_page,
-      prev_page: data.prev_page
+      prev_page: data.prev_page,
     });
   } catch (error) {
     console.error("Pexels API error:", error);
     return NextResponse.json(
       { error: "Failed to fetch images from Pexels" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

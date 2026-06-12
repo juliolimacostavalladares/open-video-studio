@@ -7,7 +7,7 @@ const GreatThinkersAnimationOut = ({
   fps,
   textLength,
   animationTextOutFrames,
-  durationInFrames
+  durationInFrames,
 }: {
   char: string;
   index: number;
@@ -27,7 +27,7 @@ const GreatThinkersAnimationOut = ({
     fps,
     from: 1,
     to: 0,
-    config: { stiffness: 60, damping: 10 }
+    config: { stiffness: 60, damping: 10 },
   });
 
   return (
@@ -35,7 +35,7 @@ const GreatThinkersAnimationOut = ({
       key={index}
       style={{
         display: "inline-block",
-        opacity
+        opacity,
       }}
     >
       {char === " " ? " " : char}

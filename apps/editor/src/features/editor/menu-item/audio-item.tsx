@@ -9,7 +9,7 @@ export const AudioItem = ({
   item,
   onAdd,
   playingId,
-  setPlayingId
+  setPlayingId,
 }: {
   item: Partial<IAudio>;
   onAdd: (payload: Partial<IAudio>) => void;
@@ -55,9 +55,9 @@ export const AudioItem = ({
         "url(https://cdn.designcombo.dev/thumbnails/music-preview.png)",
       backgroundSize: "cover",
       width: "70px",
-      height: "70px"
+      height: "70px",
     }),
-    []
+    [],
   );
 
   return (

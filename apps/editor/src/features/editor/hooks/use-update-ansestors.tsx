@@ -7,7 +7,7 @@ import { getTargetById, getTypeFromClassName } from "../utils/target";
 
 export default function useUpdateAnsestors({
   playing,
-  playerRef
+  playerRef,
 }: {
   playing: boolean;
   playerRef: RefObject<PlayerRef> | null;
@@ -24,14 +24,14 @@ export default function useUpdateAnsestors({
     if (playerRef && playerRef.current) {
       playerRef.current.addEventListener(
         "seeked",
-        updateAnsestorsPointerEvents
+        updateAnsestorsPointerEvents,
       );
     }
     return () => {
       if (playerRef && playerRef.current) {
         playerRef.current.removeEventListener(
           "seeked",
-          updateAnsestorsPointerEvents
+          updateAnsestorsPointerEvents,
         );
       }
     };
@@ -41,8 +41,8 @@ export default function useUpdateAnsestors({
     if (activeIds.length !== 1) {
       dispatch(ENTER_EDIT_MODE, {
         payload: {
-          id: null
-        }
+          id: null,
+        },
       });
       return;
     }
@@ -53,8 +53,8 @@ export default function useUpdateAnsestors({
       if (type === "text") {
         dispatch(ENTER_EDIT_MODE, {
           payload: {
-            id: activeIds[0]
-          }
+            id: activeIds[0],
+          },
         });
         e.stopPropagation();
       }
@@ -67,7 +67,7 @@ export default function useUpdateAnsestors({
 
   const updateAnsestorsPointerEvents = () => {
     const elements = document.querySelectorAll(
-      '[data-track-item="transition-element"]'
+      '[data-track-item="transition-element"]',
     );
 
     elements.forEach((element) => {

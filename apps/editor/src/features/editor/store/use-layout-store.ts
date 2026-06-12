@@ -26,7 +26,7 @@ const useLayoutStore = create<ILayoutState>((set) => ({
   setControItemDrawerOpen: (controItemDrawerOpen) =>
     set({ controItemDrawerOpen }),
   setTypeControlItem: (typeControlItem) => set({ typeControlItem }),
-  setLabelControlItem: (labelControlItem) => set({ labelControlItem })
+  setLabelControlItem: (labelControlItem) => set({ labelControlItem }),
 }));
 
 export default useLayoutStore;

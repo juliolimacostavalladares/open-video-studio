@@ -96,7 +96,7 @@ const Ribbon: FC<TPropsComp> = ({ color, onChange, setChange }) => {
 
     pointMoveTo({
       x,
-      y
+      y,
     });
 
     window.addEventListener("mousemove", onDrag);
@@ -109,7 +109,7 @@ const Ribbon: FC<TPropsComp> = ({ color, onChange, setChange }) => {
 
     pointMoveTo({
       x,
-      y
+      y,
     });
   };
 
@@ -119,7 +119,7 @@ const Ribbon: FC<TPropsComp> = ({ color, onChange, setChange }) => {
 
     pointMoveTo({
       x,
-      y
+      y,
     });
 
     setChange(false);
@@ -157,7 +157,7 @@ const Ribbon: FC<TPropsComp> = ({ color, onChange, setChange }) => {
 
     pointMoveTo({
       x,
-      y
+      y,
     });
   };
 
@@ -183,7 +183,7 @@ const Ribbon: FC<TPropsComp> = ({ color, onChange, setChange }) => {
   const hueHsv = {
     h: color.hue,
     s: 1,
-    v: 1
+    v: 1,
   };
 
   const hueColor = new TinyColor(hueHsv).toHexString();

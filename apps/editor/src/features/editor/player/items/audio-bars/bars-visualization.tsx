@@ -7,7 +7,7 @@ export const getBars = ({
   itemWidth,
   frequencyData,
   maxDb = -50,
-  minDb = -80
+  minDb = -80,
 }: {
   totalWidth: number;
   itemWidth: number;
@@ -22,7 +22,7 @@ export const getBars = ({
   const bars = Array.from({ length: nBars }).map((_, i) => {
     const processed = processAudioFftValue(
       samples[(i * sampleStep) % samples.length],
-      { maxDb, minDb }
+      { maxDb, minDb },
     );
 
     return Math.log(1 + processed);
@@ -52,7 +52,7 @@ const Bars: React.FC<BarsProps> = ({
   roundness = 4,
   placement = "middle",
   color = "white",
-  maxAmplitude = 1
+  maxAmplitude = 1,
 }) => {
   const w = width;
   const h = height;
@@ -107,7 +107,7 @@ export const BarsVisualization: React.FC<
   color = "white",
   placement = "middle",
   maxDb,
-  minDb
+  minDb,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const frame = useCurrentFrame();
@@ -116,7 +116,7 @@ export const BarsVisualization: React.FC<
   useEffect(() => {
     setSize((sz) => ({
       width: containerRef.current?.offsetWidth ?? sz.width,
-      height: containerRef.current?.offsetHeight ?? sz.height
+      height: containerRef.current?.offsetHeight ?? sz.height,
     }));
   }, [frame, setSize]);
 
@@ -127,7 +127,7 @@ export const BarsVisualization: React.FC<
     itemWidth: lineThickness + gapSize,
     frequencyData,
     maxDb,
-    minDb
+    minDb,
   });
 
   return (

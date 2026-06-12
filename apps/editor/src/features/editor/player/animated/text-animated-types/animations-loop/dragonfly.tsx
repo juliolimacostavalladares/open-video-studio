@@ -1,7 +1,7 @@
 const DragonflyText = ({
   char,
   frame,
-  fps
+  fps,
 }: {
   char: string;
   frame: number;
@@ -19,7 +19,7 @@ const DragonflyText = ({
       style={{
         display: "inline-block",
         transform: `translate(${x}px, ${y}px) rotate(${rotate}deg) scale(${scale})`,
-        transition: "transform 0.1s linear"
+        transition: "transform 0.1s linear",
       }}
     >
       {char}

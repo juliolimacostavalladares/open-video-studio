@@ -4,7 +4,7 @@ const DropAnimationOut = ({
   frame,
   fps,
   animationTextOutFrames,
-  durationInFrames
+  durationInFrames,
 }: {
   char: string;
   index: number;
@@ -19,7 +19,7 @@ const DropAnimationOut = ({
 
   const progress = Math.min(
     Math.max((time - startTime) / (endTime - startTime), 0),
-    1
+    1,
   );
 
   const scale = 1 + progress;
@@ -31,7 +31,7 @@ const DropAnimationOut = ({
       style={{
         display: "inline-block",
         transform: `scale(${scale})`,
-        opacity: opacity
+        opacity: opacity,
       }}
     >
       {char === " " ? " " : char}

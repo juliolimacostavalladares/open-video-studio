@@ -5,7 +5,7 @@ import {
   useRef,
   MutableRefObject,
   MouseEvent,
-  TouchEvent
+  TouchEvent,
 } from "react";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
@@ -143,7 +143,7 @@ const Board: FC<TPropsComp> = ({ color, onChange, setChange }) => {
 
     pointMoveTo({
       x,
-      y
+      y,
     });
   };
 
@@ -158,7 +158,7 @@ const Board: FC<TPropsComp> = ({ color, onChange, setChange }) => {
 
     pointMoveTo({
       x,
-      y
+      y,
     });
   };
 
@@ -169,7 +169,7 @@ const Board: FC<TPropsComp> = ({ color, onChange, setChange }) => {
 
     pointMoveTo({
       x,
-      y
+      y,
     });
     removeListeners();
   };
@@ -197,7 +197,7 @@ const Board: FC<TPropsComp> = ({ color, onChange, setChange }) => {
   const hueHsv = {
     h: color.hue,
     s: 1,
-    v: 1
+    v: 1,
   };
 
   const hueColor = new TinyColor(hueHsv).toHexString();
@@ -217,7 +217,7 @@ const Board: FC<TPropsComp> = ({ color, onChange, setChange }) => {
         `}
         style={{
           height: `${154}px`,
-          minHeight: `${154}px`
+          minHeight: `${154}px`,
         }}
       >
         <ValueLayer />

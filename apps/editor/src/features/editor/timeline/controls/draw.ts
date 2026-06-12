@@ -5,7 +5,7 @@ export function drawVerticalLine(
   left: number,
   top: number,
   _: {},
-  fabricObject: FabricObject
+  fabricObject: FabricObject,
 ) {
   const cSize = 12;
   const cSizeBy2 = cSize / 2;
@@ -39,7 +39,7 @@ export function drawVerticalLeftIcon(
   left: number,
   top: number,
   styleOverride: any,
-  fabricObject: FabricObject
+  fabricObject: FabricObject,
 ) {
   const width = 10; // Rectangle width
   const height = fabricObject.height;
@@ -58,7 +58,7 @@ export function drawVerticalLeftIcon(
     -width / 2,
     height / 2,
     -width / 2 + leftBorderRadius,
-    height / 2
+    height / 2,
   );
   ctx.lineTo(width / 2, height / 2);
   ctx.lineTo(width / 2, -height / 2);
@@ -67,7 +67,7 @@ export function drawVerticalLeftIcon(
     -width / 2,
     -height / 2,
     -width / 2,
-    -height / 2 + leftBorderRadius
+    -height / 2 + leftBorderRadius,
   );
   ctx.fill();
 
@@ -84,7 +84,7 @@ export function drawVerticalLeftIcon(
     -lineHeight / 2,
     lineWidth,
     lineHeight,
-    lineRadius
+    lineRadius,
   );
   ctx.fill();
   ctx.restore();
@@ -95,7 +95,7 @@ export function drawVerticalRightIcon(
   left: number,
   top: number,
   styleOverride: any,
-  fabricObject: FabricObject
+  fabricObject: FabricObject,
 ) {
   const width = 10; // Rectangle width (increased by 1)
   const height = fabricObject.height;
@@ -114,7 +114,7 @@ export function drawVerticalRightIcon(
     width / 2,
     height / 2,
     width / 2 - rightBorderRadius,
-    height / 2
+    height / 2,
   );
   ctx.lineTo(-width / 2, height / 2);
   ctx.lineTo(-width / 2, -height / 2);
@@ -123,7 +123,7 @@ export function drawVerticalRightIcon(
     width / 2,
     -height / 2,
     width / 2,
-    -height / 2 + rightBorderRadius
+    -height / 2 + rightBorderRadius,
   );
   ctx.fill();
 
@@ -140,7 +140,7 @@ export function drawVerticalRightIcon(
     -lineHeight / 2,
     lineWidth,
     lineHeight,
-    lineRadius
+    lineRadius,
   );
   ctx.fill();
 

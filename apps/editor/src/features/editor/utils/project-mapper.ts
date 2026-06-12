@@ -29,7 +29,7 @@ export interface ApiProject {
 export function mapProjectScenesToDesign(
   project: ApiProject,
   scenes: ApiScene[],
-  apiBaseUrl: string
+  apiBaseUrl: string,
 ): IDesign {
   const fps = 30;
   const size = { width: 1080, height: 1920 };
@@ -58,9 +58,12 @@ export function mapProjectScenesToDesign(
     const captionItemId = `caption-${scene.id}`;
 
     // 1. Visual Item (image or video)
-    const assetPath = scene.asset?.path || "assets/fallbacks/default-placeholder.png";
+    const assetPath =
+      scene.asset?.path || "assets/fallbacks/default-placeholder.png";
     const assetKind = scene.asset?.kind || "image";
-    const fullAssetUrl = assetPath.startsWith("http") ? assetPath : `${apiBaseUrl}/${assetPath}`;
+    const fullAssetUrl = assetPath.startsWith("http")
+      ? assetPath
+      : `${apiBaseUrl}/${assetPath}`;
 
     const visualItem: ITrackItem = {
       id: visualItemId,
@@ -105,7 +108,9 @@ export function mapProjectScenesToDesign(
 
     // 2. Audio Narration Item
     if (scene.audioPath) {
-      const fullAudioUrl = scene.audioPath.startsWith("http") ? scene.audioPath : `${apiBaseUrl}/${scene.audioPath}`;
+      const fullAudioUrl = scene.audioPath.startsWith("http")
+        ? scene.audioPath
+        : `${apiBaseUrl}/${scene.audioPath}`;
       const audioItem: ITrackItem = {
         id: audioItemId,
         name: "audio",

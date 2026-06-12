@@ -27,7 +27,8 @@ interface Scene {
 }
 
 export const AiVoice = () => {
-  const { projectId, voiceProfileId, setVoiceProfileId, trackItemsMap } = useStore();
+  const { projectId, voiceProfileId, setVoiceProfileId, trackItemsMap } =
+    useStore();
   const [voices, setVoices] = useState<VoiceProfile[]>([]);
   const [scenes, setScenes] = useState<Scene[]>([]);
   const [loadingVoices, setLoadingVoices] = useState(false);
@@ -109,11 +110,14 @@ export const AiVoice = () => {
   const selectVoiceProfile = async (voiceId: string) => {
     if (!projectId) return;
     try {
-      const res = await fetch(`${apiBaseUrl}/projects/${projectId}/voice-profile`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ voiceProfileId: voiceId }),
-      });
+      const res = await fetch(
+        `${apiBaseUrl}/projects/${projectId}/voice-profile`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ voiceProfileId: voiceId }),
+        },
+      );
       if (res.ok) {
         setVoiceProfileId(voiceId);
       }
@@ -127,16 +131,19 @@ export const AiVoice = () => {
     if (!projectId) return;
     setSavingSceneId(sceneId);
     try {
-      const res = await fetch(`${apiBaseUrl}/projects/${projectId}/scenes/${sceneId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ script: newScript }),
-      });
+      const res = await fetch(
+        `${apiBaseUrl}/projects/${projectId}/scenes/${sceneId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ script: newScript }),
+        },
+      );
 
       if (res.ok) {
         // Also update local list
         setScenes((prev) =>
-          prev.map((s) => (s.id === sceneId ? { ...s, script: newScript } : s))
+          prev.map((s) => (s.id === sceneId ? { ...s, script: newScript } : s)),
         );
 
         // Update the DesignCombo state (the text element in timeline/canvas!)
@@ -170,9 +177,12 @@ export const AiVoice = () => {
 
     setGeneratingAudio(true);
     try {
-      const res = await fetch(`${apiBaseUrl}/projects/${projectId}/scenes/audio/generate`, {
-        method: "POST",
-      });
+      const res = await fetch(
+        `${apiBaseUrl}/projects/${projectId}/scenes/audio/generate`,
+        {
+          method: "POST",
+        },
+      );
 
       if (res.ok) {
         await loadScenes();
@@ -238,7 +248,9 @@ export const AiVoice = () => {
                         )}
                       </button>
                       <div className="flex flex-col">
-                        <span className="text-xs font-semibold">{voice.name}</span>
+                        <span className="text-xs font-semibold">
+                          {voice.name}
+                        </span>
                         <span className="text-[10px] text-muted-foreground capitalize">
                           {voice.provider.replace("-", " ")}
                         </span>
@@ -284,7 +296,10 @@ export const AiVoice = () => {
           ) : (
             <div className="flex flex-col gap-3">
               {scenes.map((scene) => (
-                <Card key={scene.id} className="p-3 border-border/50 bg-black/20 flex flex-col gap-2">
+                <Card
+                  key={scene.id}
+                  className="p-3 border-border/50 bg-black/20 flex flex-col gap-2"
+                >
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-bold text-violet-400 uppercase tracking-wider">
                       Cena {scene.orderIndex + 1}: {scene.title}
@@ -303,7 +318,9 @@ export const AiVoice = () => {
                   <div className="relative">
                     <Textarea
                       defaultValue={scene.script}
-                      onBlur={(e) => updateSceneScript(scene.id, e.target.value)}
+                      onBlur={(e) =>
+                        updateSceneScript(scene.id, e.target.value)
+                      }
                       placeholder="Texto da narração desta cena..."
                       className="text-xs min-h-[60px] bg-white/5 border-white/10 resize-none pr-8"
                     />

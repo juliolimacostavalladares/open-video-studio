@@ -13,7 +13,7 @@ class Timeline extends TimelineBase {
       scale: ITimelineScaleState;
       duration: number;
       guideLineColor?: string;
-    }
+    },
   ) {
     super(canvasEl, options); // Call the parent class constructor
 
@@ -53,7 +53,7 @@ class Timeline extends TimelineBase {
 
     this.onScroll?.({
       scrollTop: limitedPos.y,
-      scrollLeft: limitedPos.x - this.spacing.left
+      scrollLeft: limitedPos.x - this.spacing.left,
     });
   }
 
@@ -70,7 +70,7 @@ class Timeline extends TimelineBase {
 
   public scrollTo({
     scrollLeft,
-    scrollTop
+    scrollTop,
   }: {
     scrollLeft?: number;
     scrollTop?: number;

@@ -10,17 +10,17 @@ export async function POST(request: Request) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.COMBO_SK}`
+          Authorization: `Bearer ${process.env.COMBO_SK}`,
         },
-        body: JSON.stringify(body)
-      }
+        body: JSON.stringify(body),
+      },
     );
 
     const responseData = await response.json();
     if (!response.ok) {
       return NextResponse.json(
         { message: responseData?.message || "Failed convert audio to text" },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     console.error(error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

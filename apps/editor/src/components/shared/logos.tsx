@@ -3,7 +3,7 @@ import {
   LucideIcon,
   LucideProps,
   User,
-  VideoIcon
+  VideoIcon,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -58,5 +58,5 @@ export const LogoIcons = {
         fill="currentColor"
       />
     </svg>
-  )
+  ),
 };

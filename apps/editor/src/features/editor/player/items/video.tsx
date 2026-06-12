@@ -8,7 +8,7 @@ import { OffthreadVideo } from "remotion";
 
 export const Video = ({
   item,
-  options
+  options,
 }: {
   item: IVideo;
   options: SequenceItemOptions;
@@ -20,13 +20,13 @@ export const Video = ({
     animations!,
     item,
     frame,
-    fps
+    fps,
   );
   const crop = details?.crop || {
     x: 0,
     y: 0,
     width: details.width,
-    height: details.height
+    height: details.height,
   };
   const { durationInFrames } = calculateFrames(item.display, fps);
   const currentFrame = (frame || 0) - (item.display.from * fps) / 1000;
@@ -34,7 +34,7 @@ export const Video = ({
   const children = (
     <BoxAnim
       style={calculateContainerStyles(details, crop, {
-        overflow: "hidden"
+        overflow: "hidden",
       })}
       animationIn={animationIn}
       animationOut={animationOut}

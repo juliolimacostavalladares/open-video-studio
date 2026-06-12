@@ -7,7 +7,7 @@ const RealityIsBrokenAnimationOut = ({
   fps,
   textLength,
   animationTextOutFrames,
-  durationInFrames
+  durationInFrames,
 }: {
   char: string;
   index: number;
@@ -27,7 +27,7 @@ const RealityIsBrokenAnimationOut = ({
     fps,
     from: 0,
     to: 1,
-    config: { mass: 1, damping: 10 }
+    config: { mass: 1, damping: 10 },
   });
 
   const translateX = spring({
@@ -35,7 +35,7 @@ const RealityIsBrokenAnimationOut = ({
     fps,
     from: 0,
     to: 0.55,
-    config: { mass: 1, damping: 10 }
+    config: { mass: 1, damping: 10 },
   });
 
   const rotateZ = spring({
@@ -43,12 +43,12 @@ const RealityIsBrokenAnimationOut = ({
     fps,
     from: 0,
     to: 180,
-    config: { mass: 1, damping: 10 }
+    config: { mass: 1, damping: 10 },
   });
 
   const opacity = interpolate(progress, [0, delayPerChar], [1, 0], {
     extrapolateLeft: "clamp",
-    extrapolateRight: "clamp"
+    extrapolateRight: "clamp",
   });
 
   return (
@@ -58,7 +58,7 @@ const RealityIsBrokenAnimationOut = ({
         display: "inline-block",
         transformOrigin: "0 100%",
         transform: `translateY(${translateY}em) translateX(${translateX}em) rotateZ(${rotateZ}deg)`,
-        opacity
+        opacity,
       }}
     >
       {char === " " ? "\u00A0" : char}

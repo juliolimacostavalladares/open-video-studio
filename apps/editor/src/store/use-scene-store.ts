@@ -8,5 +8,5 @@ interface ISceneStore {
 
 export const useSceneStore = create<ISceneStore>((set) => ({
   scene: null,
-  setScene: (scene) => set({ scene })
+  setScene: (scene) => set({ scene }),
 }));

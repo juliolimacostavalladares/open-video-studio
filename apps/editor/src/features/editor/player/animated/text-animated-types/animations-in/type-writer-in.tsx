@@ -6,7 +6,7 @@ export default function TypeWriterIn({
   frame,
   durationInFrames,
   text,
-  style
+  style,
 }: {
   frame: number;
   durationInFrames: number;
@@ -15,8 +15,8 @@ export default function TypeWriterIn({
 }) {
   const visibleCharacters = Math.floor(
     interpolate(frame, [0, durationInFrames], [0, text.length], {
-      extrapolateRight: "clamp"
-    })
+      extrapolateRight: "clamp",
+    }),
   );
 
   const visibleText = useMemo(() => {
@@ -41,12 +41,12 @@ export default function TypeWriterIn({
   return (
     <div
       style={{
-        textAlign: "center"
+        textAlign: "center",
       }}
     >
       <span
         style={{
-          fontSize: style.fontSize
+          fontSize: style.fontSize,
         }}
       >
         {visibleText}
@@ -54,7 +54,7 @@ export default function TypeWriterIn({
       <span
         style={{
           color: "#60a5fa",
-          opacity: frame % 15 < 7 ? 1 : 0
+          opacity: frame % 15 < 7 ? 1 : 0,
         }}
       >
         |

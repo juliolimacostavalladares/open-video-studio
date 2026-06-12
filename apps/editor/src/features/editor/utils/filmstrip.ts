@@ -1,17 +1,17 @@
 import { FilmstripBacklogOptions } from "../timeline/types";
 
 export const calculateThumbnailSegmentLayout = (
-  thumbnailWidth: number
+  thumbnailWidth: number,
 ): FilmstripBacklogOptions => {
   // Calculate the maximum number of thumbnails based on the thumbnail width
-  let maxThumbnails = Math.floor(1200 / thumbnailWidth);
+  const maxThumbnails = Math.floor(1200 / thumbnailWidth);
 
   // Calculate the total width required for the thumbnails
-  let segmentSize = maxThumbnails * thumbnailWidth;
+  const segmentSize = maxThumbnails * thumbnailWidth;
 
   return {
     thumbnailsPerSegment: maxThumbnails,
-    segmentSize
+    segmentSize,
   };
 };
 
@@ -19,10 +19,10 @@ export const calculateThumbnailSegmentLayout = (
 export const calculateOffscreenSegments = (
   offscreenWidth: number,
   trimFromSize: number,
-  segmentSize: number
+  segmentSize: number,
 ) => {
   const offscreenSegments = Math.floor(
-    (offscreenWidth + trimFromSize) / segmentSize
+    (offscreenWidth + trimFromSize) / segmentSize,
   );
   return offscreenSegments;
 };
@@ -39,7 +39,7 @@ interface Result {
 
 export function matchTimestampsToNearestThumbnails(
   timestamps: number[],
-  thumbnailsList: Thumbnail[]
+  thumbnailsList: Thumbnail[],
 ): Result[] {
   const results: Result[] = [];
 
@@ -52,7 +52,7 @@ export function matchTimestampsToNearestThumbnails(
     // Push the result into the results array
     results.push({
       ts,
-      url: closestThumbnail.url
+      url: closestThumbnail.url,
     });
   });
 

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 
 import { ChevronDown } from "lucide-react";
@@ -20,7 +20,7 @@ import { debounce } from "lodash";
 
 export function regroupCaptions(
   captions: ICaption[],
-  newLinesPerCaption: number
+  newLinesPerCaption: number,
 ): ICaption[] {
   const allWords = captions.flatMap((c) => c.details.words);
   if (allWords.length === 0) return [];
@@ -45,7 +45,7 @@ export function regroupCaptions(
     const wordWidth = ctx.measureText(word.word).width;
     const spaceWidth = ctx.measureText(" ").width;
 
-    let nextWidth =
+    const nextWidth =
       currentLineWidth === 0
         ? wordWidth
         : currentLineWidth + spaceWidth + wordWidth;
@@ -65,8 +65,8 @@ export function regroupCaptions(
             ...base.details,
             text,
             linesPerCaption: newLinesPerCaption,
-            words: [...buffer]
-          }
+            words: [...buffer],
+          },
         };
 
         newCaptions.push(newCaption);
@@ -96,8 +96,8 @@ export function regroupCaptions(
           ...base.details,
           text,
           linesPerCaption: newLinesPerCaption,
-          words: [...buffer]
-        }
+          words: [...buffer],
+        },
       };
       newCaptions.push(newCaption);
     }
@@ -109,7 +109,7 @@ type CaptionTransformType = "punctuationOrPause" | "time" | "singleWord";
 
 export function transformCaptions(
   captions: ICaption[],
-  type: CaptionTransformType
+  type: CaptionTransformType,
 ): ICaption[] {
   if (!captions.length) return [];
 
@@ -128,8 +128,8 @@ export function transformCaptions(
         text,
         words,
         wordsPerLine: type,
-        linesPerCaption: 1
-      }
+        linesPerCaption: 1,
+      },
     };
   };
 
@@ -186,7 +186,7 @@ export function transformCaptions(
       ) {
         const currentEnd = Math.min(
           currentStart + interval,
-          allWords[allWords.length - 1]?.end || 0
+          allWords[allWords.length - 1]?.end || 0,
         );
         const chunkWords: any[] = [];
 
@@ -215,61 +215,61 @@ export function transformCaptions(
 const OPTIONS_LINES_PER_PAGE = [
   {
     label: "One",
-    value: 1
+    value: 1,
   },
   {
     label: "Two",
-    value: 2
+    value: 2,
   },
 
   {
     label: "Three",
-    value: 3
+    value: 3,
   },
 
   {
     label: "Four",
-    value: 4
+    value: 4,
   },
 
   {
     label: "Five",
-    value: 5
-  }
+    value: 5,
+  },
 ];
 
 const OPTIONS_WORDS_PER_LINE = [
   {
     label: "Punctuation",
-    value: "punctuationOrPause"
+    value: "punctuationOrPause",
   },
   {
     label: "Time",
-    value: "time"
+    value: "time",
   },
   {
     label: "Single Word",
-    value: "singleWord"
-  }
+    value: "singleWord",
+  },
 ];
 
 const OPTIONS_WORDS_IN_LINE = [
   {
     label: "Page",
-    value: "page"
+    value: "page",
   },
   {
     label: "Line",
-    value: "line"
+    value: "line",
   },
   {
     label: "Word",
-    value: "word"
-  }
+    value: "word",
+  },
 ];
 const CaptionWords = ({
   handleModalAnimation,
-  trackItem
+  trackItem,
 }: {
   id: string;
   handleModalAnimation: (newState?: boolean) => void;
@@ -302,13 +302,13 @@ const CaptionWords = ({
     linesPerCaption: trackItem?.details?.linesPerCaption || 2,
     wordsPerLine: trackItem?.details?.wordsPerLine || "punctuationOrPause",
     captionsTransitions: "none",
-    showObject: trackItem?.details?.showObject || "page"
+    showObject: trackItem?.details?.showObject || "page",
   });
 
   const rawWidth = trackItem?.details.width as string | number | undefined;
 
   const elementWidth = Number(
-    typeof rawWidth === "string" ? rawWidth.replace("px", "") : rawWidth || 0
+    typeof rawWidth === "string" ? rawWidth.replace("px", "") : rawWidth || 0,
   );
   const popoverRef = useRef<HTMLDivElement | null>(null);
 
@@ -348,14 +348,14 @@ const CaptionWords = ({
     } else if (type === "showObject") {
       newData = captionsData.map((item) => ({
         ...item,
-        details: { ...item.details, showObject: value }
+        details: { ...item.details, showObject: value },
       }));
     }
 
     dispatch(LAYER_DELETE, {
       payload: {
-        trackItemIds: captionsData.map((t) => t.id)
-      }
+        trackItemIds: captionsData.map((t) => t.id),
+      },
     });
     console.log(newData);
     dispatch(ADD_ITEMS, {
@@ -365,10 +365,10 @@ const CaptionWords = ({
           {
             id: generateId(),
             items: newData?.map((item) => item.id) || [],
-            type: "caption"
-          }
-        ]
-      }
+            type: "caption",
+          },
+        ],
+      },
     });
   };
 
@@ -378,19 +378,19 @@ const CaptionWords = ({
         (acc, item) => ({
           ...acc,
           [item.id]: {
-            details: { left, top }
-          }
+            details: { left, top },
+          },
         }),
-        {}
+        {},
       );
 
       dispatch(EDIT_OBJECT, { payload: updates });
     }, 200),
-    [captionsData]
+    [captionsData],
   );
 
   const handlePresetPosition = (
-    position: "left" | "center" | "right" | "up" | "middle" | "down"
+    position: "left" | "center" | "right" | "up" | "middle" | "down",
   ) => {
     let left = 0;
     let top = 0;
@@ -441,7 +441,7 @@ const CaptionWords = ({
     { key: "scale-up-08", label: "Zoom" },
     { key: "scale-down-12", label: "Pop" },
     { key: "jump", label: "Jump" },
-    { key: "pulse", label: "Pulse" }
+    { key: "pulse", label: "Pulse" },
   ];
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
@@ -469,13 +469,13 @@ const CaptionWords = ({
         ...acc,
         [id]: {
           details: {
-            animation
-          }
-        }
+            animation,
+          },
+        },
       };
     }, {});
     dispatch(EDIT_OBJECT, {
-      payload
+      payload,
     });
   };
 
@@ -498,7 +498,7 @@ const CaptionWords = ({
                   <p className="truncate">
                     {
                       OPTIONS_LINES_PER_PAGE.filter(
-                        (option) => option.value === data.linesPerCaption
+                        (option) => option.value === data.linesPerCaption,
                       )[0].label
                     }
                   </p>
@@ -542,7 +542,7 @@ const CaptionWords = ({
                     <p className="truncate">
                       {
                         OPTIONS_WORDS_PER_LINE.filter(
-                          (option) => option.value === data.wordsPerLine
+                          (option) => option.value === data.wordsPerLine,
                         )[0].label
                       }
                     </p>
@@ -587,7 +587,7 @@ const CaptionWords = ({
                     <p className="truncate">
                       {
                         OPTIONS_WORDS_IN_LINE.filter(
-                          (option) => option.value === data.showObject
+                          (option) => option.value === data.showObject,
                         )[0].label
                       }
                     </p>
@@ -690,7 +690,7 @@ const CaptionWords = ({
                     {selectedOptions.length === 0
                       ? "None"
                       : animationOptions.find(
-                          (opt) => opt.key === selectedOptions[0]
+                          (opt) => opt.key === selectedOptions[0],
                         )?.label || "None"}
                   </p>
                 </div>

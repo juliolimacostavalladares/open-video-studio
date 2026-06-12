@@ -8,7 +8,7 @@ import MotionText from "../motion-text";
 
 export default function Text({
   item,
-  options
+  options,
 }: {
   item: IText;
   options: SequenceItemOptions;
@@ -20,7 +20,7 @@ export default function Text({
     animations!,
     item,
     frame,
-    fps
+    fps,
   );
   const textAnimationIn = animations?.in?.name || "";
   const textAnimationOut = animations?.out?.name || "";
@@ -68,7 +68,7 @@ export default function Text({
         durationInFrames={durationInFrames}
         frame={currentFrame}
         style={{
-          height: "100%"
+          height: "100%",
         }}
       >
         <MotionText

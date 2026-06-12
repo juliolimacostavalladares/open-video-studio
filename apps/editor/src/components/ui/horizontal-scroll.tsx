@@ -15,7 +15,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
   showShadows = true,
   shadowColor = "black",
   shadowWidth = 6,
-  debug = false
+  debug = false,
 }) => {
   const [showLeftShadow, setShowLeftShadow] = useState(false);
   const [showRightShadow, setShowRightShadow] = useState(false);
@@ -37,7 +37,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
         scrollWidth,
         clientWidth,
         shouldShowLeft,
-        shouldShowRight
+        shouldShowRight,
       });
     }
   };
@@ -58,7 +58,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
 
   const shadowClasses = {
     left: `absolute left-0 top-0 bottom-0 w-${shadowWidth} bg-gradient-to-r from-${shadowColor}/50 via-${shadowColor}/30 to-transparent pointer-events-none z-20`,
-    right: `absolute right-0 top-0 bottom-0 w-${shadowWidth} bg-gradient-to-l from-${shadowColor}/50 via-${shadowColor}/30 to-transparent pointer-events-none z-20`
+    right: `absolute right-0 top-0 bottom-0 w-${shadowWidth} bg-gradient-to-l from-${shadowColor}/50 via-${shadowColor}/30 to-transparent pointer-events-none z-20`,
   };
 
   return (

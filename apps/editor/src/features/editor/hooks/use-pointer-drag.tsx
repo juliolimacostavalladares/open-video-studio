@@ -167,12 +167,12 @@ export interface IPointerDragOptions<T> {
 }
 
 export function usePointerDrag<T>(
-  options: IPointerDragOptions<T>
+  options: IPointerDragOptions<T>,
 ): unknown extends T
   ? IPointerDragReturnWithoutState
   : IPointerDragReturnWithState<T>;
 export function usePointerDrag<T>(
-  options: IPointerDragOptions<T>
+  options: IPointerDragOptions<T>,
 ): IPointerDragReturnWithoutState | IPointerDragReturnWithState<T> {
   const [dragState, setDragState] = useState<T | undefined>(undefined);
   const [isDragging, setIsDragging] = useState(false);
@@ -208,7 +208,7 @@ export function usePointerDrag<T>(
       onStart,
       onMove,
       onEnd,
-      dragPredicate
+      dragPredicate,
     } = optionsRef.current;
 
     const getData = (e: PointerEvent): IPointerDragData<T> => {
@@ -229,7 +229,7 @@ export function usePointerDrag<T>(
         startedAt,
         initialEvent,
         distance: Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2)),
-        event: e
+        event: e,
       };
     };
 
@@ -284,7 +284,7 @@ export function usePointerDrag<T>(
       setIsDragging(true);
       infoRef.current.dragging = true;
     },
-    [setDragState, setIsStarted, setIsDragging]
+    [setDragState, setIsStarted, setIsDragging],
   );
 
   const dragProps = useCallback(
@@ -300,7 +300,7 @@ export function usePointerDrag<T>(
             y: e.clientY,
             startedAt: now,
             dragging: false,
-            initialEvent: e.nativeEvent
+            initialEvent: e.nativeEvent,
           };
 
           if (optionsRef.current.pointerDownPreventDefault) {
@@ -323,18 +323,18 @@ export function usePointerDrag<T>(
             startedAt: now,
             initialEvent: e.nativeEvent,
             distance: 0,
-            event: e.nativeEvent
+            event: e.nativeEvent,
           });
-        }
+        },
       };
     },
-    [setDragState, setIsStarted]
+    [setDragState, setIsStarted],
   );
 
   return {
     startDragging,
     dragState,
     isDragging,
-    dragProps
+    dragProps,
   } as IPointerDragReturnWithState<T> | IPointerDragReturnWithoutState;
 }

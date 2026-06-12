@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 const Rounded = ({
   value,
-  onChange
+  onChange,
 }: {
   value: number;
   onChange: (v: number) => void;
@@ -27,7 +27,7 @@ const Rounded = ({
         className="w-32"
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 80px"
+          gridTemplateColumns: "1fr 80px",
         }}
       >
         <Input

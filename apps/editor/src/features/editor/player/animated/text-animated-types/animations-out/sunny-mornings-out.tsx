@@ -7,7 +7,7 @@ const SunnyMorningsAnimationOut = ({
   fps,
   textLength,
   animationTextOutFrames,
-  durationInFrames
+  durationInFrames,
 }: {
   char: string;
   index: number;
@@ -28,12 +28,12 @@ const SunnyMorningsAnimationOut = ({
     fps,
     from: 1,
     to: 0,
-    config: { mass: 1, damping: 10 }
+    config: { mass: 1, damping: 10 },
   });
 
   const opacity = interpolate(progress, [0, delayPerChar], [1, 0], {
     extrapolateLeft: "clamp",
-    extrapolateRight: "clamp"
+    extrapolateRight: "clamp",
   });
 
   return (
@@ -42,7 +42,7 @@ const SunnyMorningsAnimationOut = ({
       style={{
         display: "inline-block",
         transform: `scale(${scale})`,
-        opacity
+        opacity,
       }}
     >
       {char === " " ? " " : char}

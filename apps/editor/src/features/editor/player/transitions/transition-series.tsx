@@ -3,19 +3,19 @@ import { Children, useMemo } from "react";
 import type {
   AbsoluteFillLayout,
   LayoutAndStyle,
-  SequencePropsWithoutDuration
+  SequencePropsWithoutDuration,
 } from "remotion";
 import {
   Freeze,
   Internals,
   Sequence,
   useCurrentFrame,
-  useVideoConfig
+  useVideoConfig,
 } from "remotion";
 import { NoReactInternals } from "remotion/no-react";
 import {
   WrapInEnteringProgressContext,
-  WrapInExitingProgressContext
+  WrapInExitingProgressContext,
 } from "./context";
 import { flattenChildren } from "./flatten-children";
 import { slide } from "./presentations/slide";
@@ -24,10 +24,10 @@ import { validateDurationInFrames } from "./validate";
 
 // eslint-disable-next-line react/function-component-definition
 const TransitionSeriesTransition = function <
-  PresentationProps extends Record<string, unknown>
+  PresentationProps extends Record<string, unknown>,
 >(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _props: TransitionSeriesTransitionProps<PresentationProps>
+  _props: TransitionSeriesTransitionProps<PresentationProps>,
 ) {
   return null;
 };
@@ -69,7 +69,7 @@ type TypeChild<PresentationProps extends Record<string, unknown>> =
   | string;
 
 const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
-  children
+  children,
 }) => {
   const { fps } = useVideoConfig();
   const frame = useCurrentFrame();
@@ -87,7 +87,7 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
         }
 
         throw new TypeError(
-          `The <TransitionSeries /> component only accepts a list of <TransitionSeries.Sequence /> components as its children, but you passed a string "${current}"`
+          `The <TransitionSeries /> component only accepts a list of <TransitionSeries.Sequence /> components as its children, but you passed a string "${current}"`,
         );
       }
 
@@ -122,7 +122,7 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
           throw new TypeError(
             `A <TransitionSeries.Transition /> component must not be followed by another <TransitionSeries.Transition /> component (nth children = ${
               i - 1
-            } and ${i})`
+            } and ${i})`,
           );
         }
 
@@ -131,7 +131,7 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
 
       if (current.type !== SeriesSequence) {
         throw new TypeError(
-          `The <TransitionSeries /> component only accepts a list of <TransitionSeries.Sequence /> and <TransitionSeries.Transition /> components as its children, but got ${current} instead`
+          `The <TransitionSeries /> component only accepts a list of <TransitionSeries.Sequence /> and <TransitionSeries.Transition /> components as its children, but got ${current} instead`,
         );
       }
 
@@ -144,7 +144,7 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
 
       if (!castedChildAgain?.props.children) {
         throw new TypeError(
-          `A <TransitionSeries.Sequence /> component (${debugInfo}) was detected to not have any children. Delete it to fix this error.`
+          `A <TransitionSeries.Sequence /> component (${debugInfo}) was detected to not have any children. Delete it to fix this error.`,
         );
       }
 
@@ -156,24 +156,24 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
       } = castedChildAgain.props;
       validateDurationInFrames(durationInFramesProp, {
         component: `of a <TransitionSeries.Sequence /> component`,
-        allowFloats: true
+        allowFloats: true,
       });
       const offset = castedChildAgain.props.offset ?? 0;
       if (Number.isNaN(offset)) {
         throw new TypeError(
-          `The "offset" property of a <TransitionSeries.Sequence /> must not be NaN, but got NaN (${debugInfo}).`
+          `The "offset" property of a <TransitionSeries.Sequence /> must not be NaN, but got NaN (${debugInfo}).`,
         );
       }
 
       if (!Number.isFinite(offset)) {
         throw new TypeError(
-          `The "offset" property of a <TransitionSeries.Sequence /> must be finite, but got ${offset} (${debugInfo}).`
+          `The "offset" property of a <TransitionSeries.Sequence /> must be finite, but got ${offset} (${debugInfo}).`,
         );
       }
 
       if (offset % 1 !== 0) {
         throw new TypeError(
-          `The "offset" property of a <TransitionSeries.Sequence /> must be finite, but got ${offset} (${debugInfo}).`
+          `The "offset" property of a <TransitionSeries.Sequence /> must be finite, but got ${offset} (${debugInfo}).`,
         );
       }
       const currentStartFrame = startFrame + offset;
@@ -181,7 +181,7 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
 
       if (prev) {
         duration = prev.props.timing.getDurationInFrames({
-          fps
+          fps,
         });
         transitionOffsets -= duration / 2;
       }
@@ -204,21 +204,21 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
               durationInFrames +
               next.props.timing.getDurationInFrames({ fps }) / 2 +
               transitionOffsets,
-            fps
+            fps,
           })
         : null;
 
       const prevProgress = prev
         ? prev.props.timing.getProgress({
             frame: frame - actualStartFrame,
-            fps
+            fps,
           })
         : null;
 
       const nextProgressIn = prev
         ? prev.props.timing.getProgress({
             frame: frame - (actualStartFrame + durationInFrames),
-            fps
+            fps,
           })
         : null;
 
@@ -229,8 +229,8 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
       ) {
         throw new Error(
           `The duration of a <TransitionSeries.Sequence /> must not be shorter than the duration of the next <TransitionSeries.Transition />. The transition is ${next.props.timing.getDurationInFrames(
-            { fps }
-          )} frames long, but the sequence is only ${durationInFramesProp} frames long (${debugInfo})`
+            { fps },
+          )} frames long, but the sequence is only ${durationInFramesProp} frames long (${debugInfo})`,
         );
       }
 
@@ -241,8 +241,8 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
       ) {
         throw new Error(
           `The duration of a <TransitionSeries.Sequence /> must not be shorter than the duration of the previous <TransitionSeries.Transition />. The transition is ${prev.props.timing.getDurationInFrames(
-            { fps }
-          )} frames long, but the sequence is only ${durationInFramesProp} frames long (${debugInfo})`
+            { fps },
+          )} frames long, but the sequence is only ${durationInFramesProp} frames long (${debugInfo})`,
         );
       }
 
@@ -251,10 +251,10 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
         const prevPresentation = prev.props.presentation ?? slide();
 
         const prevTransitionDuration = prev.props.timing.getDurationInFrames({
-          fps
+          fps,
         });
         const nextTransitionDuration = next.props.timing.getDurationInFrames({
-          fps
+          fps,
         });
         const UppercaseNextPresentation = nextPresentation.component;
         const UppercasePrevPresentation = prevPresentation.component;
@@ -281,7 +281,7 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
         const nextProgres = next.props.timing.getProgress({
           frame:
             frame - (fromTemp + durationInFrames - nextTransitionDuration / 2),
-          fps
+          fps,
         });
 
         const isAfterSequenceStart = frame > actualStartFrame;
@@ -317,7 +317,7 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
                 presentationDirection="exiting"
                 presentationProgress={nextProgres}
                 presentationDurationInFrames={next.props.timing.getDurationInFrames(
-                  { fps }
+                  { fps },
                 )}
               >
                 <WrapInExitingProgressContext
@@ -328,7 +328,7 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
                     presentationDirection="entering"
                     presentationProgress={prevProgress}
                     presentationDurationInFrames={prev.props.timing.getDurationInFrames(
-                      { fps }
+                      { fps },
                     )}
                   >
                     <WrapInEnteringProgressContext
@@ -373,7 +373,7 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
                 presentationDirection="entering"
                 presentationProgress={prevProgress}
                 presentationDurationInFrames={prev.props.timing.getDurationInFrames(
-                  { fps }
+                  { fps },
                 )}
               >
                 <WrapInEnteringProgressContext
@@ -422,7 +422,7 @@ const TransitionSeriesChildren: FC<{ readonly children: React.ReactNode }> = ({
                 presentationDirection="exiting"
                 presentationProgress={nextProgress}
                 presentationDurationInFrames={next.props.timing.getDurationInFrames(
-                  { fps }
+                  { fps },
                 )}
               >
                 <WrapInExitingProgressContext
@@ -470,7 +470,7 @@ export const TransitionSeries: FC<SequencePropsWithoutDuration> & {
     layout !== "absolute-fill"
   ) {
     throw new TypeError(
-      `The "layout" prop of <TransitionSeries /> is not supported anymore in v5. TransitionSeries' must be absolutely positioned.`
+      `The "layout" prop of <TransitionSeries /> is not supported anymore in v5. TransitionSeries' must be absolutely positioned.`,
     );
   }
 

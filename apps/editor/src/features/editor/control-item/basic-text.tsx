@@ -40,7 +40,7 @@ const getStyleNameFromFontName = (fontName: string) => {
 
 const BasicText = ({
   trackItem,
-  type
+  type,
 }: {
   trackItem: ITrackItem & IText;
   type?: string;
@@ -64,15 +64,15 @@ const BasicText = ({
       color: "#000000",
       x: 0,
       y: 0,
-      blur: 0
-    }
+      blur: 0,
+    },
   });
 
   const [selectedFont, setSelectedFont] = useState<ICompactFont>({
     family: "Open Sans",
     styles: [],
     default: DEFAULT_FONT,
-    name: "Regular"
+    name: "Regular",
   });
   const { compactFonts, fonts } = useDataState();
 
@@ -80,20 +80,20 @@ const BasicText = ({
     const fontFamily =
       trackItem.details.fontFamily || DEFAULT_FONT.postScriptName;
     const currentFont = fonts.find(
-      (font) => font.postScriptName === fontFamily
+      (font) => font.postScriptName === fontFamily,
     );
 
     if (!currentFont) return;
 
     const selectedFont = compactFonts.find(
-      (font) => font.family === currentFont?.family
+      (font) => font.family === currentFont?.family,
     );
 
     if (!selectedFont) return;
 
     setSelectedFont({
       ...selectedFont,
-      name: getStyleNameFromFontName(currentFont.postScriptName)
+      name: getStyleNameFromFontName(currentFont.postScriptName),
     });
 
     setProperties({
@@ -114,8 +114,8 @@ const BasicText = ({
         color: "#000000",
         x: 0,
         y: 0,
-        blur: 0
-      }
+        blur: 0,
+      },
     });
   }, [trackItem.id]);
 
@@ -126,8 +126,8 @@ const BasicText = ({
     await loadFonts([
       {
         name: fontName,
-        url: fontUrl
-      }
+        url: fontUrl,
+      },
     ]);
     setSelectedFont({ ...selectedFont, name: styleName });
     dispatch(EDIT_OBJECT, {
@@ -135,10 +135,10 @@ const BasicText = ({
         [trackItem.id]: {
           details: {
             fontFamily: fontName,
-            fontUrl: fontUrl
-          }
-        }
-      }
+            fontUrl: fontUrl,
+          },
+        },
+      },
     });
   };
 
@@ -147,15 +147,15 @@ const BasicText = ({
       payload: {
         [trackItem.id]: {
           details: {
-            borderWidth: v
-          }
-        }
-      }
+            borderWidth: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
-        borderWidth: v
+        borderWidth: v,
       } as ITextControlProps;
     });
   };
@@ -165,15 +165,15 @@ const BasicText = ({
       payload: {
         [trackItem.id]: {
           details: {
-            borderColor: v
-          }
-        }
-      }
+            borderColor: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
-        borderColor: v
+        borderColor: v,
       } as ITextControlProps;
     });
   };
@@ -183,15 +183,15 @@ const BasicText = ({
       payload: {
         [trackItem.id]: {
           details: {
-            opacity: v
-          }
-        }
-      }
+            opacity: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
-        opacity: v
+        opacity: v,
       } as ITextControlProps;
     }); // Update local state
   };
@@ -201,16 +201,16 @@ const BasicText = ({
       payload: {
         [trackItem.id]: {
           details: {
-            boxShadow: boxShadow
-          }
-        }
-      }
+            boxShadow: boxShadow,
+          },
+        },
+      },
     });
 
     setProperties((prev) => {
       return {
         ...prev,
-        boxShadow
+        boxShadow,
       } as ITextControlProps;
     });
   };
@@ -220,15 +220,15 @@ const BasicText = ({
       payload: {
         [trackItem.id]: {
           details: {
-            fontSize: v
-          }
-        }
-      }
+            fontSize: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
-        fontSize: v
+        fontSize: v,
       } as ITextControlProps;
     });
   };
@@ -240,14 +240,14 @@ const BasicText = ({
     await loadFonts([
       {
         name: fontName,
-        url: fontUrl
-      }
+        url: fontUrl,
+      },
     ]);
     setSelectedFont({ ...font, name: getStyleNameFromFontName(fontName) });
     setProperties({
       ...properties,
       fontFamily: font.default.family,
-      fontFamilyDisplay: font.default.family
+      fontFamilyDisplay: font.default.family,
     });
 
     dispatch(EDIT_OBJECT, {
@@ -255,10 +255,10 @@ const BasicText = ({
         [trackItem.id]: {
           details: {
             fontFamily: fontName,
-            fontUrl: fontUrl
-          }
-        }
-      }
+            fontUrl: fontUrl,
+          },
+        },
+      },
     });
   };
 
@@ -266,7 +266,7 @@ const BasicText = ({
     setProperties((prev) => {
       return {
         ...prev,
-        color: color
+        color: color,
       } as ITextControlProps;
     });
 
@@ -274,10 +274,10 @@ const BasicText = ({
       payload: {
         [trackItem.id]: {
           details: {
-            color: color
-          }
-        }
-      }
+            color: color,
+          },
+        },
+      },
     });
   };
 
@@ -285,7 +285,7 @@ const BasicText = ({
     setProperties((prev) => {
       return {
         ...prev,
-        backgroundColor: color
+        backgroundColor: color,
       } as ITextControlProps;
     });
 
@@ -293,10 +293,10 @@ const BasicText = ({
       payload: {
         [trackItem.id]: {
           details: {
-            backgroundColor: color
-          }
-        }
-      }
+            backgroundColor: color,
+          },
+        },
+      },
     });
   };
 
@@ -304,41 +304,41 @@ const BasicText = ({
     setProperties((prev) => {
       return {
         ...prev,
-        textAlign: v
+        textAlign: v,
       } as ITextControlProps;
     });
     dispatch(EDIT_OBJECT, {
       payload: {
         [trackItem.id]: {
           details: {
-            textAlign: v
-          }
-        }
-      }
+            textAlign: v,
+          },
+        },
+      },
     });
   };
 
   const onChangeTextDecoration = (v: string) => {
     setProperties({
       ...properties,
-      textDecoration: v
+      textDecoration: v,
     });
 
     dispatch(EDIT_OBJECT, {
       payload: {
         [trackItem.id]: {
           details: {
-            textDecoration: v
-          }
-        }
-      }
+            textDecoration: v,
+          },
+        },
+      },
     });
   };
 
   const components = [
     {
       key: "textPreset",
-      component: <PresetText trackItem={trackItem} properties={properties} />
+      component: <PresetText trackItem={trackItem} properties={properties} />,
     },
     {
       key: "textControls",
@@ -356,11 +356,11 @@ const BasicText = ({
           onChangeTextDecoration={onChangeTextDecoration}
           handleChangeOpacity={handleChangeOpacity}
         />
-      )
+      ),
     },
     {
       key: "animations",
-      component: <Animations trackItem={trackItem} properties={properties} />
+      component: <Animations trackItem={trackItem} properties={properties} />,
     },
     {
       key: "fontStroke",
@@ -372,7 +372,7 @@ const BasicText = ({
           valueBorderWidth={properties.borderWidth as number}
           valueBorderColor={properties.borderColor as string}
         />
-      )
+      ),
     },
     {
       key: "fontShadow",
@@ -385,12 +385,12 @@ const BasicText = ({
               color: "#000000",
               x: 0,
               y: 0,
-              blur: 0
+              blur: 0,
             }
           }
         />
-      )
-    }
+      ),
+    },
   ];
 
   return (

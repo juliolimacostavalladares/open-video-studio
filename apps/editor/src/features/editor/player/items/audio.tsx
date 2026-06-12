@@ -4,7 +4,7 @@ import { Audio as RemotionAudio } from "remotion";
 
 export default function Audio({
   item,
-  options
+  options,
 }: {
   item: IAudio;
   options: SequenceItemOptions;

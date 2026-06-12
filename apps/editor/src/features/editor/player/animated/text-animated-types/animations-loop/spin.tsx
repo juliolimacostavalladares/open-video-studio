@@ -1,7 +1,7 @@
 const Spin = ({
   text,
   frame,
-  fps
+  fps,
 }: {
   text: string;
   frame: number;
@@ -14,7 +14,7 @@ const Spin = ({
     <span
       style={{
         display: "inline-block",
-        transform: `rotateZ(${rotateZ}deg)`
+        transform: `rotateZ(${rotateZ}deg)`,
       }}
     >
       {text}

@@ -36,7 +36,7 @@ export const getIndexActiveTag = (value: string) => {
 
 export const checkValidColorsArray = (
   arr: string[],
-  type: "solid" | "grad"
+  type: "solid" | "grad",
 ) => {
   if (!arr.length || !Array.isArray(arr)) {
     return [];
@@ -72,7 +72,7 @@ export const checkValidColorsArray = (
 
         if (validColor === "Not correct position") {
           console.warn(
-            "Incorrect gradient default value. You need to indicate the location for the colors. We ignore this gradient value"
+            "Incorrect gradient default value. You need to indicate the location for the colors. We ignore this gradient value",
           );
           return false;
         }

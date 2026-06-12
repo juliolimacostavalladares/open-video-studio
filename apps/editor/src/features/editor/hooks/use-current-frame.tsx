@@ -3,7 +3,7 @@ import { useCallback, useSyncExternalStore } from "react";
 import { getSafeCurrentFrame } from "../utils/time";
 
 export const useCurrentPlayerFrame = (
-  ref: React.RefObject<PlayerRef> | null
+  ref: React.RefObject<PlayerRef> | null,
 ) => {
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
@@ -19,12 +19,12 @@ export const useCurrentPlayerFrame = (
         current.removeEventListener("frameupdate", updater);
       };
     },
-    [ref]
+    [ref],
   );
   const data = useSyncExternalStore<number>(
     subscribe,
     () => getSafeCurrentFrame(ref),
-    () => 0
+    () => 0,
   );
   return data;
 };

@@ -39,7 +39,7 @@ export const groupTrackItems = (data: {
 
       // Find transition from this item
       const transition = Object.values(transitionsMap).find(
-        (t) => t.fromId === currentId && t.kind !== "none" // Filter here
+        (t) => t.fromId === currentId && t.kind !== "none", // Filter here
       );
       if (!transition) break;
 

@@ -10,7 +10,7 @@ import {
   slide,
   slidingDoors,
   star,
-  wipe
+  wipe,
 } from "@designcombo/transitions";
 import { TransitionSeries } from "@designcombo/transitions";
 
@@ -96,12 +96,12 @@ export const Transitions: Record<
     width,
     height,
     durationInFrames,
-    id
+    id,
   }: TransitionOptions) => (
     <TransitionSeries.Transition
       key={id}
       presentation={slidingDoors({ width, height })}
       timing={linearTiming({ durationInFrames })}
     />
-  )
+  ),
 };

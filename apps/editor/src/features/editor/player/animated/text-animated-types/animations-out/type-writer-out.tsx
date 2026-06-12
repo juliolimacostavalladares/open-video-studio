@@ -7,7 +7,7 @@ const TypeWriterOut = ({
   text,
   details,
   frame,
-  durationInFrames
+  durationInFrames,
 }: {
   animationDuration: number;
   text: string;
@@ -20,8 +20,8 @@ const TypeWriterOut = ({
       frame,
       [durationInFrames - animationDuration, durationInFrames],
       [text.length, 0],
-      { extrapolateRight: "clamp" }
-    )
+      { extrapolateRight: "clamp" },
+    ),
   );
 
   const visibleText = useMemo(() => {
@@ -46,12 +46,12 @@ const TypeWriterOut = ({
   return (
     <div
       style={{
-        textAlign: "center"
+        textAlign: "center",
       }}
     >
       <span
         style={{
-          fontSize: details.fontSize
+          fontSize: details.fontSize,
         }}
       >
         {visibleText}
@@ -59,7 +59,7 @@ const TypeWriterOut = ({
       <span
         style={{
           color: "#60a5fa",
-          opacity: frame % 15 < 7 ? 1 : 0
+          opacity: frame % 15 < 7 ? 1 : 0,
         }}
       >
         |

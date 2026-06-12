@@ -32,7 +32,9 @@ export const Uploads = () => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterTab, setFilterTab] = useState<"todos" | "imagens" | "videos">("todos");
+  const [filterTab, setFilterTab] = useState<"todos" | "imagens" | "videos">(
+    "todos",
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
@@ -41,9 +43,12 @@ export const Uploads = () => {
     if (!projectId) return;
     setLoading(true);
     try {
-      const response = await fetch(`${apiBaseUrl}/projects/${projectId}/assets`, {
-        cache: "no-store",
-      });
+      const response = await fetch(
+        `${apiBaseUrl}/projects/${projectId}/assets`,
+        {
+          cache: "no-store",
+        },
+      );
       if (response.ok) {
         const data = await response.json();
         setAssets(data.assets || []);
@@ -68,10 +73,13 @@ export const Uploads = () => {
     formData.append("asset", file);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/projects/${projectId}/assets`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `${apiBaseUrl}/projects/${projectId}/assets`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
 
       if (response.ok) {
         await fetchAssets();
@@ -90,12 +98,20 @@ export const Uploads = () => {
 
   const handleDeleteAsset = async (assetId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm("Deseja realmente deletar esta mídia? Ela será removida das cenas que a utilizam.")) return;
+    if (
+      !confirm(
+        "Deseja realmente deletar esta mídia? Ela será removida das cenas que a utilizam.",
+      )
+    )
+      return;
 
     try {
-      const response = await fetch(`${apiBaseUrl}/projects/${projectId}/assets/${assetId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `${apiBaseUrl}/projects/${projectId}/assets/${assetId}`,
+        {
+          method: "DELETE",
+        },
+      );
       if (response.ok) {
         setAssets((prev) => prev.filter((a) => a.id !== assetId));
       }
@@ -155,7 +171,9 @@ export const Uploads = () => {
 
   // Filter and Search logic
   const filteredAssets = assets.filter((asset) => {
-    const matchesSearch = asset.path.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = asset.path
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
     if (filterTab === "imagens") {
       return matchesSearch && asset.kind === "image";
     }
@@ -212,7 +230,9 @@ export const Uploads = () => {
             key={tab}
             onClick={() => setFilterTab(tab)}
             className={`pb-3 capitalize transition-all duration-200 relative cursor-pointer ${
-              filterTab === tab ? "text-violet-400 font-bold" : "text-muted-foreground hover:text-foreground"
+              filterTab === tab
+                ? "text-violet-400 font-bold"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {tab}

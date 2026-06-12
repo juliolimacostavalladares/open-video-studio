@@ -24,7 +24,7 @@ export const FilePreview = React.forwardRef<HTMLDivElement, FilePreviewProps>(
     }
 
     return <GenericFilePreview {...props} ref={ref} />;
-  }
+  },
 );
 FilePreview.displayName = "FilePreview";
 
@@ -63,7 +63,7 @@ const ImageFilePreview = React.forwardRef<HTMLDivElement, FilePreviewProps>(
         ) : null}
       </motion.div>
     );
-  }
+  },
 );
 ImageFilePreview.displayName = "ImageFilePreview";
 
@@ -112,7 +112,7 @@ const TextFilePreview = React.forwardRef<HTMLDivElement, FilePreviewProps>(
         ) : null}
       </motion.div>
     );
-  }
+  },
 );
 TextFilePreview.displayName = "TextFilePreview";
 
@@ -148,6 +148,6 @@ const GenericFilePreview = React.forwardRef<HTMLDivElement, FilePreviewProps>(
         ) : null}
       </motion.div>
     );
-  }
+  },
 );
 GenericFilePreview.displayName = "GenericFilePreview";

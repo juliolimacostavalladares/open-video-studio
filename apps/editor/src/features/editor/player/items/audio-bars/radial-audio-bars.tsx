@@ -6,7 +6,7 @@ import { audioDataManager } from "../../lib/audio-data";
 
 export const RadialBars = ({
   item,
-  options
+  options,
 }: {
   item: IRadialAudioBars;
   options: SequenceItemOptions;

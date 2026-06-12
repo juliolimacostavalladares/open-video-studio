@@ -3,7 +3,7 @@ import { interpolate } from "remotion";
 const Rotate3d = ({
   frame,
   durationInFrames,
-  text
+  text,
 }: {
   text: string;
   frame: number;
@@ -19,14 +19,14 @@ const Rotate3d = ({
         height: "100%",
         position: "relative",
         background: "transparent",
-        perspective: 1000 // necesaria para el efecto 3D
+        perspective: 1000, // necesaria para el efecto 3D
       }}
     >
       <div
         style={{
           transform: `rotateY(${rotation}deg)`,
           transformStyle: "preserve-3d",
-          background: "transparent"
+          background: "transparent",
         }}
       >
         {text}
@@ -37,7 +37,7 @@ const Rotate3d = ({
           transformStyle: "preserve-3d",
           position: "absolute",
           top: 0,
-          background: "transparent"
+          background: "transparent",
         }}
       >
         {text}

@@ -13,7 +13,7 @@ import {
   IShape,
   IText,
   IVideo,
-  IWaveAudioBars
+  IWaveAudioBars,
 } from "@designcombo/types";
 import {
   Audio,
@@ -28,7 +28,7 @@ import {
   Shape,
   Text,
   Video,
-  WaveAudioBars
+  WaveAudioBars,
 } from "./items";
 import { SequenceItemOptions } from "./base-sequence";
 
@@ -55,5 +55,5 @@ export const SequenceItem: Record<
   progressFrame: (item, options) =>
     ProgressFrame({ item: item as IProgressFrame, options }),
   radialAudioBars: (item, options) =>
-    RadialAudioBars({ item: item as IRadialAudioBars, options })
+    RadialAudioBars({ item: item as IRadialAudioBars, options }),
 };

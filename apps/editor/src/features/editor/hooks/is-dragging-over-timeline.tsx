@@ -7,7 +7,7 @@ export const useIsDraggingOverTimeline = () => {
 
   useEffect(() => {
     const dragEvents = subject.pipe(
-      filter(({ key }) => key.startsWith(DRAG_PREFIX))
+      filter(({ key }) => key.startsWith(DRAG_PREFIX)),
     );
 
     const dragEventsSubscription = dragEvents.subscribe((obj) => {

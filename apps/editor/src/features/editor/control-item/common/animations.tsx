@@ -33,21 +33,21 @@ const SelectaAnimation = ({ trackItem }: { trackItem: ITrackItem & IText }) => {
     "in",
     activeIds,
     trackItem.type === "text" ? "text" : "media",
-    trackItemsMap
+    trackItemsMap,
   );
   const presetOutButtons = createPresetButtons(
     (key) => key.includes("Out"),
     "out",
     activeIds,
     trackItem.type === "text" ? "text" : "media",
-    trackItemsMap
+    trackItemsMap,
   );
   const presetLoopButtons = createPresetButtons(
     (key) => key.includes("Loop"),
     "loop",
     activeIds,
     trackItem.type === "text" ? "text" : "media",
-    trackItemsMap
+    trackItemsMap,
   );
   return (
     <div className="flex gap-2 py-0 flex-col lg:flex-row">

@@ -18,7 +18,7 @@ import { Animations } from "./common/animations";
 
 const BasicImage = ({
   trackItem,
-  type
+  type,
 }: {
   trackItem: ITrackItem & IImage;
   type?: string;
@@ -35,18 +35,18 @@ const BasicImage = ({
       payload: {
         [trackItem.id]: {
           details: {
-            borderWidth: v
-          }
-        }
-      }
+            borderWidth: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
         details: {
           ...prev.details,
-          borderWidth: v
-        }
+          borderWidth: v,
+        },
       };
     });
   };
@@ -56,18 +56,18 @@ const BasicImage = ({
       payload: {
         [trackItem.id]: {
           details: {
-            borderColor: v
-          }
-        }
-      }
+            borderColor: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
         details: {
           ...prev.details,
-          borderColor: v
-        }
+          borderColor: v,
+        },
       };
     });
   };
@@ -77,18 +77,18 @@ const BasicImage = ({
       payload: {
         [trackItem.id]: {
           details: {
-            opacity: v
-          }
-        }
-      }
+            opacity: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
         details: {
           ...prev.details,
-          opacity: v
-        }
+          opacity: v,
+        },
       };
     });
   };
@@ -98,18 +98,18 @@ const BasicImage = ({
       payload: {
         [trackItem.id]: {
           details: {
-            blur: v
-          }
-        }
-      }
+            blur: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
         details: {
           ...prev.details,
-          blur: v
-        }
+          blur: v,
+        },
       };
     });
   };
@@ -118,18 +118,18 @@ const BasicImage = ({
       payload: {
         [trackItem.id]: {
           details: {
-            brightness: v
-          }
-        }
-      }
+            brightness: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
         details: {
           ...prev.details,
-          brightness: v
-        }
+          brightness: v,
+        },
       };
     });
   };
@@ -139,18 +139,18 @@ const BasicImage = ({
       payload: {
         [trackItem.id]: {
           details: {
-            borderRadius: v
-          }
-        }
-      }
+            borderRadius: v,
+          },
+        },
+      },
     });
     setProperties((prev) => {
       return {
         ...prev,
         details: {
           ...prev.details,
-          borderRadius: v
-        }
+          borderRadius: v,
+        },
       };
     });
   };
@@ -160,10 +160,10 @@ const BasicImage = ({
       payload: {
         [trackItem.id]: {
           details: {
-            boxShadow: boxShadow
-          }
-        }
-      }
+            boxShadow: boxShadow,
+          },
+        },
+      },
     });
 
     setProperties((prev) => {
@@ -171,8 +171,8 @@ const BasicImage = ({
         ...prev,
         details: {
           ...prev.details,
-          boxShadow
-        }
+          boxShadow,
+        },
       };
     });
   };
@@ -195,7 +195,7 @@ const BasicImage = ({
             </Button>
           </div>
         </div>
-      )
+      ),
     },
     {
       key: "basic",
@@ -222,11 +222,11 @@ const BasicImage = ({
             value={properties.details.brightness ?? 100}
           />
         </div>
-      )
+      ),
     },
     {
       key: "animations",
-      component: <Animations trackItem={trackItem} properties={properties} />
+      component: <Animations trackItem={trackItem} properties={properties} />,
     },
 
     {
@@ -239,7 +239,7 @@ const BasicImage = ({
           valueBorderWidth={properties.details.borderWidth as number}
           valueBorderColor={properties.details.borderColor as string}
         />
-      )
+      ),
     },
     {
       key: "shadow",
@@ -252,12 +252,12 @@ const BasicImage = ({
               color: "transparent",
               x: 0,
               y: 0,
-              blur: 0
+              blur: 0,
             }
           }
         />
-      )
-    }
+      ),
+    },
   ];
   return (
     <div className="flex lg:h-[calc(100vh-84px)] flex-1 flex-col overflow-hidden min-h-[340px]">

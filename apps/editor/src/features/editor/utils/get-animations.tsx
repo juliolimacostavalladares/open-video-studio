@@ -1,7 +1,7 @@
 import {
   IBasicAnimation,
   ICompositionAnimation,
-  ITrackItem
+  ITrackItem,
 } from "@designcombo/types";
 import { Easing } from "remotion";
 import { Animation } from "../player/animated";
@@ -15,7 +15,7 @@ export const getAnimations = (
   },
   item: ITrackItem,
   frame?: number,
-  fps?: number
+  fps?: number,
 ): {
   animationIn: Animation | Animation[] | null;
   animationOut: Animation | Animation[] | null;
@@ -24,8 +24,8 @@ export const getAnimations = (
 } => {
   let animationIn = null;
   let animationOut = null;
-  let animationLoop = null;
-  let animationTimed = null;
+  const animationLoop = null;
+  const animationTimed = null;
   if (animation?.in) {
     animationIn = [];
     animation.in.composition.forEach((comp) => {
@@ -38,8 +38,8 @@ export const getAnimations = (
           to: comp.to,
           durationInFrames: comp.durationInFrames,
           ease: Easing[comp.easing as keyof typeof Easing] as (
-            t: number
-          ) => number
+            t: number,
+          ) => number,
         });
       }
     });
@@ -56,8 +56,8 @@ export const getAnimations = (
           to: comp.to,
           durationInFrames: comp.durationInFrames,
           ease: Easing[comp.easing as keyof typeof Easing] as (
-            t: number
-          ) => number
+            t: number,
+          ) => number,
         });
       }
     });
@@ -66,14 +66,14 @@ export const getAnimations = (
     animationIn,
     animationOut,
     animationLoop,
-    animationTimed
+    animationTimed,
   };
 };
 
 const getSlideAnimation = (
   type: string,
   anim: ICompositionAnimation,
-  item: ITrackItem
+  item: ITrackItem,
 ) => {
   const transformString = item.details.transform;
   const scaleMatch = /scale\(([^,]+), ([^)]+)\)/.exec(transformString);
@@ -88,7 +88,7 @@ const getSlideAnimation = (
       from,
       to,
       durationInFrames: anim.durationInFrames,
-      ease: Easing[anim.easing as keyof typeof Easing]
+      ease: Easing[anim.easing as keyof typeof Easing],
     };
   } else if (type === "slideInLeft" || type === "slideOutRight") {
     const commonValue =
@@ -100,7 +100,7 @@ const getSlideAnimation = (
       from,
       to,
       durationInFrames: anim.durationInFrames,
-      ease: Easing[anim.easing as keyof typeof Easing]
+      ease: Easing[anim.easing as keyof typeof Easing],
     };
   } else if (type === "slideInBottom" || type === "slideOutTop") {
     const commonValue =
@@ -112,7 +112,7 @@ const getSlideAnimation = (
       from,
       to,
       durationInFrames: anim.durationInFrames,
-      ease: Easing[anim.easing as keyof typeof Easing]
+      ease: Easing[anim.easing as keyof typeof Easing],
     };
   } else if (type === "slideInTop" || type === "slideOutBottom") {
     const commonValue =
@@ -125,7 +125,7 @@ const getSlideAnimation = (
       from,
       to,
       durationInFrames: anim.durationInFrames,
-      ease: Easing[anim.easing as keyof typeof Easing]
+      ease: Easing[anim.easing as keyof typeof Easing],
     };
   }
 };

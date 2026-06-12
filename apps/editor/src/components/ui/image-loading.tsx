@@ -5,7 +5,7 @@ interface ImageLoadingProps {
 }
 
 export function ImageLoading({
-  message = "Loading images..."
+  message = "Loading images...",
 }: ImageLoadingProps) {
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center">

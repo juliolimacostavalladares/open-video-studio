@@ -2,12 +2,12 @@ import {
   Control,
   Trimmable,
   TrimmableProps,
-  timeMsToUnits
+  timeMsToUnits,
 } from "@designcombo/timeline";
 import {
   AudioData,
   getAudioData,
-  getWaveformPortion
+  getWaveformPortion,
 } from "@remotion/media-utils";
 import { IMetadata, ITrim } from "@designcombo/types";
 import { createAudioControls } from "../controls";
@@ -85,7 +85,7 @@ class Audio extends Trimmable {
       visibleStart,
       0,
       this.offscreenCanvas!.width,
-      this.height
+      this.height,
     );
 
     ctx.restore();
@@ -114,14 +114,14 @@ class Audio extends Trimmable {
     const durationInUnits = timeMsToUnits(
       this.duration!,
       this.tScale,
-      this.playbackRate
+      this.playbackRate,
     );
 
     const bars = getWaveformPortion({
       audioData: this.barData,
       startTimeInSeconds: start / 1000 || 0,
       durationInSeconds: duration || this.barData.durationInSeconds,
-      numberOfSamples: Math.round(durationInUnits / 4)
+      numberOfSamples: Math.round(durationInUnits / 4),
     });
 
     // Cache the result
@@ -147,7 +147,7 @@ class Audio extends Trimmable {
 
   public drawTextIdentity(ctx: CanvasRenderingContext2D) {
     const audioIconPath = new Path2D(
-      "M8.24092 0C8.24092 2.51565 10.2795 4.55419 12.7951 4.55419C12.9677 4.55419 13.1331 4.62274 13.2552 4.74475C13.3772 4.86676 13.4457 5.03224 13.4457 5.20479C13.4457 5.37734 13.3772 5.54282 13.2552 5.66483C13.1331 5.78685 12.9677 5.85539 12.7951 5.85539C11.9218 5.85605 11.0594 5.66105 10.2713 5.28471C9.48319 4.90838 8.78942 4.36027 8.24092 3.68066V13.8794C8.24094 14.8271 7.91431 15.7458 7.31606 16.4808C6.71781 17.2157 5.88451 17.722 4.95657 17.9143C4.02863 18.1066 3.06276 17.9731 2.22172 17.5364C1.38067 17.0997 0.715856 16.3865 0.339286 15.5169C-0.0372842 14.6473 -0.10259 13.6744 0.154372 12.7622C0.411334 11.8501 0.974857 11.0544 1.74999 10.5092C2.52512 9.96403 3.46449 9.7027 4.40981 9.76924C5.35512 9.83579 6.24861 10.2261 6.93972 10.8745V0H8.24092ZM6.93972 13.8794C6.93972 13.1317 6.6427 12.4146 6.11398 11.8859C5.58527 11.3572 4.86818 11.0602 4.12046 11.0602C3.37275 11.0602 2.65566 11.3572 2.12694 11.8859C1.59823 12.4146 1.3012 13.1317 1.3012 13.8794C1.3012 14.6272 1.59823 15.3443 2.12694 15.873C2.65566 16.4017 3.37275 16.6987 4.12046 16.6987C4.86818 16.6987 5.58527 16.4017 6.11398 15.873C6.6427 15.3443 6.93972 14.6272 6.93972 13.8794Z"
+      "M8.24092 0C8.24092 2.51565 10.2795 4.55419 12.7951 4.55419C12.9677 4.55419 13.1331 4.62274 13.2552 4.74475C13.3772 4.86676 13.4457 5.03224 13.4457 5.20479C13.4457 5.37734 13.3772 5.54282 13.2552 5.66483C13.1331 5.78685 12.9677 5.85539 12.7951 5.85539C11.9218 5.85605 11.0594 5.66105 10.2713 5.28471C9.48319 4.90838 8.78942 4.36027 8.24092 3.68066V13.8794C8.24094 14.8271 7.91431 15.7458 7.31606 16.4808C6.71781 17.2157 5.88451 17.722 4.95657 17.9143C4.02863 18.1066 3.06276 17.9731 2.22172 17.5364C1.38067 17.0997 0.715856 16.3865 0.339286 15.5169C-0.0372842 14.6473 -0.10259 13.6744 0.154372 12.7622C0.411334 11.8501 0.974857 11.0544 1.74999 10.5092C2.52512 9.96403 3.46449 9.7027 4.40981 9.76924C5.35512 9.83579 6.24861 10.2261 6.93972 10.8745V0H8.24092ZM6.93972 13.8794C6.93972 13.1317 6.6427 12.4146 6.11398 11.8859C5.58527 11.3572 4.86818 11.0602 4.12046 11.0602C3.37275 11.0602 2.65566 11.3572 2.12694 11.8859C1.59823 12.4146 1.3012 13.1317 1.3012 13.8794C1.3012 14.6272 1.59823 15.3443 2.12694 15.873C2.65566 16.4017 3.37275 16.6987 4.12046 16.6987C4.86818 16.6987 5.58527 16.4017 6.11398 15.873C6.6427 15.3443 6.93972 14.6272 6.93972 13.8794Z",
     );
     ctx.save();
     ctx.translate(-this.width / 2, -this.height / 2);
@@ -184,7 +184,7 @@ class Audio extends Trimmable {
       -this.height / 2 + borderWidth,
       this.width - borderWidth * 2,
       this.height - borderWidth * 2,
-      innerRadius
+      innerRadius,
     );
 
     // Use even-odd fill rule to create the border effect
@@ -218,7 +218,7 @@ class Audio extends Trimmable {
     const trimFromSize = timeMsToUnits(
       this.trim.from,
       this.tScale,
-      this.playbackRate
+      this.playbackRate,
     );
     const visibleStart =
       Math.max(0, -scrollLeft) - CANVAS_SAFE_DRAWING + trimFromSize;
@@ -241,8 +241,8 @@ class Audio extends Trimmable {
 
     // Calculate which bars are visible
     const barWidth = 4; // 1px bar + 3px space
-    let startBarIndex = Math.floor(visibleStart / barWidth);
-    let endBarIndex = Math.ceil((visibleStart + visibleWidth) / barWidth);
+    const startBarIndex = Math.floor(visibleStart / barWidth);
+    const endBarIndex = Math.ceil((visibleStart + visibleWidth) / barWidth);
     // Only draw visible bars
     ctx.beginPath();
     for (let i = startBarIndex; i < endBarIndex && i < bars.length; i++) {

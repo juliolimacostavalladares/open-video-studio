@@ -16,12 +16,12 @@ import {
   ANIMATION_CONFIGS,
   captionRotationCache,
   rotationOptions,
-  AnimationConfig
+  AnimationConfig,
 } from "./caption-animations";
 
 export default function Caption({
   item,
-  options
+  options,
 }: {
   item: ICaption;
   options: SequenceItemOptions;
@@ -32,7 +32,7 @@ export default function Caption({
     animations!,
     item,
     frame,
-    fps
+    fps,
   );
   const { from, durationInFrames } = calculateFrames(item.display, fps);
   const currentFrame = (frame || 0) - (item.display.from * fps) / 1000;
@@ -59,7 +59,7 @@ export default function Caption({
         justifyContent: "center",
         maxHeight: "max-content",
         height: "100%",
-        width: "auto"
+        width: "auto",
       }}
       animationIn={animationIn}
       animationOut={animationOut}
@@ -75,7 +75,7 @@ export default function Caption({
           width: "100%",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <div
@@ -90,7 +90,7 @@ export default function Caption({
             maxWidth: "100%",
             maxHeight: "max-content",
             height: "100%",
-            padding: "8px"
+            padding: "8px",
           }}
         >
           {renderWords(
@@ -100,7 +100,7 @@ export default function Caption({
             offsetFrom,
             fps,
             currentFrame,
-            globalOpacity
+            globalOpacity,
           )}
         </div>
       </ContentAnim>
@@ -130,14 +130,14 @@ function calculateUpdatedDetails(details: any) {
     x: 0,
     y: 0,
     blur: 0,
-    color: "#000000"
+    color: "#000000",
   };
 
   const scaledBoxShadow = {
     ...boxShadow,
     x: boxShadow.x * scaleFactor,
     y: boxShadow.y * scaleFactor,
-    blur: boxShadow.blur * scaleFactor
+    blur: boxShadow.blur * scaleFactor,
   };
 
   return {
@@ -145,7 +145,7 @@ function calculateUpdatedDetails(details: any) {
     WebkitTextStrokeWidth: strokeWidth,
     boxShadow: scaledBoxShadow,
     borderWidth,
-    scaleFactor
+    scaleFactor,
   };
 }
 
@@ -154,7 +154,7 @@ function calculateAnimationTransforms(
   frame: number,
   from: number,
   fps: number,
-  item: ICaption
+  item: ICaption,
 ) {
   const relativeFrame = Math.max(frame - from, 0);
   let transformValues: {
@@ -181,7 +181,7 @@ function calculateAnimationTransforms(
           item.display.to,
           fps,
           scaleConfig.value,
-          scaleConfig.mode
+          scaleConfig.mode,
         );
       }
     }
@@ -191,7 +191,7 @@ function calculateAnimationTransforms(
       const translateConfig = userConfig.translate ?? config.translate;
       const translation = TranslateAnimationCaption(
         relativeFrame,
-        translateConfig
+        translateConfig,
       );
       transformValues = { ...transformValues, ...translation };
     }
@@ -203,7 +203,7 @@ function calculateAnimationTransforms(
         relativeFrame,
         item.display.to,
         fps,
-        opacityConfig
+        opacityConfig,
       );
     }
 
@@ -212,7 +212,7 @@ function calculateAnimationTransforms(
       transformValues.scale = ScalePulseAnimationCaption(
         relativeFrame,
         item.display.to,
-        fps
+        fps,
       );
     }
 
@@ -229,7 +229,7 @@ function calculateAnimationTransforms(
         fps,
         50,
         0.8,
-        1
+        1,
       );
     }
 
@@ -242,7 +242,7 @@ function calculateAnimationTransforms(
           translateOnceConfig;
         transformValues = {
           ...transformValues,
-          ...TranslateOnceAnimation(relativeFrame, duration, orientation)
+          ...TranslateOnceAnimation(relativeFrame, duration, orientation),
         };
       }
     }
@@ -276,7 +276,7 @@ function calculateAnimationTransforms(
         relativeFrame,
         item.display.to,
         fps,
-        globalOpacityConfig
+        globalOpacityConfig,
       );
     }
 
@@ -284,7 +284,7 @@ function calculateAnimationTransforms(
     if (config.extraStyles || userConfig.extraStyles) {
       extraStyles = {
         ...extraStyles,
-        ...(userConfig.extraStyles ?? config.extraStyles)
+        ...(userConfig.extraStyles ?? config.extraStyles),
       };
     }
   }
@@ -312,8 +312,8 @@ function calculateAnimationTransforms(
   const transformStyles = {
     ...(transformParts.length > 0 && { transform: transformParts.join(" ") }),
     ...(transformValues.opacity !== undefined && {
-      opacity: transformValues.opacity
-    })
+      opacity: transformValues.opacity,
+    }),
   };
 
   return { transformStyles, globalOpacity, extraStyles };
@@ -384,7 +384,7 @@ function renderWords(
   offsetFrom: number,
   fps: number,
   currentFrame: number,
-  globalOpacity?: number
+  globalOpacity?: number,
 ) {
   if (
     updatedDetails?.showObject === "line" &&
@@ -397,7 +397,7 @@ function renderWords(
       offsetFrom,
       fps,
       currentFrame,
-      globalOpacity
+      globalOpacity,
     );
   } else if (updatedDetails?.animation === "customAnimation1") {
     return renderCustomAnimation1Words(
@@ -405,7 +405,7 @@ function renderWords(
       updatedDetails,
       scaleFactor,
       offsetFrom,
-      globalOpacity
+      globalOpacity,
     );
   } else {
     return renderStandardWords(
@@ -413,7 +413,7 @@ function renderWords(
       updatedDetails,
       scaleFactor,
       offsetFrom,
-      globalOpacity
+      globalOpacity,
     );
   }
 }
@@ -425,10 +425,10 @@ function renderLineBasedWords(
   offsetFrom: number,
   fps: number,
   currentFrame: number,
-  globalOpacity?: number
+  globalOpacity?: number,
 ) {
   const wordsPerLine = Math.ceil(
-    item.details.words.length / updatedDetails.linesPerCaption
+    item.details.words.length / updatedDetails.linesPerCaption,
   );
   const lines: any[][] = [];
 
@@ -436,7 +436,7 @@ function renderLineBasedWords(
     const startIndex = i * wordsPerLine;
     const endIndex = Math.min(
       startIndex + wordsPerLine,
-      item.details.words.length
+      item.details.words.length,
     );
     lines.push(item.details.words.slice(startIndex, endIndex));
   }
@@ -445,7 +445,7 @@ function renderLineBasedWords(
     (item.display.to - item.display.from) / updatedDetails.linesPerCaption;
   const currentLine = Math.min(
     Math.floor(currentFrame / ((lineDuration * fps) / 1000)),
-    updatedDetails.linesPerCaption - 1
+    updatedDetails.linesPerCaption - 1,
   );
 
   return lines.map((lineWords, lineIndex) => (
@@ -455,7 +455,7 @@ function renderLineBasedWords(
         display: "flex",
         flexWrap: "wrap",
         justifyContent: "center",
-        marginBottom: lineIndex < lines.length - 1 ? "8px" : "0"
+        marginBottom: lineIndex < lines.length - 1 ? "8px" : "0",
       }}
     >
       {lineWords.map((word: any, wordIndex: number) => (
@@ -469,7 +469,7 @@ function renderLineBasedWords(
             globalOpacity,
             undefined,
             lineIndex,
-            currentLine
+            currentLine,
           )}
           key={`${lineIndex}-${wordIndex}`}
         />
@@ -483,13 +483,13 @@ function renderCustomAnimation1Words(
   updatedDetails: any,
   scaleFactor: number,
   offsetFrom: number,
-  globalOpacity?: number
+  globalOpacity?: number,
 ) {
   const nonKeywordWords = item.details.words.filter(
-    (word: any) => !word.is_keyword
+    (word: any) => !word.is_keyword,
   );
   const keywordWords = item.details.words.filter(
-    (word: any) => word.is_keyword
+    (word: any) => word.is_keyword,
   );
   const groupedWords: any[] = [];
 
@@ -505,7 +505,7 @@ function renderCustomAnimation1Words(
       word: nonKeywordWords.map((w) => w.word).join(" "),
       start: firstNonKeyword.start,
       end: groupEndTime,
-      is_keyword: false
+      is_keyword: false,
     };
     groupedWords.push(groupWord);
   }
@@ -523,7 +523,7 @@ function renderCustomAnimation1Words(
         offsetFrom,
         updatedDetails.animation || "",
         globalOpacity,
-        "word"
+        "word",
       )}
       key={index}
     />
@@ -535,7 +535,7 @@ function renderStandardWords(
   updatedDetails: any,
   scaleFactor: number,
   offsetFrom: number,
-  globalOpacity?: number
+  globalOpacity?: number,
 ) {
   return item.details.words.map((word: any, index: number) => (
     <CaptionWord
@@ -545,7 +545,7 @@ function renderStandardWords(
         scaleFactor,
         offsetFrom,
         updatedDetails.animation || "",
-        globalOpacity
+        globalOpacity,
       )}
       key={index}
     />
@@ -562,7 +562,7 @@ const createCaptionWordProps = (
   globalOpacity?: number,
   showObject?: string,
   lineIndex?: number,
-  currentLine?: number
+  currentLine?: number,
 ) => ({
   word,
   offsetFrom,
@@ -578,5 +578,5 @@ const createCaptionWordProps = (
   animationNoneCaption: false,
   showObject: showObject || updatedDetails?.showObject || "page",
   lineIndex,
-  currentLine
+  currentLine,
 });

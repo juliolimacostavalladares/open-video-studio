@@ -6,7 +6,7 @@ function random(seed: number) {
 const ShakyLettersText = ({
   char,
   index,
-  frame
+  frame,
 }: {
   char: string;
   index: number;
@@ -22,7 +22,7 @@ const ShakyLettersText = ({
       key={index}
       style={{
         display: "inline-block",
-        transform: `translate(${offsetX}px, ${offsetY}px) rotate(${rotate}deg)`
+        transform: `translate(${offsetX}px, ${offsetY}px) rotate(${rotate}deg)`,
       }}
     >
       {char}

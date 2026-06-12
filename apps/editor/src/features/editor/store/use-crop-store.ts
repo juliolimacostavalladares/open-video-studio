@@ -30,7 +30,7 @@ const useCropStore = create<ICropState>((set) => ({
   element: undefined,
   size: {
     width: 0,
-    height: 0
+    height: 0,
   },
   reset: () => {
     set(({ element, size, scale }) => {
@@ -39,7 +39,7 @@ const useCropStore = create<ICropState>((set) => ({
         element.pause();
       }
       return {
-        area: [0, 0, size.width * scale, size.height * scale]
+        area: [0, 0, size.width * scale, size.height * scale],
       };
     });
   },
@@ -49,10 +49,10 @@ const useCropStore = create<ICropState>((set) => ({
       src: "",
       size: {
         width: 0,
-        height: 0
+        height: 0,
       },
       fileLoading: false,
-      element: undefined
+      element: undefined,
     });
   },
   setArea: (area: Area) => set({ area }),
@@ -76,7 +76,7 @@ const useCropStore = create<ICropState>((set) => ({
       set({
         area: [0, 0, imageWidth * scaleFactor, imageHeight * scaleFactor],
         src,
-        size: { width: imageWidth, height: imageHeight }
+        size: { width: imageWidth, height: imageHeight },
       });
       set({ element: image, scale: scaleFactor });
     });
@@ -115,16 +115,16 @@ const useCropStore = create<ICropState>((set) => ({
         scale: scaleFactor,
         size: {
           width: videoWidth,
-          height: videoHeight
+          height: videoHeight,
         },
-        area: [0, 0, videoWidth * scaleFactor, videoHeight * scaleFactor]
+        area: [0, 0, videoWidth * scaleFactor, videoHeight * scaleFactor],
       });
     });
 
     video.addEventListener("canplay", () => {
       set({
         fileLoading: false,
-        step: 1
+        step: 1,
       });
     });
 
@@ -144,7 +144,7 @@ const useCropStore = create<ICropState>((set) => ({
     });
 
     video.src = src;
-  }
+  },
 }));
 
 export default useCropStore;

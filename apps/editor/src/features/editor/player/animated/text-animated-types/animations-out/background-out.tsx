@@ -7,7 +7,7 @@ const BackgroundOut = ({
   animationTextOutFrames,
   details,
   durationInFrames,
-  fps
+  fps,
 }: {
   text: string;
   frame: number;
@@ -21,7 +21,7 @@ const BackgroundOut = ({
 
   // Progreso de la animación de salida
   const progress = interpolate(frame, [start, start + duration], [0, 1], {
-    extrapolateRight: "clamp"
+    extrapolateRight: "clamp",
   });
   const fullWidth = details.width;
   const fullHeight = details.height;
@@ -30,7 +30,7 @@ const BackgroundOut = ({
   const revealWidth = interpolate(
     Math.round(progress * 100),
     [0, 100 - fps / 10],
-    [fullWidth, 0]
+    [fullWidth, 0],
   );
   // El texto se mueve del centro hacia la derecha
   const textTranslateX = interpolate(progress, [0, 1], [0, fullWidth * 2]);
@@ -44,7 +44,7 @@ const BackgroundOut = ({
         alignItems: "center",
         display: "flex",
         width: details.width,
-        height: details.height
+        height: details.height,
       }}
     >
       {/* Máscara que oculta el texto fuera del rectángulo */}
@@ -57,7 +57,7 @@ const BackgroundOut = ({
           position: "relative",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "white"
+          backgroundColor: "white",
         }}
       >
         <div
@@ -73,7 +73,7 @@ const BackgroundOut = ({
               details.color === "white" || details.color.includes("fff")
                 ? "black"
                 : details.color,
-            transform: `translateX(${textTranslateX}px)`
+            transform: `translateX(${textTranslateX}px)`,
           }}
         >
           {text}

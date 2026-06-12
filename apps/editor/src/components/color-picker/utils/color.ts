@@ -103,7 +103,7 @@ export default class Color {
     this.color = tinycolor({
       h: value,
       s: this.saturation,
-      v: this.brightness
+      v: this.brightness,
     });
 
     this.initRgb();
@@ -118,7 +118,7 @@ export default class Color {
     this.color = tinycolor({
       h: this.hue,
       s: value,
-      v: this.brightness
+      v: this.brightness,
     });
 
     this.initRgb();
@@ -133,7 +133,7 @@ export default class Color {
     this.color = tinycolor({
       h: this.hue,
       s: this.saturation,
-      l: value
+      l: value,
     });
 
     this.initRgb();
@@ -148,7 +148,7 @@ export default class Color {
     this.color = tinycolor({
       h: this.hue,
       s: this.saturation,
-      v: value
+      v: value,
     });
 
     this.initRgb();
@@ -164,7 +164,7 @@ export default class Color {
     const rgb = this.color.toRgb();
     this.color = tinycolor({
       ...rgb,
-      r: value
+      r: value,
     });
 
     this.initHsb();
@@ -180,7 +180,7 @@ export default class Color {
     const rgb = this.color.toRgb();
     this.color = tinycolor({
       ...rgb,
-      g: value
+      g: value,
     });
 
     this.initHsb();
@@ -196,7 +196,7 @@ export default class Color {
     const rgb = this.color.toRgb();
     this.color = tinycolor({
       ...rgb,
-      b: value
+      b: value,
     });
 
     this.initHsb();

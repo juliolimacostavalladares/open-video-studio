@@ -8,7 +8,7 @@ import {
   ADD_LINEAL_AUDIO_BARS,
   ADD_RADIAL_AUDIO_BARS,
   ADD_WAVE_AUDIO_BARS,
-  ADD_HILL_AUDIO_BARS
+  ADD_HILL_AUDIO_BARS,
 } from "@designcombo/state";
 import { generateId } from "@designcombo/timeline";
 import { ChevronLeft, ChevronRight, Ellipsis } from "lucide-react";
@@ -35,41 +35,41 @@ interface ControlAllItemsProps {
 const TAGS = [
   {
     id: "stickers",
-    name: "Stickers"
+    name: "Stickers",
   },
   {
     id: "shapes",
-    name: "Shapes"
+    name: "Shapes",
   },
   {
     id: "visualizers",
-    name: "Visualizers"
-  }
+    name: "Visualizers",
+  },
 ];
 const STICKERS_TAGS = [
   {
     id: "featured",
-    name: "Featured"
+    name: "Featured",
   },
   {
     id: "emoji",
-    name: "Emoji"
+    name: "Emoji",
   },
   {
     id: "social",
-    name: "Social"
-  }
+    name: "Social",
+  },
 ];
 
 const VISUALIZERS_TAGS = [
   {
     id: "progress",
-    name: "Progress"
+    name: "Progress",
   },
   {
     id: "soundWaves",
-    name: "Sound Waves"
-  }
+    name: "Sound Waves",
+  },
 ];
 
 const OPTIONS_LINEAL_BARS = [
@@ -82,8 +82,8 @@ const OPTIONS_LINEAL_BARS = [
       linealBarColor: "#F3B3DC",
       lineThickness: 5,
       gapSize: 7,
-      roundness: 2
-    }
+      roundness: 2,
+    },
   },
   {
     label: "Lineal 2",
@@ -94,8 +94,8 @@ const OPTIONS_LINEAL_BARS = [
       linealBarColor: "#CBAE9A",
       lineThickness: 7,
       gapSize: 6,
-      roundness: 4
-    }
+      roundness: 4,
+    },
   },
   {
     label: "Lineal 3",
@@ -106,8 +106,8 @@ const OPTIONS_LINEAL_BARS = [
       linealBarColor: "#A687DF",
       lineThickness: 2,
       gapSize: 4,
-      roundness: 2
-    }
+      roundness: 2,
+    },
   },
   {
     label: "Lineal 4",
@@ -119,8 +119,8 @@ const OPTIONS_LINEAL_BARS = [
       lineThickness: 6,
       gapSize: 7,
       roundness: 2,
-      placement: "under"
-    }
+      placement: "under",
+    },
   },
   {
     label: "Lineal 5",
@@ -132,8 +132,8 @@ const OPTIONS_LINEAL_BARS = [
       lineThickness: 3,
       gapSize: 5,
       roundness: 2,
-      placement: "under"
-    }
+      placement: "under",
+    },
   },
   {
     label: "Lineal 6",
@@ -144,9 +144,9 @@ const OPTIONS_LINEAL_BARS = [
       linealBarColor: "#A9B6C9",
       lineThickness: 16,
       gapSize: 0,
-      roundness: 0
-    }
-  }
+      roundness: 0,
+    },
+  },
 ];
 
 const OPTIONS_WAVE_BARS = [
@@ -161,8 +161,8 @@ const OPTIONS_WAVE_BARS = [
       lineGap: 70,
       topRoundness: 0.2,
       bottomRoundness: 0.4,
-      sections: 10
-    }
+      sections: 10,
+    },
   },
   {
     label: "Wave 2",
@@ -174,9 +174,9 @@ const OPTIONS_WAVE_BARS = [
       lines: 6,
       lineGap: 6,
       sections: 10,
-      offsetPixelSpeed: -100
-    }
-  }
+      offsetPixelSpeed: -100,
+    },
+  },
 ];
 
 const OPTIONS_HILL_BARS = [
@@ -186,8 +186,8 @@ const OPTIONS_HILL_BARS = [
     details: {
       height: 1920 / 20,
       width: 1080,
-      fillColor: "#92E1B0"
-    }
+      fillColor: "#92E1B0",
+    },
   },
   {
     label: "Hill 2",
@@ -197,8 +197,8 @@ const OPTIONS_HILL_BARS = [
       width: 1080,
       fillColor: ["#559B59", "#466CF6", "#E54B41"],
       copies: 3,
-      blendMode: "screen"
-    }
+      blendMode: "screen",
+    },
   },
   {
     label: "Hill 3",
@@ -206,8 +206,8 @@ const OPTIONS_HILL_BARS = [
     details: {
       height: 1920 / 20,
       width: 1080,
-      strokeColor: "#E9AB6C"
-    }
+      strokeColor: "#E9AB6C",
+    },
   },
   {
     label: "Hill 4",
@@ -218,9 +218,9 @@ const OPTIONS_HILL_BARS = [
       strokeColor: "rgb(100, 120, 250, 0.2)",
       strokeWidth: 2,
       fillColor: "rgb(70, 90, 200, 0.2)",
-      copies: 5
-    }
-  }
+      copies: 5,
+    },
+  },
 ];
 
 export const Elements = () => {
@@ -254,9 +254,9 @@ export const Elements = () => {
                       type="button"
                       className={cn(
                         buttonVariants({
-                          variant: "default"
+                          variant: "default",
                         }),
-                        "h-7 cursor-pointer"
+                        "h-7 cursor-pointer",
                       )}
                     >
                       All
@@ -372,7 +372,7 @@ export const Elements = () => {
 
 const ControlAllItems: React.FC<ControlAllItemsProps> = ({
   type,
-  handleAllClick
+  handleAllClick,
 }) => {
   return (
     <>
@@ -380,7 +380,7 @@ const ControlAllItems: React.FC<ControlAllItemsProps> = ({
         {
           visualizers: (
             <AllVisualizers handleAllClick={handleAllClick} type={type} />
-          )
+          ),
         }[type.type]}
     </>
   );
@@ -388,7 +388,7 @@ const ControlAllItems: React.FC<ControlAllItemsProps> = ({
 
 const AllVisualizers = ({
   handleAllClick,
-  type
+  type,
 }: {
   handleAllClick: (type: string | null, all: string | null) => void;
   type: ActiveAllState;
@@ -407,10 +407,10 @@ const AllVisualizers = ({
         details,
         display: {
           from: 0,
-          to: 10000
-        }
+          to: 10000,
+        },
       },
-      options: {}
+      options: {},
     });
   };
   const handleAddRadialAudioBars = () => {
@@ -421,14 +421,14 @@ const AllVisualizers = ({
         details: {
           height: 1080,
           width: 1080,
-          linealBarColor: "#00a6ff"
+          linealBarColor: "#00a6ff",
         },
         display: {
           from: 0,
-          to: 10000
-        }
+          to: 10000,
+        },
       },
-      options: {}
+      options: {},
     });
   };
 
@@ -440,10 +440,10 @@ const AllVisualizers = ({
         details,
         display: {
           from: 0,
-          to: 10000
-        }
+          to: 10000,
+        },
       },
-      options: {}
+      options: {},
     });
   };
 
@@ -455,10 +455,10 @@ const AllVisualizers = ({
         details,
         display: {
           from: 0,
-          to: 10000
-        }
+          to: 10000,
+        },
       },
-      options: {}
+      options: {},
     });
   };
 
@@ -466,7 +466,7 @@ const AllVisualizers = ({
     {
       category: "progress",
       label: "Progress Bars",
-      items: [{ label: "progress" }, { label: "progress1" }]
+      items: [{ label: "progress" }, { label: "progress1" }],
     },
     {
       category: "soundWaves",
@@ -474,22 +474,22 @@ const AllVisualizers = ({
       items: [
         ...OPTIONS_LINEAL_BARS.map((bar) => ({
           label: bar.label,
-          onClick: () => handleAddLinealAudioBars(bar.details)
+          onClick: () => handleAddLinealAudioBars(bar.details),
         })),
         {
           label: "Radial 1",
-          onClick: () => handleAddRadialAudioBars()
+          onClick: () => handleAddRadialAudioBars(),
         },
         ...OPTIONS_WAVE_BARS.map((bar) => ({
           label: bar.label,
-          onClick: () => handleAddWaveAudioBars(bar.details)
+          onClick: () => handleAddWaveAudioBars(bar.details),
         })),
         ...OPTIONS_HILL_BARS.map((bar) => ({
           label: bar.label,
-          onClick: () => handleAddHillAudioBars(bar.details)
-        }))
-      ]
-    }
+          onClick: () => handleAddHillAudioBars(bar.details),
+        })),
+      ],
+    },
   ];
 
   const renderItems = (group: (typeof visualizerGroups)[0]) => (
@@ -552,9 +552,9 @@ const AllVisualizers = ({
                       variant:
                         selectedCategoryVisualizers === null
                           ? "default"
-                          : "outline"
+                          : "outline",
                     }),
-                    "h-7 cursor-pointer"
+                    "h-7 cursor-pointer",
                   )}
                 >
                   All
@@ -569,9 +569,9 @@ const AllVisualizers = ({
                         variant:
                           selectedCategoryVisualizers === tag.id
                             ? "default"
-                            : "outline"
+                            : "outline",
                       }),
-                      "h-7 cursor-pointer"
+                      "h-7 cursor-pointer",
                     )}
                   >
                     {tag.name}
@@ -609,8 +609,8 @@ const AllVisualizers = ({
           ) : (
             renderItems(
               visualizerGroups.find(
-                (group) => group.category === selectedCategoryVisualizers
-              )!
+                (group) => group.category === selectedCategoryVisualizers,
+              )!,
             )
           )
         ) : (

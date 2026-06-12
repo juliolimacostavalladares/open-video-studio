@@ -17,7 +17,7 @@ export default (color: any) => {
       parseInt(color.substr(1, 2), 16),
       parseInt(color.substr(3, 2), 16),
       parseInt(color.substr(5, 2), 16),
-      color.length > 7 ? parseInt(color.substr(7, 2), 16) / 255 : 1
+      color.length > 7 ? parseInt(color.substr(7, 2), 16) / 255 : 1,
     ];
   }
 

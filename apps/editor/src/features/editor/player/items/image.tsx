@@ -8,7 +8,7 @@ import { Img } from "remotion";
 
 export default function Image({
   item,
-  options
+  options,
 }: {
   item: IImage;
   options: SequenceItemOptions;
@@ -19,13 +19,13 @@ export default function Image({
     animations!,
     item,
     frame,
-    fps
+    fps,
   );
   const crop = details?.crop || {
     x: 0,
     y: 0,
     width: details.width,
-    height: details.height
+    height: details.height,
   };
   const { durationInFrames } = calculateFrames(item.display, fps);
   const currentFrame = (frame || 0) - (item.display.from * fps) / 1000;
@@ -33,7 +33,7 @@ export default function Image({
   const children = (
     <BoxAnim
       style={calculateContainerStyles(details, crop, {
-        transform: "scale(1)"
+        transform: "scale(1)",
       })}
       animationIn={animationIn!}
       animationOut={animationOut!}

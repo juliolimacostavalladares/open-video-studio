@@ -5,7 +5,7 @@ const RisingStrongAnimationIn = ({
   index,
   frame,
   textLength,
-  animationTextInFrames
+  animationTextInFrames,
 }: {
   char: string;
   index: number;
@@ -24,14 +24,14 @@ const RisingStrongAnimationIn = ({
     frame - appearDelay,
     [0, totalDuration / 2, disappearStart, disappearStart + totalDuration / 2],
     [0, 1, 1, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
 
   const translateY = interpolate(
     frame - appearDelay,
     [0, totalDuration],
     [100, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
 
   return (
@@ -40,7 +40,7 @@ const RisingStrongAnimationIn = ({
       style={{
         display: "inline-block",
         transform: `translateY(${translateY}px)`,
-        opacity
+        opacity,
       }}
     >
       {char === " " ? " " : char}

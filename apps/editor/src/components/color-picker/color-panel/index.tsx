@@ -13,7 +13,7 @@ const Panel: FC<TPropsMain> = ({ alpha, hex, colorBoardHeight, onChange }) => {
   colorConvert.alpha = alpha;
   const [state, setState] = useState({
     color: colorConvert,
-    alpha
+    alpha,
   });
   const [change, setChange] = useState(false);
 
@@ -21,7 +21,7 @@ const Panel: FC<TPropsMain> = ({ alpha, hex, colorBoardHeight, onChange }) => {
     if (!change) {
       setState({
         color: colorConvert,
-        alpha
+        alpha,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -34,11 +34,11 @@ const Panel: FC<TPropsMain> = ({ alpha, hex, colorBoardHeight, onChange }) => {
 
     setState({
       color,
-      alpha
+      alpha,
     });
     onChange({
       hex: color.toHexString(),
-      alpha
+      alpha,
     });
   };
 
@@ -50,7 +50,7 @@ const Panel: FC<TPropsMain> = ({ alpha, hex, colorBoardHeight, onChange }) => {
     setState({ ...state, color, alpha: color.alpha });
     onChange({
       hex: color.toHexString(),
-      alpha: color.alpha
+      alpha: color.alpha,
     });
   };
 

@@ -4,7 +4,7 @@ import {
   PREVIEW_FRAME_WIDTH,
   SECONDARY_FONT,
   SMALL_FONT_SIZE,
-  TIMELINE_OFFSET_CANVAS_LEFT
+  TIMELINE_OFFSET_CANVAS_LEFT,
 } from "../constants/constants";
 import { formatTimelineUnit } from "../utils/format";
 import useStore from "../store/use-store";
@@ -34,7 +34,7 @@ const Ruler = (props: RulerProps) => {
     textFormat = formatTimelineUnit,
     scrollLeft = 0,
     onClick,
-    onScroll
+    onScroll,
   } = props;
   const { scale } = useStore();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -42,7 +42,7 @@ const Ruler = (props: RulerProps) => {
     useState<CanvasRenderingContext2D | null>(null);
   const [canvasSize, setCanvasSize] = useState({
     width: 0,
-    height: height // Increased height for text space
+    height: height, // Increased height for text space
   });
 
   // Drag state
@@ -52,7 +52,7 @@ const Ruler = (props: RulerProps) => {
     startX: 0,
     startScrollPos: 0,
     isDragging: false,
-    hasDragged: false
+    hasDragged: false,
   });
 
   useEffect(() => {
@@ -86,7 +86,7 @@ const Ruler = (props: RulerProps) => {
   const resize = (
     canvas: HTMLCanvasElement | null,
     context: CanvasRenderingContext2D | null,
-    scrollLeft: number
+    scrollLeft: number,
   ) => {
     if (!canvas || !context) return;
 
@@ -105,7 +105,7 @@ const Ruler = (props: RulerProps) => {
     context: CanvasRenderingContext2D,
     scrollLeft: number,
     width: number,
-    height: number
+    height: number,
   ) => {
     const zoom = scale.zoom;
     const unit = scale.unit;
@@ -203,7 +203,7 @@ const Ruler = (props: RulerProps) => {
       startX: clickX,
       startScrollPos: scrollLeft,
       isDragging: true,
-      hasDragged: false
+      hasDragged: false,
     };
 
     // Prevent text selection during drag
@@ -226,7 +226,7 @@ const Ruler = (props: RulerProps) => {
       startX: touchX,
       startScrollPos: scrollLeft,
       isDragging: true,
-      hasDragged: false
+      hasDragged: false,
     };
 
     // Prevent default touch behavior
@@ -251,13 +251,13 @@ const Ruler = (props: RulerProps) => {
 
         const newScrollLeft = Math.max(
           0,
-          dragRef.current.startScrollPos + (dragRef.current.startX - currentX)
+          dragRef.current.startScrollPos + (dragRef.current.startX - currentX),
         );
 
         onScroll?.(newScrollLeft);
       }
     },
-    [onScroll]
+    [onScroll],
   );
 
   const handleTouchMove = useCallback(
@@ -279,13 +279,13 @@ const Ruler = (props: RulerProps) => {
 
         const newScrollLeft = Math.max(
           0,
-          dragRef.current.startScrollPos + (dragRef.current.startX - currentX)
+          dragRef.current.startScrollPos + (dragRef.current.startX - currentX),
         );
 
         onScroll?.(newScrollLeft);
       }
     },
-    [onScroll]
+    [onScroll],
   );
 
   const handleMouseUp = useCallback(() => {
@@ -377,7 +377,7 @@ const Ruler = (props: RulerProps) => {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
       document.addEventListener("touchmove", handleTouchMove as any, {
-        passive: false
+        passive: false,
       });
       document.addEventListener("touchend", handleTouchEnd);
 
@@ -393,7 +393,7 @@ const Ruler = (props: RulerProps) => {
     handleMouseMove,
     handleMouseUp,
     handleTouchMove,
-    handleTouchEnd
+    handleTouchEnd,
   ]);
 
   return (
@@ -402,7 +402,7 @@ const Ruler = (props: RulerProps) => {
       style={{
         position: "relative",
         width: "100%",
-        height: `${canvasSize.height}px`
+        height: `${canvasSize.height}px`,
       }}
     >
       <canvas
@@ -417,7 +417,7 @@ const Ruler = (props: RulerProps) => {
           cursor: isDragging ? "grabbing" : "grab",
           width: "100%",
           display: "block",
-          touchAction: "none" // Prevent default touch behaviors
+          touchAction: "none", // Prevent default touch behaviors
         }}
       />
     </div>

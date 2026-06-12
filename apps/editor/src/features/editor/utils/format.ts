@@ -17,7 +17,7 @@ export function formatTimelineUnit(units?: number): string {
     hours.toString(),
     minutes.toString(),
     seconds.toString(),
-    frames.toString()
+    frames.toString(),
   ];
 
   if (time < 60) {
@@ -34,7 +34,7 @@ export function formatTimelineUnit(units?: number): string {
 
 export function formatTimeToHumanReadable(
   ms: number,
-  includeFrames = false
+  includeFrames = false,
 ): string {
   if (!ms) return "00:00";
 

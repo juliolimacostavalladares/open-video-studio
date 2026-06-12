@@ -9,9 +9,9 @@ export default function PlaybackRate({ trackItem }: { trackItem: ITrackItem }) {
     dispatch(EDIT_OBJECT, {
       payload: {
         [trackItem.id]: {
-          playbackRate: value
-        }
-      }
+          playbackRate: value,
+        },
+      },
     });
   };
   return (

@@ -4,7 +4,7 @@ import { BaseSequence, SequenceItemOptions } from "../base-sequence";
 
 export default function ProgressFrame({
   item,
-  options
+  options,
 }: {
   item: IProgressFrame;
   options: SequenceItemOptions;
@@ -15,9 +15,9 @@ export default function ProgressFrame({
   const { from, durationInFrames } = calculateFrames(
     {
       from: item.display.from / playbackRate,
-      to: item.display.to / playbackRate
+      to: item.display.to / playbackRate,
     },
-    fps
+    fps,
   );
   let progress;
   if (details.inverted) {
@@ -40,14 +40,14 @@ export default function ProgressFrame({
           width: "100%",
           height: "100%",
           backgroundColor: "transparent",
-          scale: `${details.flipX ? -1 : 1} ${details.flipY ? -1 : 1}`
+          scale: `${details.flipX ? -1 : 1} ${details.flipY ? -1 : 1}`,
         }}
       >
         <div
           style={{
             position: "absolute",
             inset: 0,
-            clipPath: `polygon(0 0, 100% 0, 100% ${maskSize}px, ${maskSize}px ${maskSize}px, ${maskSize}px 100%, 0 100%)`
+            clipPath: `polygon(0 0, 100% 0, 100% ${maskSize}px, ${maskSize}px ${maskSize}px, ${maskSize}px 100%, 0 100%)`,
           }}
         >
           <div
@@ -57,7 +57,7 @@ export default function ProgressFrame({
               backgroundColor:
                 details.backgroundColors[0] || "rgba(128, 128, 128,0.5)",
               width: "100%",
-              height: "100%"
+              height: "100%",
             }}
           />
           <div
@@ -67,7 +67,7 @@ export default function ProgressFrame({
               backgroundColor:
                 details.backgroundColors[1] || "rgba(128, 128, 128,1)",
               width: `${progress}%`,
-              height: `${progress}%`
+              height: `${progress}%`,
             }}
           />
         </div>

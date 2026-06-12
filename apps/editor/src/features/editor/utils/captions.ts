@@ -19,7 +19,7 @@ export const generateCaption = (
   captionLine: ICaptionLine,
   fontInfo: FontInfo,
   options: Options,
-  sourceUrl: string
+  sourceUrl: string,
 ): ICaption => {
   const caption = {
     id: generateId(),
@@ -27,11 +27,11 @@ export const generateCaption = (
     name: "Caption",
     display: {
       from: options.displayFrom + captionLine.start * 1000,
-      to: options.displayFrom + captionLine.end * 1000
+      to: options.displayFrom + captionLine.end * 1000,
     },
     metadata: {
       sourceUrl,
-      parentId: options.parentId
+      parentId: options.parentId,
     },
     details: {
       // top: 100,
@@ -52,9 +52,9 @@ export const generateCaption = (
       words: captionLine.words.map((w) => ({
         ...w,
         start: w.start * 1000,
-        end: w.end * 1000
-      }))
-    } as unknown
+        end: w.end * 1000,
+      })),
+    } as unknown,
   };
   return caption as ICaption;
 };
@@ -78,7 +78,7 @@ interface CaptionsInput {
 function createCaptionLines(
   input: CaptionsInput,
   fontInfo: FontInfo,
-  options: Options
+  options: Options,
 ): ICaptionLine[] {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
@@ -93,7 +93,7 @@ function createCaptionLines(
     words: [],
     width: 0,
     start: words.length > 0 ? words[0].start : 0,
-    end: 0
+    end: 0,
   };
   let linesCount = 0;
 
@@ -117,7 +117,7 @@ function createCaptionLines(
           words: [],
           width: 0,
           start: wordObj.start,
-          end: wordObj.end
+          end: wordObj.end,
         };
       } else {
         linesCount += 1;
@@ -157,12 +157,12 @@ interface Options {
 export function generateCaptions(
   input: CaptionsInput,
   fontInfo: FontInfo,
-  options: Options
+  options: Options,
 ): ICaption[] {
   const captionLines = createCaptionLines(input, fontInfo, options);
 
   const captions = captionLines.map((line) =>
-    generateCaption(line, fontInfo, options, input.sourceUrl)
+    generateCaption(line, fontInfo, options, input.sourceUrl),
   );
 
   return captions;

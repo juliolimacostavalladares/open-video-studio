@@ -4,14 +4,14 @@ import {
   Trimmable,
   TrimmableProps,
   timeMsToUnits,
-  unitsToTimeMs
+  unitsToTimeMs,
 } from "@designcombo/timeline";
 import { Filmstrip, FilmstripBacklogOptions } from "../types";
 import ThumbnailCache from "../../utils/thumbnail-cache";
 import { IDisplay, IMetadata, ITrim } from "@designcombo/types";
 import {
   calculateOffscreenSegments,
-  calculateThumbnailSegmentLayout
+  calculateThumbnailSegmentLayout,
 } from "../../utils/filmstrip";
 import { getFileFromUrl } from "../../utils/file";
 import { createMediaControls } from "../controls";
@@ -24,7 +24,7 @@ const EMPTY_FILMSTRIP: Filmstrip = {
   offset: 0,
   startTime: 0,
   thumbnailsCount: 0,
-  widthOnScreen: 0
+  widthOnScreen: 0,
 };
 
 interface VideoProps extends TrimmableProps {
@@ -171,7 +171,7 @@ class Video extends Trimmable {
 
   private calculateFilmstripDimensions({
     segmentIndex,
-    widthOnScreen
+    widthOnScreen,
   }: {
     segmentIndex: number;
     widthOnScreen: number;
@@ -183,7 +183,7 @@ class Video extends Trimmable {
     const totalWidth = timeMsToUnits(
       this.duration,
       this.tScale,
-      this.playbackRate
+      this.playbackRate,
     );
 
     const rightRemainingSize =
@@ -195,7 +195,7 @@ class Video extends Trimmable {
       1 +
       Math.round(
         (widthOnScreen + leftBacklogSize + rightBacklogSize) /
-          this.thumbnailWidth
+          this.thumbnailWidth,
       );
 
     return {
@@ -203,7 +203,7 @@ class Video extends Trimmable {
       leftBacklogSize,
       rightBacklogSize,
       filmstripStartTime,
-      filmstrimpThumbnailsCount
+      filmstrimpThumbnailsCount,
     };
   }
 
@@ -247,7 +247,7 @@ class Video extends Trimmable {
     const timePerThumbnail = unitsToTimeMs(
       this.thumbnailWidth,
       this.tScale,
-      this.playbackRate
+      this.playbackRate,
     );
 
     return Array.from({ length: count }, (_, i) => {
@@ -289,7 +289,7 @@ class Video extends Trimmable {
         x,
         0,
         this.thumbnailWidth,
-        this.thumbnailHeight
+        this.thumbnailHeight,
       );
     }
 
@@ -297,7 +297,7 @@ class Video extends Trimmable {
     const fillPattern = new Pattern({
       source: offCanvas,
       repeat: "no-repeat",
-      offsetX: 0
+      offsetX: 0,
     });
 
     this.set("fill", fillPattern);
@@ -317,16 +317,16 @@ class Video extends Trimmable {
 
     // Match and prepare thumbnails
     const thumbnailsArr = await this.clip.thumbnailsList(this.thumbnailWidth, {
-      timestamps: timestamps.map((timestamp) => timestamp * 1e6)
+      timestamps: timestamps.map((timestamp) => timestamp * 1e6),
     });
 
     const updatedThumbnails = thumbnailsArr.map(
       (thumbnail: { ts: number; img: Blob }) => {
         return {
           ts: Math.round(thumbnail.ts / 1e6),
-          img: thumbnail.img
+          img: thumbnail.img,
         };
-      }
+      },
     );
 
     // Load all thumbnails in parallel
@@ -416,14 +416,14 @@ class Video extends Trimmable {
     const trimFromSize = timeMsToUnits(
       this.trim.from,
       this.tScale,
-      this.playbackRate
+      this.playbackRate,
     );
 
     let timeInFilmstripe = startTime;
     const timePerThumbnail = unitsToTimeMs(
       thumbnailWidth,
       this.tScale,
-      this.playbackRate || 1
+      this.playbackRate || 1,
     );
 
     // Clear the offscreen canvas
@@ -436,7 +436,7 @@ class Video extends Trimmable {
     // Draw thumbnails
     for (let i = 0; i < thumbnailsCount; i++) {
       let img = this.thumbnailCache.getThumbnail(
-        Math.ceil(timeInFilmstripe / 1000)
+        Math.ceil(timeInFilmstripe / 1000),
       );
 
       if (!img) {
@@ -456,7 +456,7 @@ class Video extends Trimmable {
 
   public drawTextIdentity(ctx: CanvasRenderingContext2D) {
     const iconPath = new Path2D(
-      "M16.5625 0.925L12.5 3.275V0.625L11.875 0H0.625L0 0.625V9.375L0.625 10H11.875L12.5 9.375V6.875L16.5625 9.2125L17.5 8.625V1.475L16.5625 0.925ZM11.25 8.75H1.25V1.25H11.25V8.75ZM16.25 7.5L12.5 5.375V4.725L16.25 2.5V7.5Z"
+      "M16.5625 0.925L12.5 3.275V0.625L11.875 0H0.625L0 0.625V9.375L0.625 10H11.875L12.5 9.375V6.875L16.5625 9.2125L17.5 8.625V1.475L16.5625 0.925ZM11.25 8.75H1.25V1.25H11.25V8.75ZM16.25 7.5L12.5 5.375V4.725L16.25 2.5V7.5Z",
     );
     ctx.save();
     ctx.translate(-this.width / 2, -this.height / 2);
@@ -499,7 +499,7 @@ class Video extends Trimmable {
       -this.height / 2 + borderWidth,
       this.width - borderWidth * 2,
       this.height - borderWidth * 2,
-      innerRadius
+      innerRadius,
     );
 
     // Use even-odd fill rule to create the border effect
@@ -515,11 +515,11 @@ class Video extends Trimmable {
     const timelineWidth = canvasWidth;
     const cutFromBottomEdge = Math.max(
       timelineWidth - (this.width + this.left + scrollLeft),
-      0
+      0,
     );
     const visibleHeight = Math.min(
       timelineWidth - this.left - scrollLeft,
-      timelineWidth
+      timelineWidth,
     );
 
     return Math.max(visibleHeight - cutFromBottomEdge, 0);
@@ -534,7 +534,7 @@ class Video extends Trimmable {
 
   public onScrollChange({
     scrollLeft,
-    force
+    force,
   }: {
     scrollLeft: number;
     force?: boolean;
@@ -543,13 +543,13 @@ class Video extends Trimmable {
     const trimFromSize = timeMsToUnits(
       this.trim.from,
       this.tScale,
-      this.playbackRate
+      this.playbackRate,
     );
 
     const offscreenSegments = calculateOffscreenSegments(
       offscreenWidth,
       trimFromSize,
-      this.segmentSize
+      this.segmentSize,
     );
 
     this.offscreenSegments = offscreenSegments;
@@ -578,7 +578,7 @@ class Video extends Trimmable {
       const { filmstripOffset, filmstripStartTime, filmstrimpThumbnailsCount } =
         this.calculateFilmstripDimensions({
           widthOnScreen: this.calulateWidthOnScreen(),
-          segmentIndex: segmentToDraw
+          segmentIndex: segmentToDraw,
         });
 
       this.nextFilmstrip = {
@@ -586,7 +586,7 @@ class Video extends Trimmable {
         offset: filmstripOffset,
         startTime: filmstripStartTime,
         thumbnailsCount: filmstrimpThumbnailsCount,
-        widthOnScreen
+        widthOnScreen,
       };
 
       this.loadAndRenderThumbnails();

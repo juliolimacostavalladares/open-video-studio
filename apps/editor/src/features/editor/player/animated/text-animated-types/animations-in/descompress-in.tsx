@@ -3,7 +3,7 @@ const DescompressAnimationIn = ({
   index,
   frame,
   fps,
-  animationTextInFrames
+  animationTextInFrames,
 }: {
   char: string;
   index: number;
@@ -25,7 +25,7 @@ const DescompressAnimationIn = ({
       style={{
         display: "inline-block",
         transform: `scaleX(${scaleX})`,
-        opacity: opacity
+        opacity: opacity,
       }}
     >
       {char === " " ? " " : char}

@@ -7,7 +7,7 @@ import { calculateFrames } from "../../utils/frames";
 
 export const Shape = ({
   item,
-  options
+  options,
 }: {
   item: IShape;
   options: SequenceItemOptions;
@@ -18,7 +18,7 @@ export const Shape = ({
     animations!,
     item,
     frame,
-    fps
+    fps,
   );
   const { durationInFrames } = calculateFrames(item.display, fps);
   const currentFrame = (frame || 0) - (item.display.from * fps) / 1000;
@@ -49,7 +49,7 @@ export const Shape = ({
               WebkitMaskSize: "cover",
               WebkitMaskPosition: "center",
               WebkitMaskRepeat: "no-repeat",
-              backgroundColor: details.backgroundColor || "#808080"
+              backgroundColor: details.backgroundColor || "#808080",
             }}
           />
         </MaskAnim>

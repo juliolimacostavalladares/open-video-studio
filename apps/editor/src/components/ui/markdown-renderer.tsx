@@ -8,7 +8,7 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger
+  AccordionTrigger,
 } from "@/components/ui/accordion";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
@@ -50,15 +50,15 @@ const HighlightedPre = React.memo(
 
           const highlighter = await getHighlighter({
             themes: ["min-dark"],
-            langs: [language as keyof typeof bundledLanguages]
+            langs: [language as keyof typeof bundledLanguages],
           });
 
           const result = await highlighter.codeToTokens(children, {
             lang: language as keyof typeof bundledLanguages,
             themes: {
               light: "min-dark",
-              dark: "min-dark"
-            }
+              dark: "min-dark",
+            },
           });
 
           if (mounted) {
@@ -109,7 +109,7 @@ const HighlightedPre = React.memo(
         </code>
       </pre>
     );
-  }
+  },
 );
 HighlightedPre.displayName = "HighlightedCode";
 
@@ -202,7 +202,7 @@ const COMPONENTS = {
     ) : (
       <code
         className={cn(
-          "font-mono rounded-lg !border !bg-background-subtle [:not(pre)>&]:rounded-md [:not(pre)>&]:bg-background/50 [:not(pre)>&]:px-1 [:not(pre)>&]:py-0.5 overflow-scroll"
+          "font-mono rounded-lg !border !bg-background-subtle [:not(pre)>&]:rounded-md [:not(pre)>&]:bg-background/50 [:not(pre)>&]:px-1 [:not(pre)>&]:py-0.5 overflow-scroll",
         )}
         {...rest}
       >
@@ -216,19 +216,19 @@ const COMPONENTS = {
   li: withClass("li", "my-1.5  leading-[1.7]"),
   table: withClass(
     "table",
-    "w-full border-collapse overflow-y-auto rounded-md border border-foreground/20"
+    "w-full border-collapse overflow-y-auto rounded-md border border-foreground/20",
   ),
   th: withClass(
     "th",
-    "border border-foreground/20 px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right"
+    "border border-foreground/20 px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right",
   ),
   td: withClass(
     "td",
-    "border border-foreground/20 px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right"
+    "border border-foreground/20 px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right",
   ),
   tr: withClass("tr", "m-0 border-t p-0 even:bg-muted"),
   p: withClass("p", "whitespace-pre-wrap leading-[1.7]"),
-  hr: withClass("hr", "border-foreground/20")
+  hr: withClass("hr", "border-foreground/20"),
 };
 
 function withClass(Tag: keyof JSX.IntrinsicElements, classes: string) {

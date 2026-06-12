@@ -6,7 +6,7 @@ import {
   IImage,
   ITrackItem,
   ITrackItemAndDetails,
-  IVideo
+  IVideo,
 } from "@designcombo/types";
 import useLayoutStore from "./store/use-layout-store";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,7 @@ import { Label } from "@/components/ui/label";
 
 const ActiveControlItem = ({
   trackItem,
-  handleMenuItemClick
+  handleMenuItemClick,
 }: {
   trackItem?: ITrackItemAndDetails;
   handleMenuItemClick: (menuItem: string, label: string) => void;
@@ -39,7 +39,7 @@ const ActiveControlItem = ({
           caption: <ItemCaption handleMenuItemClick={handleMenuItemClick} />,
           image: <ItemImage handleMenuItemClick={handleMenuItemClick} />,
           video: <ItemVideo handleMenuItemClick={handleMenuItemClick} />,
-          audio: <ItemAudio handleMenuItemClick={handleMenuItemClick} />
+          audio: <ItemAudio handleMenuItemClick={handleMenuItemClick} />,
         }[trackItem?.type as "text"]
       }
     </>
@@ -47,7 +47,7 @@ const ActiveControlItem = ({
 };
 
 const ColorPickerControl = ({
-  trackItem
+  trackItem,
 }: {
   trackItem?: ITrackItemAndDetails;
 }) => {
@@ -85,9 +85,9 @@ const ColorPickerControl = ({
     dispatch(EDIT_OBJECT, {
       payload: {
         [trackItem?.id || ""]: {
-          details: updatePayload
-        }
-      }
+          details: updatePayload,
+        },
+      },
     });
   };
 
@@ -109,7 +109,7 @@ const ColorPickerControl = ({
 };
 
 const StrokeColorPickerControl = ({
-  trackItem
+  trackItem,
 }: {
   trackItem?: ITrackItemAndDetails;
 }) => {
@@ -132,10 +132,10 @@ const StrokeColorPickerControl = ({
       payload: {
         [trackItem?.id || ""]: {
           details: {
-            borderColor: color
-          }
-        }
-      }
+            borderColor: color,
+          },
+        },
+      },
     });
   };
 
@@ -162,7 +162,7 @@ const StrokeColorPickerControl = ({
 };
 
 const ShadowColorPickerControl = ({
-  trackItem
+  trackItem,
 }: {
   trackItem?: ITrackItemAndDetails;
 }) => {
@@ -187,11 +187,11 @@ const ShadowColorPickerControl = ({
           details: {
             boxShadow: {
               ...trackItem?.details?.boxShadow,
-              color: color
-            }
-          }
-        }
-      }
+              color: color,
+            },
+          },
+        },
+      },
     });
   };
 
@@ -218,7 +218,7 @@ const ShadowColorPickerControl = ({
 };
 
 const BackgroundColorPickerControl = ({
-  trackItem
+  trackItem,
 }: {
   trackItem?: ITrackItemAndDetails;
 }) => {
@@ -240,10 +240,10 @@ const BackgroundColorPickerControl = ({
       payload: {
         [trackItem?.id || ""]: {
           details: {
-            background: color
-          }
-        }
-      }
+            background: color,
+          },
+        },
+      },
     });
   };
 
@@ -272,7 +272,7 @@ const BackgroundColorPickerControl = ({
 };
 
 const CaptionAppearedColorPickerControl = ({
-  trackItem
+  trackItem,
 }: {
   trackItem?: ITrackItemAndDetails;
 }) => {
@@ -294,10 +294,10 @@ const CaptionAppearedColorPickerControl = ({
       payload: {
         [trackItem?.id || ""]: {
           details: {
-            appearedColor: color
-          }
-        }
-      }
+            appearedColor: color,
+          },
+        },
+      },
     });
   };
 
@@ -324,7 +324,7 @@ const CaptionAppearedColorPickerControl = ({
 };
 
 const CaptionActiveColorPickerControl = ({
-  trackItem
+  trackItem,
 }: {
   trackItem?: ITrackItemAndDetails;
 }) => {
@@ -346,10 +346,10 @@ const CaptionActiveColorPickerControl = ({
       payload: {
         [trackItem?.id || ""]: {
           details: {
-            activeColor: color
-          }
-        }
-      }
+            activeColor: color,
+          },
+        },
+      },
     });
   };
 
@@ -376,7 +376,7 @@ const CaptionActiveColorPickerControl = ({
 };
 
 const CaptionActiveFillColorPickerControl = ({
-  trackItem
+  trackItem,
 }: {
   trackItem?: ITrackItemAndDetails;
 }) => {
@@ -399,10 +399,10 @@ const CaptionActiveFillColorPickerControl = ({
       payload: {
         [trackItem?.id || ""]: {
           details: {
-            activeFillColor: color
-          }
-        }
-      }
+            activeFillColor: color,
+          },
+        },
+      },
     });
   };
 
@@ -431,7 +431,7 @@ const CaptionActiveFillColorPickerControl = ({
 };
 
 const CaptionEmphasizeColorPickerControl = ({
-  trackItem
+  trackItem,
 }: {
   trackItem?: ITrackItemAndDetails;
 }) => {
@@ -452,10 +452,10 @@ const CaptionEmphasizeColorPickerControl = ({
       payload: {
         [trackItem?.id || ""]: {
           details: {
-            isKeywordColor: color
-          }
-        }
-      }
+            isKeywordColor: color,
+          },
+        },
+      },
     });
   };
 
@@ -479,7 +479,7 @@ const CaptionEmphasizeColorPickerControl = ({
 
 const ControlItem = ({
   trackItem,
-  feature
+  feature,
 }: {
   trackItem?: ITrackItemAndDetails;
   feature: string;
@@ -550,7 +550,7 @@ const ControlItem = ({
               trackItem={trackItem as ITrackItem & IAudio}
               type={feature}
             />
-          )
+          ),
         }[trackItem?.type as "text"]
       }
     </>
@@ -567,7 +567,7 @@ export default function ControlItemHorizontal() {
     typeControlItem,
     setControItemDrawerOpen,
     controItemDrawerOpen,
-    setLabelControlItem
+    setLabelControlItem,
   } = useLayoutStore();
 
   // Framer Motion controls
@@ -625,7 +625,7 @@ export default function ControlItemHorizontal() {
       // Animate back to original position
       controls.start({
         y: 0,
-        transition: { type: "spring", damping: 25, stiffness: 300 }
+        transition: { type: "spring", damping: 25, stiffness: 300 },
       });
     }
   };
@@ -639,8 +639,8 @@ export default function ControlItemHorizontal() {
         type: "spring",
         damping: 25,
         stiffness: 300,
-        duration: 0.3
-      }
+        duration: 0.3,
+      },
     },
     exit: {
       y: "100%",
@@ -648,9 +648,9 @@ export default function ControlItemHorizontal() {
         type: "spring",
         damping: 25,
         stiffness: 300,
-        duration: 0.2
-      }
-    }
+        duration: 0.2,
+      },
+    },
   };
 
   return (
@@ -713,7 +713,7 @@ type Item = {
 
 const ItemGroup = ({
   items,
-  handleMenuItemClick
+  handleMenuItemClick,
 }: {
   items: Item[];
   handleMenuItemClick: (menuItem: string, label: string) => void;
@@ -740,7 +740,7 @@ const ItemGroup = ({
 };
 
 const ItemText = ({
-  handleMenuItemClick
+  handleMenuItemClick,
 }: {
   handleMenuItemClick: (menuItem: string, label: string) => void;
 }) => (
@@ -750,14 +750,14 @@ const ItemText = ({
       { icon: Icons.style, label: "Styles", id: "textControls" },
       { icon: Icons.animation, label: "Animations", id: "animations" },
       { icon: Icons.fontStroke, label: "Stroke", id: "fontStroke" },
-      { icon: Icons.fontShadow, label: "Shadow", id: "fontShadow" }
+      { icon: Icons.fontShadow, label: "Shadow", id: "fontShadow" },
     ]}
     handleMenuItemClick={handleMenuItemClick}
   />
 );
 
 const ItemCaption = ({
-  handleMenuItemClick
+  handleMenuItemClick,
 }: {
   handleMenuItemClick: (menuItem: string, label: string) => void;
 }) => (
@@ -768,14 +768,14 @@ const ItemCaption = ({
       { icon: Icons.style, label: "Styles", id: "textControls" },
       { icon: Icons.animation, label: "Colors", id: "captionColors" },
       { icon: Icons.fontStroke, label: "Stroke", id: "fontStroke" },
-      { icon: Icons.fontShadow, label: "Shadow", id: "fontShadow" }
+      { icon: Icons.fontShadow, label: "Shadow", id: "fontShadow" },
     ]}
     handleMenuItemClick={handleMenuItemClick}
   />
 );
 
 const ItemImage = ({
-  handleMenuItemClick
+  handleMenuItemClick,
 }: {
   handleMenuItemClick: (menuItem: string, label: string) => void;
 }) => (
@@ -785,14 +785,14 @@ const ItemImage = ({
       { icon: Icons.basic, label: "Basic", id: "basic" },
       { icon: Icons.animation, label: "Animations", id: "animations" },
       { icon: Icons.outline, label: "Outline", id: "outline" },
-      { icon: Icons.shadow, label: "Shadow", id: "shadow" }
+      { icon: Icons.shadow, label: "Shadow", id: "shadow" },
     ]}
     handleMenuItemClick={handleMenuItemClick}
   />
 );
 
 const ItemVideo = ({
-  handleMenuItemClick
+  handleMenuItemClick,
 }: {
   handleMenuItemClick: (menuItem: string, label: string) => void;
 }) => (
@@ -802,14 +802,14 @@ const ItemVideo = ({
       { icon: Icons.basic, label: "Basic", id: "basic" },
       { icon: Icons.animation, label: "Animations", id: "animations" },
       { icon: Icons.outline, label: "Outline", id: "outline" },
-      { icon: Icons.shadow, label: "Shadow", id: "shadow" }
+      { icon: Icons.shadow, label: "Shadow", id: "shadow" },
     ]}
     handleMenuItemClick={handleMenuItemClick}
   />
 );
 
 const ItemAudio = ({
-  handleMenuItemClick
+  handleMenuItemClick,
 }: {
   handleMenuItemClick: (menuItem: string, label: string) => void;
 }) => (
@@ -817,7 +817,7 @@ const ItemAudio = ({
     items={[
       { icon: Icons.audio, label: "Replace", id: "replace" },
       { icon: Icons.speed, label: "Speed", id: "speed" },
-      { icon: Icons.volume, label: "Volume", id: "volume" }
+      { icon: Icons.volume, label: "Volume", id: "volume" },
     ]}
     handleMenuItemClick={handleMenuItemClick}
   />

@@ -5,7 +5,7 @@ export type Orientation = "horizontal" | "vertical" | "bilateral";
 // Animation utility functions
 export const TranslateAnimationCaption = (
   frame: number,
-  orientation: Orientation = "bilateral"
+  orientation: Orientation = "bilateral",
 ) => {
   const phase1Duration = 15;
   const phase2Duration = 15;
@@ -43,7 +43,7 @@ export const TranslateAnimationCaption = (
 export const TranslateOnceAnimation = (
   frame: number,
   duration: number = 30,
-  orientation: Orientation = "horizontal"
+  orientation: Orientation = "horizontal",
 ) => {
   const clampedFrame = Math.min(frame, duration);
   const progress = clampedFrame / duration;
@@ -68,7 +68,7 @@ export const ScaleAnimationCaption = (
   to: number,
   fps: number,
   speedMultiplier: number = 10,
-  direction: "min" | "max" = "max"
+  direction: "min" | "max" = "max",
 ) => {
   const totalDuration = to / (1000 * speedMultiplier);
   const cycleFrame = Math.min(frame / fps, totalDuration);
@@ -86,7 +86,7 @@ export const ScaleAnimationBetween = (
   fps: number,
   speedMultiplier: number = 10,
   minScale: number = 0.8,
-  maxScale: number = 1
+  maxScale: number = 1,
 ) => {
   const totalDuration = to / (1000 * speedMultiplier);
   const cycleFrame = Math.min(frame / fps, totalDuration);
@@ -97,7 +97,7 @@ export const ScaleAnimationBetween = (
 export const ScalePulseAnimationCaption = (
   frame: number,
   to: number,
-  fps: number
+  fps: number,
 ) => {
   const totalDurationSec = to / 1000;
   const currentTime = frame / fps;
@@ -112,7 +112,7 @@ export const ScalePulseAnimationCaption = (
 export const ScaleAnimationLoop = (
   frame: number,
   phase1Duration: number = 15,
-  phase2Duration: number = 15
+  phase2Duration: number = 15,
 ) => {
   const totalDuration = phase1Duration + phase2Duration;
   const cycleFrame = frame % totalDuration;
@@ -130,7 +130,7 @@ export const OpacityAnimationCaption = (
   frame: number,
   to: number,
   fps: number,
-  speedMultiplier: number = 10
+  speedMultiplier: number = 10,
 ) => {
   const totalDuration = to / (1000 * speedMultiplier);
   const cycleFrame = Math.min(frame / fps, totalDuration);
@@ -190,7 +190,7 @@ export const ANIMATION_CAPTION_LIST = [
   "captionAnimationKeyword104",
   "captionAnimationKeyword105",
   "captionAnimationKeyword107",
-  "captionAnimationKeyword108"
+  "captionAnimationKeyword108",
 ];
 
 export type AnimationConfig = {
@@ -243,7 +243,7 @@ export const ANIMATION_CONFIGS: Record<string, AnimationConfig> = {
 
   // Translate once animations
   captionAnimationKeyword56: {
-    translateOnceAnimation: { duration: 10, orientation: "vertical" }
+    translateOnceAnimation: { duration: 10, orientation: "vertical" },
   },
   captionAnimationKeyword58: { translateOnceAnimation: { duration: 10 } },
 
@@ -269,15 +269,15 @@ export const ANIMATION_CONFIGS: Record<string, AnimationConfig> = {
     extraStyles: {
       display: "flex",
       flexDirection: "column",
-      gap: "8px"
-    }
+      gap: "8px",
+    },
   },
   captionAnimation33: {
     extraStyles: {
       display: "flex",
       flexDirection: "column",
-      gap: "8px"
-    }
+      gap: "8px",
+    },
   },
 
   // Combined animations
@@ -292,19 +292,19 @@ export const ANIMATION_CONFIGS: Record<string, AnimationConfig> = {
   captionAnimation38: { scaleAnimationLoop: true, translate: "bilateral" },
   captionAnimationKeyword90: {
     scaleAnimationLoop: true,
-    translate: "bilateral"
+    translate: "bilateral",
   },
   captionAnimationKeyword16: { rotateFixed: 10, translate: "vertical" },
   captionAnimationKeyword26: { rotateFixed: 10 },
   captionAnimationKeyword32: { scaleAnimationLoop: true, rotateRandom: true },
   captionAnimationKeyword43: {
     opacity: 2,
-    translateOnceAnimation: { duration: 5 }
+    translateOnceAnimation: { duration: 5 },
   },
   captionAnimationKeyword47: {
     opacity: 2,
-    translateOnceAnimation: { duration: 5 }
-  }
+    translateOnceAnimation: { duration: 5 },
+  },
 };
 
 // Cache for rotation values

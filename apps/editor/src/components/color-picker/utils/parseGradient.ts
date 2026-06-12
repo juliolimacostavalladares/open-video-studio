@@ -19,7 +19,7 @@ const LINEAR_POS = [
   { angle: "225", name: "to bottom left" },
   { angle: "270", name: "to left" },
   { angle: "315", name: "to top left" },
-  { angle: "315", name: "to left top" }
+  { angle: "315", name: "to left top" },
 ];
 
 export default (str: string) => {
@@ -28,11 +28,11 @@ export default (str: string) => {
   const defaultStops = {
     stops: [
       ["rgba(0, 0, 0, 1)", 0, 0],
-      ["rgba(183, 80, 174, 0.92)", 1, 1]
+      ["rgba(183, 80, 174, 0.92)", 1, 1],
     ],
     gradient: `linear-gradient(180deg, rgba(6, 6, 6, 1) 0.0%, rgba(183, 80, 174, 0.92) 100.0%)`,
     modifier: 180,
-    type: "linear"
+    type: "linear",
   };
 
   if (str === "transparent") {
@@ -49,7 +49,7 @@ export default (str: string) => {
     if (rgbaStr) {
       defaultStops.stops = [
         ["rgba(0, 0, 0, 1)", 0, 0],
-        [rgbaStr, 1, 1]
+        [rgbaStr, 1, 1],
       ];
       defaultStops.gradient = `linear-gradient(180deg, rgba(6, 6, 6, 1) 0.0%, ${rgbaStr} 100.0%)`;
     }
@@ -100,7 +100,7 @@ export default (str: string) => {
           formatStop.splice(1, 0, stop.position);
         }
         return formatStop;
-      })
+      }),
     };
   }
 };

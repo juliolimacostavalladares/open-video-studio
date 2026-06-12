@@ -40,8 +40,8 @@ const AnimationCaption = () => {
     const composition: Animation[] = [
       {
         ...presetAnimation,
-        durationInFrames: 3
-      }
+        durationInFrames: 3,
+      },
     ];
 
     const payload = captionItemIds.reduce((acc, id) => {
@@ -51,10 +51,10 @@ const AnimationCaption = () => {
           animations: {
             [type]: {
               name: presetName,
-              composition
-            }
-          }
-        }
+              composition,
+            },
+          },
+        },
       };
     }, {});
 
@@ -63,7 +63,7 @@ const AnimationCaption = () => {
 
   const createPresetButtons = (
     filter: (key: string) => boolean,
-    type: "in" | "out"
+    type: "in" | "out",
   ) =>
     Object.keys(presets)
       .filter(filter)
@@ -77,9 +77,9 @@ const AnimationCaption = () => {
             width: "50px",
             height: "50px",
             borderRadius: "8px",
-            border: isActive ? "2px solid #3b82f6" : "2px solid transparent"
+            border: isActive ? "2px solid #3b82f6" : "2px solid transparent",
           }),
-          [preset.previewUrl, isActive]
+          [preset.previewUrl, isActive],
         );
         if (
           preset.property?.toLowerCase().includes("text") ||
@@ -101,12 +101,12 @@ const AnimationCaption = () => {
 
   const presetInButtons = createPresetButtons(
     (key) => key.includes("In"),
-    "in"
+    "in",
   );
   const floatingRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(floatingRef as React.RefObject<HTMLElement>, () =>
-    setFloatingControl("")
+    setFloatingControl(""),
   );
   return (
     <div

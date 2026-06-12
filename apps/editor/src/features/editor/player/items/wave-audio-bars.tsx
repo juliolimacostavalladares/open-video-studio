@@ -4,7 +4,7 @@ import { WaveBars } from "./audio-bars/wave-audio-bars";
 
 export default function WaveAudioBars({
   item,
-  options
+  options,
 }: {
   item: IWaveAudioBars;
   options: SequenceItemOptions;

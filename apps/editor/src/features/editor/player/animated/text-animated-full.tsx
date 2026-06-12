@@ -43,7 +43,7 @@ export const renderFullTextAnimation = ({
   validAnimOut,
   textAnimationNameIn,
   textAnimationNameOut,
-  textAnimationNameLoop
+  textAnimationNameLoop,
 }: FullTextAnimationProps): JSX.Element | null => {
   // Animaciones de entrada
   if (validAnimIn) {

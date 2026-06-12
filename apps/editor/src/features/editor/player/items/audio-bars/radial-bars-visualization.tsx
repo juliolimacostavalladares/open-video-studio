@@ -23,7 +23,7 @@ export const RadialBars: React.FC<RadialBarsProps> = ({
   barOrigin,
   color,
   maxAmplitude = 1,
-  innerRadius
+  innerRadius,
 }) => {
   if (!values || values.length === 0) {
     return null;
@@ -97,7 +97,7 @@ export const RadialBarsVisualization: React.FC<
   color = "white",
   maxAmplitude,
   innerRadius = 0,
-  gapSize = 4
+  gapSize = 4,
 }) => {
   const radius = 0.5 * diameter;
 
@@ -106,7 +106,7 @@ export const RadialBarsVisualization: React.FC<
     itemWidth: lineThickness + gapSize,
     frequencyData,
     maxDb,
-    minDb
+    minDb,
   });
 
   const highpass = bars.slice(Math.floor(0.5 * bars.length));

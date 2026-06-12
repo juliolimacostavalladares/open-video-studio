@@ -7,7 +7,7 @@ import {
   ITrack,
   ITrackItem,
   ITransition,
-  ItemStructure
+  ItemStructure,
 } from "@designcombo/types";
 import { Moveable } from "@interactify/toolkit";
 import { PlayerRef } from "@remotion/player";
@@ -61,12 +61,12 @@ const useStore = create<ITimelineStore>((set) => ({
   setCompositions: (compositions) => set({ compositions }),
   size: {
     width: 1080,
-    height: 1920
+    height: 1920,
   },
 
   background: {
     type: "color",
-    value: "transparent"
+    value: "transparent",
   },
   viewTimeline: true,
   setViewTimeline: (viewTimeline) => set({ viewTimeline }),
@@ -79,11 +79,11 @@ const useStore = create<ITimelineStore>((set) => ({
     index: 7,
     unit: 300,
     zoom: 1 / 300,
-    segments: 5
+    segments: 5,
   },
   scroll: {
     left: 0,
-    top: 0
+    top: 0,
   },
   playerRef: null,
 
@@ -98,22 +98,22 @@ const useStore = create<ITimelineStore>((set) => ({
 
   setTimeline: (timeline: Timeline) =>
     set(() => ({
-      timeline: timeline
+      timeline: timeline,
     })),
   setScale: (scale: ITimelineScaleState) =>
     set(() => ({
-      scale: scale
+      scale: scale,
     })),
   setScroll: (scroll: ITimelineScrollState) =>
     set(() => ({
-      scroll: scroll
+      scroll: scroll,
     })),
   setState: async (state) => {
     return set((currentState) => ({ ...currentState, ...state }));
   },
   setPlayerRef: (playerRef: React.RefObject<PlayerRef> | null) =>
     set({ playerRef }),
-  setSceneMoveableRef: (ref) => set({ sceneMoveableRef: ref })
+  setSceneMoveableRef: (ref) => set({ sceneMoveableRef: ref }),
 }));
 
 export default useStore;

@@ -7,7 +7,7 @@ const sizerStyle: React.CSSProperties = {
   visibility: "hidden",
   height: 0,
   overflow: "scroll",
-  whiteSpace: "pre"
+  whiteSpace: "pre",
 };
 
 const INPUT_PROPS_BLACKLIST: Array<keyof AutosizeInputProps> = [
@@ -18,7 +18,7 @@ const INPUT_PROPS_BLACKLIST: Array<keyof AutosizeInputProps> = [
   "inputStyle",
   "minWidth",
   "onAutosize",
-  "placeholderIsMinWidth"
+  "placeholderIsMinWidth",
 ];
 
 interface AutosizeInputProps
@@ -35,7 +35,7 @@ interface AutosizeInputProps
 }
 
 const cleanInputProps = (
-  inputProps: AutosizeInputProps
+  inputProps: AutosizeInputProps,
 ): AutosizeInputProps => {
   const cleanedProps = { ...inputProps };
   for (const field of INPUT_PROPS_BLACKLIST) {
@@ -73,7 +73,7 @@ const AutosizeInput: React.FC<AutosizeInputProps> = (props) => {
   } = props;
 
   const [inputWidth, setInputWidth] = useState<number>(
-    typeof minWidth === "number" ? minWidth : Number.parseInt(minWidth)
+    typeof minWidth === "number" ? minWidth : Number.parseInt(minWidth),
   );
   const [inputId] = useState<string>(id || "uniqueid");
   const inputEl = useRef<HTMLInputElement | null>(null);
@@ -92,7 +92,7 @@ const AutosizeInput: React.FC<AutosizeInputProps> = (props) => {
         newInputWidth =
           Math.max(
             sizerEl.current.scrollWidth,
-            placeHolderSizerEl.current?.scrollWidth || 0
+            placeHolderSizerEl.current?.scrollWidth || 0,
           ) + 2;
       } else {
         newInputWidth = sizerEl.current.scrollWidth + 2;
@@ -142,7 +142,7 @@ const AutosizeInput: React.FC<AutosizeInputProps> = (props) => {
     extraWidth,
     minWidth,
     inputWidth,
-    onAutosize
+    onAutosize,
   ]);
 
   const sizerValue = [defaultValue, value, ""].reduce<any>(
@@ -152,7 +152,7 @@ const AutosizeInput: React.FC<AutosizeInputProps> = (props) => {
       }
       return currentValue;
     },
-    undefined // Initial value for reduce
+    undefined, // Initial value for reduce
   );
 
   return (
@@ -165,7 +165,7 @@ const AutosizeInput: React.FC<AutosizeInputProps> = (props) => {
         style={{
           boxSizing: "content-box",
           width: `${inputWidth}px`,
-          ...inputStyle
+          ...inputStyle,
         }}
         ref={(el) => {
           inputEl.current = el;

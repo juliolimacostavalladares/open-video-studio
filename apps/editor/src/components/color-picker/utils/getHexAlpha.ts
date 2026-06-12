@@ -3,7 +3,7 @@ import tinycolor from "tinycolor2";
 export default (value: string) => {
   const defaultObject = {
     hex: "#ffffff",
-    alpha: 100
+    alpha: 100,
   };
   const tinyColor = tinycolor(value);
 

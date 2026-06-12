@@ -14,7 +14,7 @@ const ColorPickerSolid: FC<IPropsComp> = ({
   format = "rgb",
   debounceMS = 300,
   debounce = true,
-  colorBoardHeight = 180
+  colorBoardHeight = 180,
 }) => {
   const node = useRef<HTMLDivElement | null>(null);
 
@@ -49,7 +49,7 @@ const ColorPickerSolid: FC<IPropsComp> = ({
     setInit(false);
     setColor({
       hex: value.hex,
-      alpha: Math.round(value.alpha)
+      alpha: Math.round(value.alpha),
     });
   };
 

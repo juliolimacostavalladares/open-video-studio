@@ -33,7 +33,7 @@ export const getTargetAbles = (targetType: string): ITargetAbles => {
         scalable: false,
         keepRatio: false,
         draggable: true,
-        snappable: true
+        snappable: true,
       };
     case "caption":
       return {
@@ -42,7 +42,7 @@ export const getTargetAbles = (targetType: string): ITargetAbles => {
         scalable: false,
         keepRatio: false,
         draggable: true,
-        snappable: true
+        snappable: true,
       };
     case "image":
       return {
@@ -51,7 +51,7 @@ export const getTargetAbles = (targetType: string): ITargetAbles => {
         scalable: true,
         keepRatio: true,
         draggable: true,
-        snappable: true
+        snappable: true,
       };
     case "group":
       return {
@@ -60,7 +60,7 @@ export const getTargetAbles = (targetType: string): ITargetAbles => {
         scalable: true,
         keepRatio: true,
         draggable: true,
-        snappable: true
+        snappable: true,
       };
     case "svg":
       return {
@@ -70,7 +70,7 @@ export const getTargetAbles = (targetType: string): ITargetAbles => {
         keepRatio: true,
 
         draggable: true,
-        snappable: true
+        snappable: true,
       };
     default:
       return {
@@ -79,7 +79,7 @@ export const getTargetAbles = (targetType: string): ITargetAbles => {
         scalable: true,
         keepRatio: true,
         draggable: true,
-        snappable: true
+        snappable: true,
       };
   }
 };
@@ -106,9 +106,9 @@ export const emptySelection: SelectionInfo = {
     scalable: false,
     keepRatio: false,
     draggable: true,
-    snappable: true
+    snappable: true,
   },
-  controls: []
+  controls: [],
 };
 
 export const getSelectionByIds = (ids: string[]): SelectionInfo => {
@@ -118,7 +118,7 @@ export const getSelectionByIds = (ids: string[]): SelectionInfo => {
     .map((id) => {
       if (!id) return null;
       const element = document.querySelector<HTMLElement>(
-        `.designcombo-scene-item.id-${id}`
+        `.designcombo-scene-item.id-${id}`,
       );
       return element;
     })
@@ -140,14 +140,14 @@ export const getSelectionByIds = (ids: string[]): SelectionInfo => {
       targets,
       layerType: "group",
       ables: getTargetAbles("group"),
-      controls: []
+      controls: [],
     };
   }
 };
 
 export const getTargetById = (id: string): HTMLElement | null => {
   const element = document.querySelector<HTMLElement>(
-    `.designcombo-scene-item.id-${id}`
+    `.designcombo-scene-item.id-${id}`,
   );
   return element;
 };

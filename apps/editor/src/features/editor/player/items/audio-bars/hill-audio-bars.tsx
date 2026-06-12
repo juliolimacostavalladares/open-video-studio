@@ -5,7 +5,7 @@ import { HillsVisualization } from "./hill-visualization";
 
 export const HillBars = ({
   item,
-  options
+  options,
 }: {
   item: IHillAudioBars;
   options: SequenceItemOptions;
@@ -20,7 +20,7 @@ export const HillBars = ({
 
   const frequencyData = visualizationValues.slice(0, 0.7 * nSamples);
   const isValidBlendMode = (
-    value: any
+    value: any,
   ): value is
     | "normal"
     | "multiply"
@@ -54,7 +54,7 @@ export const HillBars = ({
       "hue",
       "saturation",
       "color",
-      "luminosity"
+      "luminosity",
     ].includes(value);
   };
   return (

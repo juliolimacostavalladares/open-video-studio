@@ -18,7 +18,7 @@ export const VoiceOver = () => {
   const handleAddText = () => {
     dispatch(ADD_TEXT, {
       payload: TEXT_ADD_PAYLOAD,
-      options: {}
+      options: {},
     });
   };
 
@@ -69,14 +69,14 @@ export const VoiceOver = () => {
 
 async function voiceOverMedia(
   voiceId: string,
-  text: string
+  text: string,
 ): Promise<{ url: string }> {
   const voiceOverResponse = await fetch("/api/voice-over", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ voiceId, text })
+    body: JSON.stringify({ voiceId, text }),
   });
 
   if (!voiceOverResponse.ok) {

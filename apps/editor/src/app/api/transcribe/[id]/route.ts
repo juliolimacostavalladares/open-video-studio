@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -10,20 +10,20 @@ export async function GET(
     if (!id) {
       return NextResponse.json(
         { message: "id parameter is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const response = await fetch(`https://api.combo.sh/v1/transcribe/${id}`, {
       headers: {
-        Authorization: "Bearer cb_bYQbTtE7Yb7R" // JWT Token from environment
-      }
+        Authorization: "Bearer cb_bYQbTtE7Yb7R", // JWT Token from environment
+      },
     });
 
     const statusData = await response.json();
     if (!response.ok) {
       const error = new Error(
-        statusData?.message || "Failed status transcribe"
+        statusData?.message || "Failed status transcribe",
       );
       (error as any).status = response.status;
       throw error;
@@ -34,7 +34,7 @@ export async function GET(
     console.error(error);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

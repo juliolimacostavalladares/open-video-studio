@@ -2,7 +2,7 @@ const Wave = ({
   char,
   frame,
   fps,
-  index
+  index,
 }: {
   char: string;
   frame: number;
@@ -16,7 +16,7 @@ const Wave = ({
     <span
       style={{
         display: "inline-block",
-        transform: `translateY(${translateY}px)`
+        transform: `translateY(${translateY}px)`,
       }}
     >
       {char}

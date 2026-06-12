@@ -6,7 +6,13 @@ import { useState } from "react";
 import { readApiError } from "../lib/api";
 import { SparkIcon } from "./icons";
 
-const tones = ["Educativo", "Inspirador", "Direto", "Storytelling", "Descontraído"];
+const tones = [
+  "Educativo",
+  "Inspirador",
+  "Direto",
+  "Storytelling",
+  "Descontraído",
+];
 
 export function CreateProjectForm({ apiBaseUrl }: { apiBaseUrl: string }) {
   const router = useRouter();
@@ -40,10 +46,17 @@ export function CreateProjectForm({ apiBaseUrl }: { apiBaseUrl: string }) {
         throw new Error(await readApiError(response));
       }
 
-      const project = (await response.json()) as { id: string; aiError?: string };
+      const project = (await response.json()) as {
+        id: string;
+        aiError?: string;
+      };
       router.push(`/editor/edit/${project.id}`);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Não foi possível criar o projeto.");
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "Não foi possível criar o projeto.",
+      );
       setIsSubmitting(false);
     }
   }
@@ -84,7 +97,9 @@ export function CreateProjectForm({ apiBaseUrl }: { apiBaseUrl: string }) {
           <label className="field">
             <span>Duração alvo</span>
             <select
-              onChange={(event) => setTargetDuration(Number(event.target.value))}
+              onChange={(event) =>
+                setTargetDuration(Number(event.target.value))
+              }
               value={targetDuration}
             >
               <option value={1}>1 minuto</option>
@@ -96,8 +111,13 @@ export function CreateProjectForm({ apiBaseUrl }: { apiBaseUrl: string }) {
           </label>
           <label className="field">
             <span>Tom principal</span>
-            <select onChange={(event) => setTone(event.target.value)} value={tone}>
-              {tones.map((item) => <option key={item}>{item}</option>)}
+            <select
+              onChange={(event) => setTone(event.target.value)}
+              value={tone}
+            >
+              {tones.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
             </select>
           </label>
           <label className="field field-full">
@@ -114,7 +134,11 @@ export function CreateProjectForm({ apiBaseUrl }: { apiBaseUrl: string }) {
         {error ? <div className="notice notice-error">{error}</div> : null}
 
         <div className="form-actions">
-          <button className="button button-primary button-large" disabled={isSubmitting} type="submit">
+          <button
+            className="button button-primary button-large"
+            disabled={isSubmitting}
+            type="submit"
+          >
             <SparkIcon />
             {isSubmitting ? "Criando roteiro..." : "Gerar projeto com IA"}
           </button>
@@ -134,7 +158,10 @@ export function CreateProjectForm({ apiBaseUrl }: { apiBaseUrl: string }) {
           ].map(([number, label, copy]) => (
             <div className="preview-step" key={number}>
               <span>{number}</span>
-              <div><strong>{label}</strong><small>{copy}</small></div>
+              <div>
+                <strong>{label}</strong>
+                <small>{copy}</small>
+              </div>
             </div>
           ))}
         </div>

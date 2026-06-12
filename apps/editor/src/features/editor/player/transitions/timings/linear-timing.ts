@@ -22,8 +22,8 @@ export const linearTiming = (options: {
       return interpolate(frame, [0, options.durationInFrames], [0, 1], {
         easing: options.easing,
         extrapolateLeft: "clamp",
-        extrapolateRight: "clamp"
+        extrapolateRight: "clamp",
       });
-    }
+    },
   };
 };

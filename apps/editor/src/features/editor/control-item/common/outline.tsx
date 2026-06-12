@@ -6,7 +6,7 @@ import useLayoutStore from "../../store/use-layout-store";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import ColorPicker from "@/components/color-picker";
 
@@ -15,7 +15,7 @@ function Outline({
   onChageBorderWidth,
   onChangeBorderColor,
   valueBorderWidth,
-  valueBorderColor
+  valueBorderColor,
 }: {
   label: string;
   onChageBorderWidth: (v: number) => void;
@@ -62,7 +62,7 @@ function Outline({
                 <div className="relative cursor-pointer">
                   <div
                     style={{
-                      backgroundColor: localValueBorderColor
+                      backgroundColor: localValueBorderColor,
                     }}
                     className="absolute left-0.5 top-0.5 h-7 w-7 flex-none rounded-md border border-border"
                   />
@@ -98,7 +98,7 @@ function Outline({
             <div className="relative cursor-pointer" onClick={handleColorClick}>
               <div
                 style={{
-                  backgroundColor: localValueBorderColor
+                  backgroundColor: localValueBorderColor,
                 }}
                 className="absolute left-0.5 top-0.5 h-7 w-7 flex-none rounded-md border border-border"
               />

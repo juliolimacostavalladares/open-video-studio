@@ -9,5 +9,5 @@ export const DEFAULT_FONT = {
   category: "sans-serif",
   createdAt: "2023-06-20T04:42:55.909Z",
   updatedAt: "2023-06-20T04:42:55.909Z",
-  userId: null
+  userId: null,
 };

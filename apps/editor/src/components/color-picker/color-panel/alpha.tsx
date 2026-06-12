@@ -74,7 +74,7 @@ const Alpha: FC<TPropsCompAlpha> = ({ color, alpha, onChange, setChange }) => {
 
     pointMoveTo({
       x,
-      y
+      y,
     });
 
     window.addEventListener("mousemove", onDrag);
@@ -87,7 +87,7 @@ const Alpha: FC<TPropsCompAlpha> = ({ color, alpha, onChange, setChange }) => {
 
     pointMoveTo({
       x,
-      y
+      y,
     });
   };
 
@@ -97,7 +97,7 @@ const Alpha: FC<TPropsCompAlpha> = ({ color, alpha, onChange, setChange }) => {
 
     pointMoveTo({
       x,
-      y
+      y,
     });
 
     setChange(false);
@@ -135,7 +135,7 @@ const Alpha: FC<TPropsCompAlpha> = ({ color, alpha, onChange, setChange }) => {
 
     pointMoveTo({
       x,
-      y
+      y,
     });
   };
 
@@ -149,7 +149,7 @@ const Alpha: FC<TPropsCompAlpha> = ({ color, alpha, onChange, setChange }) => {
       red,
       green,
       blue,
-      0
+      0,
     )} , ${rgbaColor(red, green, blue, 100)})`;
 
     return opacityGradient;

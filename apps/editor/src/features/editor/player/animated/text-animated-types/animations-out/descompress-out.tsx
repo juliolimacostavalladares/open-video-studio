@@ -4,7 +4,7 @@ const DescompressAnimationOut = ({
   frame,
   fps,
   animationTextOutFrames,
-  durationInFrames
+  durationInFrames,
 }: {
   char: string;
   index: number;
@@ -19,7 +19,7 @@ const DescompressAnimationOut = ({
 
   const progress = Math.min(
     Math.max((time - startTime) / (endTime - startTime), 0),
-    1
+    1,
   );
   const scaleX = 1 + progress;
   const opacity = 1 - progress;
@@ -30,7 +30,7 @@ const DescompressAnimationOut = ({
       style={{
         display: "inline-block",
         transform: `scaleX(${scaleX})`,
-        opacity: opacity
+        opacity: opacity,
       }}
     >
       {char === " " ? " " : char}

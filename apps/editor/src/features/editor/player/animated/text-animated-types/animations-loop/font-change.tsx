@@ -4,7 +4,7 @@ const FontChange = ({
   frame,
   text,
   details,
-  animationFonts
+  animationFonts,
 }: {
   text: string;
   frame: number;
@@ -24,12 +24,12 @@ const FontChange = ({
         height: "100%",
         position: "relative",
         background: "transparent",
-        perspective: 1000 // necesaria para el efecto 3D
+        perspective: 1000, // necesaria para el efecto 3D
       }}
     >
       <div
         style={{
-          fontFamily: totalFonts[fontIndex].fontFamily
+          fontFamily: totalFonts[fontIndex].fontFamily,
         }}
       >
         {text}

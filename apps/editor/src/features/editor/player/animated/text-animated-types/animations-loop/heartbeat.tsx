@@ -1,7 +1,7 @@
 const Heartbeat = ({
   char,
   frame,
-  fps
+  fps,
 }: {
   char: string;
   frame: number;
@@ -20,7 +20,7 @@ const Heartbeat = ({
     <span
       style={{
         display: "inline-block",
-        transform: `scale(${scale})`
+        transform: `scale(${scale})`,
       }}
     >
       {char}

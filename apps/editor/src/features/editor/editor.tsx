@@ -121,7 +121,11 @@ const Editor = ({ tempId, id }: { tempId?: string; id?: string }) => {
         setProjectName(project.title);
         setVoiceProfileId(project.voiceProfileId);
 
-        const mappedDesign = mapProjectScenesToDesign(project, scenes, apiBaseUrl);
+        const mappedDesign = mapProjectScenesToDesign(
+          project,
+          scenes,
+          apiBaseUrl,
+        );
         console.log("Mapped design from API:", mappedDesign);
         dispatch(DESIGN_LOAD, { payload: mappedDesign });
       } catch (error) {

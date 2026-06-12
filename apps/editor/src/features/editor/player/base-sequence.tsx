@@ -19,7 +19,7 @@ export interface SequenceItemOptions {
 export const BaseSequence = ({
   item,
   options,
-  children
+  children,
 }: {
   item: ITrackItem;
   options: SequenceItemOptions;
@@ -30,15 +30,15 @@ export const BaseSequence = ({
   const { from, durationInFrames } = calculateFrames(
     {
       from: item.display.from,
-      to: item.display.to
+      to: item.display.to,
     },
-    fps
+    fps,
   );
   const crop = details.crop || {
     x: 0,
     y: 0,
     width: item.details.width,
-    height: item.details.height
+    height: item.details.height,
   };
 
   const background =
@@ -73,7 +73,7 @@ export const BaseSequence = ({
       from={from}
       durationInFrames={durationInFrames || 1 / fps}
       style={{
-        pointerEvents: "none"
+        pointerEvents: "none",
       }}
     >
       <AbsoluteFill
@@ -89,9 +89,9 @@ export const BaseSequence = ({
             overflow:
               item.type !== "caption" && item.type !== "text"
                 ? "hidden"
-                : "visible"
+                : "visible",
           },
-          item.type
+          item.type,
         )}
       >
         {children}

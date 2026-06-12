@@ -70,7 +70,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Pulse Animation Loop"
+    name: "Pulse Animation Loop",
   },
   glitchAnimationLoop: {
     property: "glitchTextAnimationLoop",
@@ -79,7 +79,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Glitch Animation Loop"
+    name: "Glitch Animation Loop",
   },
   countDownAnimationIn: {
     property: "countDownTextAnimationIn",
@@ -88,7 +88,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Count Down Animation In"
+    name: "Count Down Animation In",
   },
   soundWaveIn: {
     property: "soundWaveTextAnimationIn",
@@ -97,7 +97,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Sound Wave Animation In"
+    name: "Sound Wave Animation In",
   },
   backgroundAnimationOut: {
     property: "backgroundTextAnimationOut",
@@ -106,7 +106,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Background Animation Out"
+    name: "Background Animation Out",
   },
   backgroundAnimationIn: {
     property: "backgroundTextAnimationIn",
@@ -115,7 +115,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Background Animation In"
+    name: "Background Animation In",
   },
   textFontChangeAnimationLoop: {
     property: "textFontChangeAnimationLoop",
@@ -129,26 +129,26 @@ export const presets: Record<PresetName, Animation> = {
       fonts: [
         {
           fontFamily: "Bangers-Regular",
-          url: "https://fonts.gstatic.com/s/bangers/v13/FeVQS0BTqb0h60ACL5la2bxii28.ttf"
+          url: "https://fonts.gstatic.com/s/bangers/v13/FeVQS0BTqb0h60ACL5la2bxii28.ttf",
         },
         {
           fontFamily: "AnonymousPro-BoldItalic",
-          url: "https://fonts.gstatic.com/s/anonymouspro/v14/rP2ap2a15UIB7Un-bOeISG3pHl4OTCzc6IG30KqB9Q.ttf"
+          url: "https://fonts.gstatic.com/s/anonymouspro/v14/rP2ap2a15UIB7Un-bOeISG3pHl4OTCzc6IG30KqB9Q.ttf",
         },
         {
           fontFamily: "Frijole",
-          url: "https://fonts.gstatic.com/s/frijole/v9/uU9PCBUR8oakM2BQ7xPb3vyHmlI.ttf"
+          url: "https://fonts.gstatic.com/s/frijole/v9/uU9PCBUR8oakM2BQ7xPb3vyHmlI.ttf",
         },
         {
           fontFamily: "Bangers-Regular",
-          url: "https://fonts.gstatic.com/s/bangers/v13/FeVQS0BTqb0h60ACL5la2bxii28.ttf"
+          url: "https://fonts.gstatic.com/s/bangers/v13/FeVQS0BTqb0h60ACL5la2bxii28.ttf",
         },
         {
           fontFamily: "Allura-Regular",
-          url: "https://fonts.gstatic.com/s/allura/v15/9oRPNYsQpS4zjuAPjAIXPtrrGA.ttf"
-        }
-      ]
-    }
+          url: "https://fonts.gstatic.com/s/allura/v15/9oRPNYsQpS4zjuAPjAIXPtrrGA.ttf",
+        },
+      ],
+    },
   },
   vintageAnimationLoop: {
     property: "vintageTextAnimationLoop",
@@ -157,7 +157,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Vintage Animation Loop"
+    name: "Vintage Animation Loop",
   },
   shakyLettersTextAnimationLoop: {
     property: "shakyLettersTextAnimationLoop",
@@ -166,7 +166,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Shaky Letters Animation Loop"
+    name: "Shaky Letters Animation Loop",
   },
   shakeTextAnimationLoop: {
     property: "shakeTextAnimationLoop",
@@ -175,7 +175,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Shake Text Animation Loop"
+    name: "Shake Text Animation Loop",
   },
   rotate3dAnimationLoop: {
     property: "rotate3dTextAnimationLoop",
@@ -184,7 +184,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Rotate 3D Animation Loop"
+    name: "Rotate 3D Animation Loop",
   },
   heartbeatAnimationLoop: {
     property: "heartbeatTextAnimationLoop",
@@ -193,7 +193,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Heartbeat Animation Loop"
+    name: "Heartbeat Animation Loop",
   },
   spinAnimationLoop: {
     property: "spinTextAnimationLoop",
@@ -202,7 +202,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Spin Animation Loop"
+    name: "Spin Animation Loop",
   },
   waveAnimationLoop: {
     property: "waveTextAnimationLoop",
@@ -211,7 +211,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Wave Animation Loop"
+    name: "Wave Animation Loop",
   },
   descompressAnimationIn: {
     property: "descompressTextAnimationIn",
@@ -220,7 +220,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Descompress Animation In"
+    name: "Descompress Animation In",
   },
   dropAnimationIn: {
     property: "dropTextAnimationIn",
@@ -229,7 +229,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Drop Animation In"
+    name: "Drop Animation In",
   },
   dropAnimationOut: {
     property: "dropTextAnimationOut",
@@ -238,7 +238,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Drop Animation Out"
+    name: "Drop Animation Out",
   },
   descompressAnimationOut: {
     property: "descompressTextAnimationOut",
@@ -247,7 +247,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Descompress Animation Out"
+    name: "Descompress Animation Out",
   },
   vogueAnimationLoop: {
     property: "vogueTextAnimationLoop",
@@ -256,7 +256,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Vogue Animation Loop"
+    name: "Vogue Animation Loop",
   },
   dragonFlyAnimationLoop: {
     property: "dragonFlyTextAnimationLoop",
@@ -265,7 +265,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Dragon Fly Animation Loop"
+    name: "Dragon Fly Animation Loop",
   },
   billboardAnimationLoop: {
     property: "billboardTextAnimationLoop",
@@ -274,7 +274,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Billboard Animation Loop"
+    name: "Billboard Animation Loop",
   },
   typeWriterOut: {
     property: "typeWriterTextAnimationOut",
@@ -283,7 +283,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Type Writer"
+    name: "Type Writer",
   },
   greatThinkersAnimationOut: {
     property: "greatThinkersTextAnimationOut",
@@ -292,7 +292,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/great-thinker-out.webp",
-    name: "Great Thinkers"
+    name: "Great Thinkers",
   },
   realityIsBrokenAnimationOut: {
     property: "realityIsBrokenTextAnimationOut",
@@ -302,7 +302,7 @@ export const presets: Record<PresetName, Animation> = {
     ease: Easing.linear,
     previewUrl:
       "https://cdn.designcombo.dev/animations/realisty-is-broken-out.webp",
-    name: "Reality is Broken"
+    name: "Reality is Broken",
   },
   madeWithLoveAnimationOut: {
     property: "madeWithLoveTextAnimationOut",
@@ -312,7 +312,7 @@ export const presets: Record<PresetName, Animation> = {
     ease: Easing.linear,
     previewUrl:
       "https://cdn.designcombo.dev/animations/made-with-love-out.webp",
-    name: "Made With Love"
+    name: "Made With Love",
   },
   realityIsBrokenAnimationIn: {
     property: "realityIsBrokenTextAnimationIn",
@@ -322,7 +322,7 @@ export const presets: Record<PresetName, Animation> = {
     ease: Easing.linear,
     previewUrl:
       "https://cdn.designcombo.dev/animations/reality-is-broken-in.webp",
-    name: "Reality is Broken"
+    name: "Reality is Broken",
   },
   beautifulQuestionsAnimationOut: {
     property: "beautifulQuestionsTextAnimationOut",
@@ -332,7 +332,7 @@ export const presets: Record<PresetName, Animation> = {
     ease: Easing.linear,
     previewUrl:
       "https://cdn.designcombo.dev/animations/beatiful-question-out.webp",
-    name: "Beautiful Questions"
+    name: "Beautiful Questions",
   },
   animatedTextOut: {
     property: "animatedTextOut",
@@ -341,7 +341,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/animated-text-out.webp",
-    name: "Animated Text"
+    name: "Animated Text",
   },
   sunnyMorningsAnimationOut: {
     property: "sunnyMorningsTextAnimationOut",
@@ -351,7 +351,7 @@ export const presets: Record<PresetName, Animation> = {
     ease: Easing.linear,
     previewUrl:
       "https://cdn.designcombo.dev/animations/sunny-mornings-out.webp",
-    name: "Sunny Mornings"
+    name: "Sunny Mornings",
   },
   dominoDreamsAnimationOut: {
     property: "dominoDreamsTextAnimationOut",
@@ -360,7 +360,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/domino-dreams-out.webp",
-    name: "Domino Dreams"
+    name: "Domino Dreams",
   },
   madeWithLoveAnimationIn: {
     property: "madeWithLoveTextAnimationIn",
@@ -369,7 +369,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/made-with-love-in.webp",
-    name: "Made With Love"
+    name: "Made With Love",
   },
   beautifulQuestionsAnimationIn: {
     property: "beautifulQuestionsTextAnimationIn",
@@ -379,7 +379,7 @@ export const presets: Record<PresetName, Animation> = {
     ease: Easing.linear,
     previewUrl:
       "https://cdn.designcombo.dev/animations/beautiful-questions-in.webp",
-    name: "Beatiful Questions"
+    name: "Beatiful Questions",
   },
   greatThinkersAnimationIn: {
     property: "greatThinkersTextAnimationIn",
@@ -388,7 +388,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/great-thinker-in.webp",
-    name: "Great Thinkers"
+    name: "Great Thinkers",
   },
   // thursdayIn: {
   //   property: "textThursday",
@@ -406,7 +406,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/domino-dreams-in.webp",
-    name: "Domino Dreams"
+    name: "Domino Dreams",
   },
   typeWriterIn: {
     property: "typeWriterTextAnimationIn",
@@ -415,7 +415,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Type Writer"
+    name: "Type Writer",
   },
   animatedTextIn: {
     property: "animatedTextIn",
@@ -424,7 +424,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/animated-text-in.webp",
-    name: "Animated Text"
+    name: "Animated Text",
   },
   sunnyMorningsAnimationIn: {
     property: "sunnyMorningsTextAnimationIn",
@@ -433,7 +433,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/sunny-mornings-in.webp",
-    name: "Sunny Mornings"
+    name: "Sunny Mornings",
   },
   shakeHorizontalOut: {
     property: "shakeHorizontalOut",
@@ -443,7 +443,7 @@ export const presets: Record<PresetName, Animation> = {
     ease: Easing.elastic(1),
     previewUrl:
       "https://cdn.designcombo.dev/animations/ShakeHorizontalOut.webp",
-    name: "Shake Horizontal"
+    name: "Shake Horizontal",
   },
 
   shakeVerticalOut: {
@@ -453,7 +453,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.elastic(1),
     previewUrl: "https://cdn.designcombo.dev/animations/ShakeVerticalOut.webp",
-    name: "Shake Vertical"
+    name: "Shake Vertical",
   },
 
   shakeHorizontalIn: {
@@ -463,7 +463,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.elastic(1),
     previewUrl: "https://cdn.designcombo.dev/animations/ShakeHorizontalIn.webp",
-    name: "Shake Horizontal"
+    name: "Shake Horizontal",
   },
 
   shakeVerticalIn: {
@@ -473,7 +473,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.elastic(1),
     previewUrl: "https://cdn.designcombo.dev/animations/ShakeVerticalIn.webp",
-    name: "Shake Vertical"
+    name: "Shake Vertical",
   },
 
   rotateIn: {
@@ -483,7 +483,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/scaleAndRotate.webp",
-    name: "Rotate"
+    name: "Rotate",
   },
 
   flipIn: {
@@ -493,7 +493,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 30,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/flipIn.webp",
-    name: "Flip"
+    name: "Flip",
   },
 
   fadeIn: {
@@ -503,7 +503,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 15,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/FadeIn.webp",
-    name: "Fade"
+    name: "Fade",
   },
 
   fadeOut: {
@@ -513,7 +513,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 15,
     ease: Easing.linear,
     previewUrl: "https://cdn.designcombo.dev/animations/FadeOut.webp",
-    name: "Fade"
+    name: "Fade",
   },
 
   scaleIn: {
@@ -523,7 +523,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 15,
     ease: Easing.ease,
     previewUrl: "https://cdn.designcombo.dev/animations/ScaleIn.webp",
-    name: "Scale"
+    name: "Scale",
   },
 
   scaleOut: {
@@ -533,7 +533,7 @@ export const presets: Record<PresetName, Animation> = {
     durationInFrames: 15,
     ease: Easing.ease,
     previewUrl: "https://cdn.designcombo.dev/animations/ScaleOut.webp",
-    name: "Scale"
+    name: "Scale",
   },
 
   slideInRight: {
@@ -544,7 +544,7 @@ export const presets: Record<PresetName, Animation> = {
     delay: 0,
     ease: Easing.ease,
     previewUrl: "https://cdn.designcombo.dev/animations/SlideInRight.webp",
-    name: "Slide Right"
+    name: "Slide Right",
   },
 
   slideInLeft: {
@@ -555,7 +555,7 @@ export const presets: Record<PresetName, Animation> = {
     delay: 0,
     ease: Easing.ease,
     previewUrl: "https://cdn.designcombo.dev/animations/SlideInLeft.webp",
-    name: "Slide Left"
+    name: "Slide Left",
   },
 
   slideInTop: {
@@ -566,7 +566,7 @@ export const presets: Record<PresetName, Animation> = {
     delay: 0,
     ease: Easing.ease,
     previewUrl: "https://cdn.designcombo.dev/animations/SlideInTop.webp",
-    name: "Slide Top"
+    name: "Slide Top",
   },
 
   slideInBottom: {
@@ -577,7 +577,7 @@ export const presets: Record<PresetName, Animation> = {
     delay: 0,
     ease: Easing.ease,
     previewUrl: "https://cdn.designcombo.dev/animations/SlideInBottom.webp",
-    name: "Slide Bottom"
+    name: "Slide Bottom",
   },
 
   slideOutRight: {
@@ -588,7 +588,7 @@ export const presets: Record<PresetName, Animation> = {
     delay: 0,
     ease: Easing.ease,
     previewUrl: "https://cdn.designcombo.dev/animations/SlideOutRight.webp",
-    name: "Slide Right"
+    name: "Slide Right",
   },
 
   slideOutLeft: {
@@ -599,7 +599,7 @@ export const presets: Record<PresetName, Animation> = {
     delay: 0,
     ease: Easing.ease,
     previewUrl: "https://cdn.designcombo.dev/animations/SlideOutLeft.webp",
-    name: "Slide Left"
+    name: "Slide Left",
   },
 
   slideOutTop: {
@@ -610,7 +610,7 @@ export const presets: Record<PresetName, Animation> = {
     delay: 0,
     ease: Easing.ease,
     previewUrl: "https://cdn.designcombo.dev/animations/SlideOutUp.webp",
-    name: "Slide Top"
+    name: "Slide Top",
   },
 
   slideOutBottom: {
@@ -621,8 +621,8 @@ export const presets: Record<PresetName, Animation> = {
     delay: 0,
     ease: Easing.ease,
     previewUrl: "https://cdn.designcombo.dev/animations/slideOutDown.webp",
-    name: "Slide Bottom"
-  }
+    name: "Slide Bottom",
+  },
 } as const;
 
 // Export type for external usage

@@ -9,7 +9,7 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger
+  AccordionTrigger,
 } from "@/components/ui/accordion";
 import { FilePreview } from "@/components/ui/file-preview";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
@@ -20,38 +20,38 @@ const chatBubbleVariants = cva(
     variants: {
       isUser: {
         true: "bg-muted",
-        false: "bg-muted text-foreground"
+        false: "bg-muted text-foreground",
       },
       animation: {
         none: "",
         slide: "duration-300 animate-in fade-in-0",
         scale: "duration-300 animate-in fade-in-0 zoom-in-75",
-        fade: "duration-500 animate-in fade-in-0"
-      }
+        fade: "duration-500 animate-in fade-in-0",
+      },
     },
     compoundVariants: [
       {
         isUser: true,
         animation: "slide",
-        class: "slide-in-from-right"
+        class: "slide-in-from-right",
       },
       {
         isUser: false,
         animation: "slide",
-        class: "slide-in-from-left"
+        class: "slide-in-from-left",
       },
       {
         isUser: true,
         animation: "scale",
-        class: "origin-bottom-right"
+        class: "origin-bottom-right",
       },
       {
         isUser: false,
         animation: "scale",
-        class: "origin-bottom-left"
-      }
-    ]
-  }
+        class: "origin-bottom-left",
+      },
+    ],
+  },
 );
 
 type Animation = VariantProps<typeof chatBubbleVariants>["animation"];
@@ -128,7 +128,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   actions,
   experimental_attachments,
   toolInvocations,
-  parts
+  parts,
 }) => {
   const files = useMemo(() => {
     return experimental_attachments?.map((attachment) => {
@@ -154,7 +154,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
           <div
             className={cn(
               chatBubbleVariants({ isUser, animation }),
-              "bg-zinc-900 px-4 py-2 rounded-xl"
+              "bg-zinc-900 px-4 py-2 rounded-xl",
             )}
           >
             <MarkdownRenderer>{content}</MarkdownRenderer>
@@ -172,7 +172,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             <div
               className={cn(
                 chatBubbleVariants({ isUser, animation }),
-                "px-3 py-2 rounded-lg"
+                "px-3 py-2 rounded-lg",
               )}
             >
               <MarkdownRenderer>{part.text}</MarkdownRenderer>
@@ -250,7 +250,7 @@ const ReasoningBlock = ({ part }: { part: ReasoningPart }) => {
 };
 
 function ToolCall({
-  toolInvocations
+  toolInvocations,
 }: Pick<ChatMessageProps, "toolInvocations">) {
   if (!toolInvocations?.length) return null;
 

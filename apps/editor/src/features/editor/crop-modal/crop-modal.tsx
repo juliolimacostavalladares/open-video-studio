@@ -3,7 +3,7 @@ import {
   Dialog,
   DialogDescription,
   DialogTitle,
-  DialogOverlay
+  DialogOverlay,
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { ElementCrop } from "./element-crop";
@@ -19,7 +19,7 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@radix-ui/react-label";
 
@@ -33,7 +33,7 @@ const CropModal = () => {
     scale: scaled,
     element,
     loadImage,
-    clear
+    clear,
   } = useCropStore();
 
   const apply = () => {
@@ -87,11 +87,11 @@ const CropModal = () => {
               x: cropX,
               y: cropY,
               width: newWidth,
-              height: newHeight
-            }
-          }
-        }
-      }
+              height: newHeight,
+            },
+          },
+        },
+      },
     });
 
     clear();
@@ -158,7 +158,7 @@ const CropModal = () => {
                       <ElementCrop
                         size={{
                           width: cropTargetDetails.width,
-                          height: cropTargetDetails.height
+                          height: cropTargetDetails.height,
                         }}
                         targetDetails={cropTargetDetails}
                         element={element}

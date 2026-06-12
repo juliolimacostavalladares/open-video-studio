@@ -7,14 +7,14 @@ import {
   Drawer,
   DrawerContent,
   DrawerHeader,
-  DrawerTitle
+  DrawerTitle,
 } from "@/components/ui/drawer";
 import { MenuItem } from "./menu-item/menu-item";
 import { useIsLargeScreen } from "@/hooks/use-media-query";
 import {
   Tooltip,
   TooltipContent,
-  TooltipTrigger
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
 
 // Define menu items configuration for better maintainability
@@ -23,56 +23,56 @@ const MENU_ITEMS = [
     id: "uploads",
     icon: Icons.upload,
     label: "Uploads",
-    ariaLabel: "Enviar e gerenciar arquivos"
+    ariaLabel: "Enviar e gerenciar arquivos",
   },
   {
     id: "texts",
     icon: Icons.type,
     label: "Textos",
-    ariaLabel: "Adicionar e editar textos"
+    ariaLabel: "Adicionar e editar textos",
   },
   {
     id: "videos",
     icon: Icons.video,
     label: "Vídeos",
-    ariaLabel: "Adicionar e gerenciar vídeos"
+    ariaLabel: "Adicionar e gerenciar vídeos",
   },
   {
     id: "captions",
     icon: Icons.captions,
     label: "Legendas",
-    ariaLabel: "Adicionar e editar legendas"
+    ariaLabel: "Adicionar e editar legendas",
   },
   {
     id: "images",
     icon: Icons.image,
     label: "Imagens",
-    ariaLabel: "Adicionar e gerenciar imagens"
+    ariaLabel: "Adicionar e gerenciar imagens",
   },
   {
     id: "audios",
     icon: Icons.audio,
     label: "Áudio",
-    ariaLabel: "Adicionar e gerenciar áudio"
+    ariaLabel: "Adicionar e gerenciar áudio",
   },
   {
     id: "transitions",
     icon: Icons.transition, // Custom SVG for transitions
     label: "Transições",
-    ariaLabel: "Adicionar transições"
+    ariaLabel: "Adicionar transições",
   },
   {
     id: "ai-voice",
     icon: Icons.volume,
     label: "Voz IA",
-    ariaLabel: "Gerar voz por IA"
+    ariaLabel: "Gerar voz por IA",
   },
   {
     id: "sfx",
     icon: Icons.sfx,
     label: "SFX",
-    ariaLabel: "Gerar efeitos sonoros"
-  }
+    ariaLabel: "Gerar efeitos sonoros",
+  },
 ] as const;
 
 // Memoized menu button component for better performance
@@ -94,7 +94,7 @@ const MenuButton = memo<{
         "flex items-center justify-center flex-none h-7.5 w-7.5 cursor-pointer rounded-sm transition-all duration-200",
         isActive
           ? "bg-white/10 text-white"
-          : "text-muted-foreground hover:bg-white/5 hover:text-white"
+          : "text-muted-foreground hover:bg-white/5 hover:text-white",
       )}
       key={item.id}
     >
@@ -120,7 +120,7 @@ function MenuList() {
     activeMenuItem,
     showMenuItem,
     drawerOpen,
-    setDrawerOpen
+    setDrawerOpen,
   } = useLayoutStore();
 
   const isLargeScreen = useIsLargeScreen();
@@ -138,14 +138,14 @@ function MenuList() {
         setShowMenuItem(true);
       }
     },
-    [isLargeScreen, setActiveMenuItem, setDrawerOpen, setShowMenuItem]
+    [isLargeScreen, setActiveMenuItem, setDrawerOpen, setShowMenuItem],
   );
 
   const handleDrawerOpenChange = useCallback(
     (open: boolean) => {
       setDrawerOpen(open);
     },
-    [setDrawerOpen]
+    [setDrawerOpen],
   );
 
   const checkScrollPosition = () => {

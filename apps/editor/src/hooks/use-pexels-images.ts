@@ -44,7 +44,7 @@ interface CuratedImagesCache {
 const curatedImagesCache: CuratedImagesCache = {
   data: null,
   timestamp: 0,
-  page: 1
+  page: 1,
 };
 
 // Cache duration: 5 minutes
@@ -112,7 +112,7 @@ export function usePexelsImages(): UsePexelsImagesReturn {
       const url = `/api/pexels?query=${encodeURIComponent(query)}&page=${page}&per_page=20`;
       await fetchImages(url);
     },
-    [fetchImages]
+    [fetchImages],
   );
 
   const searchImagesAppend = useCallback(async (query: string, page = 1) => {
@@ -236,7 +236,7 @@ export function usePexelsImages(): UsePexelsImagesReturn {
       clearCuratedImagesCache();
       await loadCuratedImages(page);
     },
-    [loadCuratedImages]
+    [loadCuratedImages],
   );
 
   return {
@@ -252,6 +252,6 @@ export function usePexelsImages(): UsePexelsImagesReturn {
     searchImagesAppend,
     loadCuratedImagesAppend,
     clearImages,
-    refreshCuratedImages
+    refreshCuratedImages,
   };
 }

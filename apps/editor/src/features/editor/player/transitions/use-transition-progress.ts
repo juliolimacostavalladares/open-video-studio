@@ -18,13 +18,13 @@ export const useTransitionProgress = (): TransitionState => {
     return {
       isInTransitionSeries: false,
       entering: 1,
-      exiting: 0
+      exiting: 0,
     };
   }
 
   return {
     isInTransitionSeries: true,
     entering: entering?.enteringProgress ?? 1,
-    exiting: exiting?.exitingProgress ?? 0
+    exiting: exiting?.exitingProgress ?? 0,
   };
 };

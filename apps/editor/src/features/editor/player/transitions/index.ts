@@ -6,7 +6,7 @@ export { TransitionSeries } from "./transition-series";
 export type {
   TransitionPresentation,
   TransitionPresentationComponentProps,
-  TransitionTiming
+  TransitionTiming,
 } from "./types";
 // Hooks
 export { useTransitionProgress } from "./use-transition-progress";

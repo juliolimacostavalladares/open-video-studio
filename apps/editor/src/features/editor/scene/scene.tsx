@@ -18,12 +18,12 @@ const Scene = forwardRef<
   const { size, trackItemIds } = useStore();
   const { zoom, handlePinch, recalculateZoom } = useZoom(
     containerRef as React.RefObject<HTMLDivElement>,
-    size
+    size,
   );
 
   // Expose the recalculateZoom function to parent
   useImperativeHandle(ref, () => ({
-    recalculateZoom
+    recalculateZoom,
   }));
 
   return (
@@ -37,7 +37,7 @@ const Scene = forwardRef<
         background: "transparent",
         display: "flex",
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
       }}
       ref={containerRef}
     >
@@ -48,7 +48,7 @@ const Scene = forwardRef<
           height: size.height,
           background: "#000000",
           transform: `scale(${zoom})`,
-          position: "absolute"
+          position: "absolute",
         }}
         className="player-container bg-sidebar"
       >
@@ -60,7 +60,7 @@ const Scene = forwardRef<
             width: size.width,
             height: size.height,
             background: "transparent",
-            boxShadow: "0 0 0 5000px var(--card)"
+            boxShadow: "0 0 0 5000px var(--card)",
           }}
         />
         <Board size={size}>

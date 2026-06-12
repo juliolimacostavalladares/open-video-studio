@@ -17,7 +17,7 @@ export const WrapInEnteringProgressContext: React.FC<{
 }> = ({ presentationProgress, children }) => {
   const value: EnteringState = useMemo(() => {
     return {
-      enteringProgress: presentationProgress
+      enteringProgress: presentationProgress,
     };
   }, [presentationProgress]);
 
@@ -34,7 +34,7 @@ export const WrapInExitingProgressContext: React.FC<{
 }> = ({ presentationProgress, children }) => {
   const value: ExitingState = useMemo(() => {
     return {
-      exitingProgress: presentationProgress
+      exitingProgress: presentationProgress,
     };
   }, [presentationProgress]);
 

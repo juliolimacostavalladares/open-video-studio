@@ -5,7 +5,7 @@ import { audioDataManager } from "../../lib/audio-data";
 
 export const LinealBars = ({
   item,
-  options
+  options,
 }: {
   item: ILinealAudioBars;
   options: SequenceItemOptions;

@@ -5,7 +5,7 @@ const PulseText = ({
   char,
   index,
   frame,
-  details
+  details,
 }: {
   char: string;
   index: number;
@@ -18,16 +18,16 @@ const PulseText = ({
     [0, 0.5, 1],
     [1, 1.2, 1],
     {
-      extrapolateRight: "clamp"
-    }
+      extrapolateRight: "clamp",
+    },
   );
   const opacity = interpolate(
     ((frame + 30 - delay) % 30) / 30,
     [0, 0.5, 1],
     [0.5, 1, 0.5],
     {
-      extrapolateRight: "clamp"
-    }
+      extrapolateRight: "clamp",
+    },
   );
 
   return (
@@ -36,7 +36,7 @@ const PulseText = ({
         opacity: opacity,
         position: "relative",
         fontSize: parseFloat(details.fontSize.toString()) * pulse,
-        scale: pulse
+        scale: pulse,
       }}
     >
       {char}
@@ -51,7 +51,7 @@ const PulseText = ({
           background: "rgba(255, 255, 255, 0.1)",
           borderRadius: "50%",
           filter: "blur(20px)",
-          opacity: opacity
+          opacity: opacity,
         }}
       />
     </span>
