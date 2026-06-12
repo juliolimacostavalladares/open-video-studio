@@ -155,9 +155,6 @@ test.describe("render queue and status tracking", () => {
     const renderStatus = page.locator("#render-status");
     await expect(renderStatus).toContainText("Render enfileirado com sucesso");
 
-    // Open "Render" tab to view the player status polling
-    await page.getByRole("button", { name: "Render", exact: true }).click();
-
     const statusBadge = page.locator("#video-render-status-badge");
     await expect(statusBadge).toContainText("Na Fila");
     await expect(page.locator("#rendering-queued-state")).toBeVisible();
@@ -311,9 +308,6 @@ test.describe("render queue and status tracking", () => {
 
     const renderStatus = page.locator("#render-status");
     await expect(renderStatus).toContainText("Render enfileirado com sucesso");
-
-    // Open "Render" tab to view the player status polling
-    await page.getByRole("button", { name: "Render", exact: true }).click();
 
     const statusBadge = page.locator("#video-render-status-badge");
     await expect(statusBadge).toContainText("Na Fila");
