@@ -1,18 +1,1 @@
-node_modules
-.pnpm-store
-.next
-dist
-coverage
-*.tsbuildinfo
-playwright-report
-test-results
-.turbo
-.env
-.env.local
-apps/api/.env
-apps/web/.env.local
-packages/database/.env
-packages/database/src/generated
-.tmp
-storage
-data
+Nothing should be ignored since only TypeScript source files (.ts) were added and no build artifacts, dependencies, or temporary files are present in the changes.
